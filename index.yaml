@@ -1,0 +1,31 @@
+apiVersion: v1
+entries:
+  example:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2020-07-10T12:00:39.665514331Z"
+    description: A Helm chart for Kubernetes
+    digest: 755efede112e99af7abdc4df50b84a82ee8c13ca5acab889adb59aca710ca4e9
+    home: https://google.com
+    maintainers:
+    - name: tester
+    name: example
+    type: application
+    urls:
+    - https://github.com/Kubernetli/helm-charts/releases/download/example-0.1.2/example-0.1.2.tgz
+    version: 0.1.2
+  xample-2:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2020-07-10T12:00:39.781885156Z"
+    description: A Helm chart for Kubernetes
+    digest: 5ef1a41bbd48cfb251318c9040d438806e0a5bea1d409a3410c476e994664017
+    home: https://google.com
+    maintainers:
+    - name: tester
+    name: xample-2
+    type: application
+    urls:
+    - https://github.com/Kubernetli/helm-charts/releases/download/xample-2-0.1.0/xample-2-0.1.0.tgz
+    version: 0.1.0
+generated: "2020-07-10T12:00:39.462979193Z"
