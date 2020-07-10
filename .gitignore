@@ -1,0 +1,44 @@
+# swap
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+# session
+Session.vim
+# temporary
+.netrwhist
+*~
+# auto-generated tag files
+tags
+
+# Ansible retry files
+*.retry
+
+# exclude compiled python files
+*.pyc
+
+# Ansible Vault password file
+.vault_pass
+# Ejson decrypted
+*.ejson.json
+
+# Ignore generated cluster.json
+cluster.json
+
+# default terraform vars, probably contains sensitive login data
+terraform.tfvars
+terraform.sh
+.terraform/
+*.tfstate*
+
+# Vagrant
+*.vmdk
+*.img
+.vagrant
+config.ign.merged
+*.vdi
+
+# concourse-ci
+credentials.yml
+
+# Nodejs
+node_modules/
+package-lock.json
