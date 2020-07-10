@@ -17,6 +17,19 @@ entries:
   xample-2:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2020-07-10T12:08:17.481875688Z"
+    description: A Helm chart for Kubernetes
+    digest: 38977fe919fc1559aad3fa1ed83cdb2862ac313844f6ee363b9cd123096e07c8
+    home: https://google.com
+    maintainers:
+    - name: tester
+    name: xample-2
+    type: application
+    urls:
+    - https://github.com/Kubernetli/helm-charts/releases/download/xample-2-0.1.2/xample-2-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2020-07-10T12:00:39.781885156Z"
     description: A Helm chart for Kubernetes
     digest: 5ef1a41bbd48cfb251318c9040d438806e0a5bea1d409a3410c476e994664017
