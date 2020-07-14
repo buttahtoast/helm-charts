@@ -14,6 +14,19 @@ entries:
     urls:
     - https://github.com/Kubernetli/helm-charts/releases/download/example-0.1.2/example-0.1.2.tgz
     version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2020-07-14T20:50:42.761356109Z"
+    description: A Helm chart for Kubernetes
+    digest: ea2b8f05f3a236921e50e2e687ce2fe69a85f16c6e4667729c9fa89991a956db
+    home: https://www.google.com
+    maintainers:
+    - name: oliverbaehler
+    name: example
+    type: application
+    urls:
+    - https://github.com/Kubernetli/helm-charts/releases/download/example-0.1.0/example-0.1.0.tgz
+    version: 0.1.0
   xample-2:
   - apiVersion: v2
     appVersion: 1.16.0
