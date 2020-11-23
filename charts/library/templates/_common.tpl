@@ -1,7 +1,7 @@
 {{/*
   Sprig Template - ReleaseName
 */}}
-{{- define "lib.utils.chart" -}}
+{{- define "lib.internal.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -9,18 +9,13 @@
 {{/*
   Sprig Template - Name
 */}}
-{{- define "lib.utils.name" -}}
+{{- define "lib.internal.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 
 {{/*
   Sprig Template - Fullname
-*/}}
-{{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
 */}}
 {{- define "lib.utils.fullname" -}}
   {{- $context := default . .context -}}
@@ -37,7 +32,7 @@ If release name contains chart name it will be used as a full name.
   {{- else if $fullname_p }}
     {{- $name = $fullname_p -}}
   {{- else -}}
-    {{- $name_p := default $context.Chart.Name (default $context.Values.nameOverride $name_p) -}}
+    {{- $name_p := (default (include "lib.internal.name" $context) $name_p)
       {{- if or (contains $name_p $context.Release.Name) (contains $context.Release.Name $name_p) -}}
         {{- $name = $prefix -}}
       {{- else -}}

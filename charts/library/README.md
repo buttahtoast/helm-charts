@@ -46,18 +46,62 @@ it should do and what it should return.
 **Template Index**
 
 * **[Common](#common)**
-  * Item i
+  * [Fullname](#fullname)
+  * [SelectorLabels](#selectorlabels)
+  * [DefaultLabels](#defaultlabels)
+  * [OverwriteLabels](#overwritelabels)
+  * [CommonLabels](#commonlabels)
+  * [KubeCapabilities](#kubecapabilities)
 * **[Globals](#globals)**
+  * [DockerImage](#dockerimage)
+  * [ImagePullPolicy](#imagepullpolicy)
+  * [ImagePullsecrets](#imagepullsecrets)
+  * [StorageClass](#storageclass)
 * **[Strings](#strings)**
+  * [Template](#template)
+  * [Stringify](#stringify)
+  * [ToDns1123](#todns1123)
 * **[Lists](#lists)**
   * [HasValueByKey](#hasvaluebykey)
   * [GetValueByKey](#getvaluebykey)
   * [MergeList](#mergelist)
   * [MergeListOnKey](#mergelistonkey)
+* **[Experimental](./templates/_experimental.tpl)**
 
 ## Common
 
-Common Templates.
+### Fullname
+
+Extended Function to return a fullname.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will intentionally.
+
+  * `.`/`.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+  * `.name` - Define a custom name, without prefix. The given value will appended to an evaluated prefix. Becomes suffix of the `$.Values.fullnameOverride` property, if set. Can also be set through `.context.name`.
+  * `.fullname` - Define a custom fullname. The given value will be returned as name. Is overwritten by the `$.Values.fullnameOverride` property, if set. Can also be set through `.context.fullname`.
+  * `.prefix` - Define a custom Prefix for the fullname. (Defaults to `$.Release.Name`)
+
+#### Keys
+
+This function enables the following keys on the values scope:
+
+```
+nameOverride: "SuffixOverwrite"
+fullnameOverride: "FullOverwrite"
+
+```
+
+#### Returns
+
+String
+
+#### Usage
+
+```
+\{\{- include "lib.utils.selectorLabels" $) \}\}
+```
 
 ### SelectorLabels
 
