@@ -140,11 +140,37 @@ tests:
 
 
 
+## Tavern - Kind CronJob
 ##
 cronjob:
 
   ## Enable Run as Cronjob
+  # cronjob.enabled -- Deploy tavern as kind CronJob instead of kind Job (Reoccuring execution)
   enabled: true
+
+  ## Custom API Version
+  # cronjob.apiVersion -- Declare API version for kind CronJob
+  # @default -- batch/v1beta1
+  apiVersion: ""
+
+  ## Schedule
+  # cronjob.schedule -- Define the schedule for the cronjob to run
+  schedule: "0 * * * *"
+
+  ## CronJob Configuration
+  # cronjob.conf --
+  conf: {}
+
+
+## Tavern - Kind Job
+## If Tavern is not enabled as kind Cronjob, it's deployed as kind Job.
+##
+job:
+
+  ## Custom API Version
+  # job.apiVersion -- Declare API version for kind Job
+  # @default -- batch/v1
+  apiVersion: ""
 
 
 

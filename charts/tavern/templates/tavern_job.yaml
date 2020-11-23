@@ -1,26 +1,23 @@
 
 {{- if $.Values.cronjob.enabled }}
-
+apiVersion: {{ default "batch/v1beta1" $.Values.cronjob.apiVersion }}
+kind: CronJob
+metadata:
+  name: {{ include "lib.utils.fullname" $ }}
+  labels: {{- include "lib.utils.labels" $ | nindent 4 }}
+spec:
+  schedule: {{ $.Values.cronjob.schedule }}
+  jobTemplate: {{- include "tavern.job" $ | nindent 4 }}
 {{- else }}
-apiVersion: batch/v1
+apiVersion: {{ default "batch/v1" $.Values.job.apiVersion }}
 kind: Job
 metadata:
-  name: pi-with-timeout
-
-
+  name: {{ include "lib.utils.fullname" $ }}
+  labels: {{- include "lib.utils.labels" $ | nindent 4 }}
+  {{- include "tavern.job" $ | nindent 0 }}
 {{- end }}
 
-
-
-
-
-
-
-
-
 {{- define "tavern.job" }}
-metadata:
-  name: pi
 spec:
   template:
     spec:
@@ -28,8 +25,18 @@ spec:
       - name: pi
         image: perl
         command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000)"]
-      restartPolicy: Never
+      restartPolicy: OnFailure
+
+      volumes:
+
+
+
+
+
   backoffLimit: 4
+
+
+
 
 
 
