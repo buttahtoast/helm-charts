@@ -39,9 +39,9 @@
 
 
 {{/*
-  Sprig Template - PullPolicy
+  Sprig Template - ImagePullPolicy
 */}}
-{{- define "lib.utils.pullPolicy" -}}
+{{- define "lib.utils.imagePullPolicy" -}}
   {{- if and .imagePullPolicy .context }}
     {{- $policy := "" }}
     {{- $tag := "" }}

@@ -1,14 +1,13 @@
 # Buttahtoast Library
+{{ template "chart.deprecationWarning" . }}
 
-![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
 
 This is our take on a library Chart. It contains simple functions which are (will be) used across all of our charts. Feel free the add or improve the existing templates.
 
-## Maintainers
+{{ template "chart.homepageLine" . }}
 
-| Name | Email | Url |
-| ---- | ------ | --- |
-| oliverbaehler | oliverbaehler@hotmail.com |  |
+{{ template "chart.maintainersSection" . }}
 
 # Install Chart
 
@@ -38,6 +37,7 @@ Major Changes to functions are documented with the version affected. **Before up
 | :----------- | :---------------- | :--------------------- |
 ||||
 
+
 # Templates
 
 The available template functions are grouped by Data Type or Usage. Each describing how the template is called, what
@@ -64,11 +64,17 @@ as common labels.
 
 String/YAML Structure
 
+
 #### Usage
 
 ```
 \{\{- include "lib.utils.labels" (dict "labels" (dict "custom.label" "value" "custom.label/2" "value") "context" $) \}\}
 ```
+
+
+
+
+
 
 ### Common Labels
 
@@ -109,13 +115,22 @@ to add labels, which overwrite the result of the wrapper itself.
 
 String/YAML Structure
 
+
 #### Usage
 
 ```
 \{\{- include "lib.utils.labels" (dict "labels" (dict "custom.label" "value" "custom.label/2" "value") "context" $) \}\}
 ```
 
+
+
+
+
+
+
+
 ## Globals
+
 
 ### DockerImage
 
@@ -192,6 +207,7 @@ String
 \{\{- include "lib.utils.image" (dict "registry" .Values.image "context" $ "default" .Chart.AppVersion) \}\}
 ```
 
+
 ### ImagePullPolicy
 
 This function overwrites local docker image pullpolicies with global defined pullpolicies, if available.
@@ -241,6 +257,15 @@ String
 \{\{- include "lib.utils.pullPolicy" (dict "pullPolicy" .Values.image.pullpolicy "context" $) \}\}
 ```
 
+
+
+
+
+
+
+
+
+
 ### ImagePullsecrets
 
 This function merges local pullSecrets with global defined pullSecrets, if available.
@@ -251,6 +276,7 @@ If an as required marked argument is missing, the template engine will intention
 
   * `.pullSecrets` - Local pullSecrets, which are overwritten if the global variable is set. If neither is set, an empty string is returned (Optional, Defaults to empty).
   * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+
 
 #### Keys
 
@@ -270,6 +296,7 @@ String/YAML Structure
 ```
 \{\{- include "lib.utils.imagePullSecrets" (dict "pullSecrets" .Values.imagePullSecrets "context" $) \}\}
 ```
+
 
 ### StorageClass
 
@@ -319,6 +346,31 @@ String
 \{\{ include "lib.utils.storageClass" (dict "persistence" .Values.persistence "context" $) \}\}
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Strings
 
 ### Template
@@ -349,6 +401,7 @@ or
 
 \{\{ $structure := fromYaml (include "lib.utils.template" (dict "value" .Values.path.to.the.Value "context" $)) \}\}
 ```
+
 
 ### Stringify
 
@@ -421,6 +474,7 @@ Boolean
 ```
 \{\{- include "lib.utils.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -\}\}
 ```
+
 
 ### GetValueByKey
 
