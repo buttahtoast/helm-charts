@@ -41,7 +41,8 @@ Major Changes to functions are documented with the version affected. **Before up
 # Templates
 
 The available template functions are grouped by Data Type or Usage. Each describing how the template is called, what
-it should do and what it should return.
+it should do and what it should return. **NOTICE** We had to use single `{` in the examples, because helm-docs tries to
+parse the file and that causes some issues. So don't forget to add a pair of `{}`.
 
 **Template Index**
 
@@ -66,6 +67,7 @@ it should do and what it should return.
   * [GetValueByKey](#getvaluebykey)
   * [MergeList](#mergelist)
   * [MergeListOnKey](#mergelistonkey)
+  * [ExceptionList](#exceptionlist)
 * **[Experimental](./templates/_experimental.tpl)**
 
 ## Common
@@ -100,7 +102,7 @@ String
 #### Usage
 
 ```
-\{\{- include "lib.utils.selectorLabels" $) \}\}
+{- include "lib.utils.selectorLabels" $) }
 ```
 
 ### SelectorLabels
@@ -135,7 +137,7 @@ String/YAML Structure
 #### Usage
 
 ```
-\{\{- include "lib.utils.selectorLabels" $) \}\}
+{- include "lib.utils.selectorLabels" $) }
 ```
 
 ### DefaultLabels
@@ -155,7 +157,7 @@ String/YAML Structure
 #### Usage
 
 ```
-\{\{- include "lib.utils.defaultLabels" $) \}\}
+{- include "lib.utils.defaultLabels" $) }
 ```
 
 ### OverwriteLabels
@@ -186,7 +188,7 @@ String/YAML Structure
 #### Usage
 
 ```
-\{\{- include "lib.utils.overwriteLabels" $) \}\}
+{- include "lib.utils.overwriteLabels" $) }
 ```
 
 ### CommonLabels
@@ -217,7 +219,7 @@ String/YAML Structure
 #### Usage
 
 ```
-\{\{- include "lib.utils.commonLabels" $) \}\}
+{- include "lib.utils.commonLabels" $) }
 ```
 
 ### Labels
@@ -250,7 +252,7 @@ String/YAML Structure
 #### Usage
 
 ```
-\{\{- include "lib.utils.labels" (dict "labels" (dict "custom.label" "value" "custom.label/2" "value") "context" $) \}\}
+{- include "lib.utils.labels" (dict "labels" (dict "custom.label" "value" "custom.label/2" "value") "context" $) }
 ```
 
 ### KubeCapabilities
@@ -350,7 +352,7 @@ Is included as:
 ```
       containers:
         - name: apache
-          image: \{\{- include "lib.utils.image" (dict "registry" .Values.apache "context" $ "default" .Chart.AppVersion) \}\}
+          image: {- include "lib.utils.image" (dict "registry" .Values.apache "context" $ "default" .Chart.AppVersion) }
 ```
 
 #### Returns
@@ -360,7 +362,7 @@ String
 #### Usage
 
 ```
-\{\{- include "lib.utils.image" (dict "registry" .Values.image "context" $ "default" .Chart.AppVersion) \}\}
+{- include "lib.utils.image" (dict "registry" .Values.image "context" $ "default" .Chart.AppVersion) }
 ```
 
 ### ImagePullPolicy
@@ -391,7 +393,7 @@ imagePullPolicy: "Always"
 Would both work with example:
 
 ```
-\{\{- include "lib.utils.pullPolicy" (dict "imagePullPolicy" .Values "context" $) \}\}
+{- include "lib.utils.pullPolicy" (dict "imagePullPolicy" .Values "context" $) }
 ```
 #### Keys
 
@@ -409,7 +411,7 @@ String
 #### Usage
 
 ```
-\{\{- include "lib.utils.pullPolicy" (dict "pullPolicy" .Values.image.pullpolicy "context" $) \}\}
+{- include "lib.utils.pullPolicy" (dict "pullPolicy" .Values.image.pullpolicy "context" $) }
 ```
 
 ### ImagePullsecrets
@@ -439,7 +441,7 @@ String/YAML Structure
 #### Usage
 
 ```
-\{\{- include "lib.utils.imagePullSecrets" (dict "pullSecrets" .Values.imagePullSecrets "context" $) \}\}
+{- include "lib.utils.imagePullSecrets" (dict "pullSecrets" .Values.imagePullSecrets "context" $) }
 ```
 
 ### StorageClass
@@ -487,7 +489,7 @@ String
 #### Usage
 
 ```
-\{\{ include "lib.utils.storageClass" (dict "persistence" .Values.persistence "context" $) \}\}
+{ include "lib.utils.storageClass" (dict "persistence" .Values.persistence "context" $) }
 ```
 
 ## Strings
@@ -514,11 +516,11 @@ String/YAML Structure
 #### Usage
 
 ```
-\{\{ include "lib.utils.template" (dict "value" .Values.path.to.the.Value "context" $ "extraValues" $extraValues) \}\}
+{ include "lib.utils.template" (dict "value" .Values.path.to.the.Value "context" $ "extraValues" $extraValues) }
 
 or
 
-\{\{ $structure := fromYaml (include "lib.utils.template" (dict "value" .Values.path.to.the.Value "context" $)) \}\}
+{ $structure := fromYaml (include "lib.utils.template" (dict "value" .Values.path.to.the.Value "context" $)) }
 ```
 
 ### Stringify
@@ -540,7 +542,7 @@ String/YAML Structure
 #### Usage
 
 ```
-\{\{ include "lib.utils.stringify" ( dict "list" (default (list 1 2 3) .Values.someList) "delimiter" ", " "context" $) \}\}
+{ include "lib.utils.stringify" ( dict "list" (default (list 1 2 3) .Values.someList) "delimiter" ", " "context" $) }
 ```
 
 ### ToDns1123
@@ -566,7 +568,7 @@ String (1:1 return if not given as string)
 #### Usage
 
 ```
-\{\{ include "lib.utils.toDns1123" "my-string" \}\}
+{ include "lib.utils.toDns1123" "my-string" }
 ```
 
 ## Lists
@@ -590,7 +592,7 @@ Boolean
 #### Usage
 
 ```
-\{\{- include "lib.utils.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -\}\}
+{- include "lib.utils.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
 ```
 
 ### GetValueByKey
@@ -612,7 +614,7 @@ String/YAML Structure
 #### Usage
 
 ```
-\{\{- include "lib.utils.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -\}\}
+{- include "lib.utils.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
 ```
 
 ### MergeList
@@ -632,7 +634,7 @@ String/YAML Structure
 #### Usage
 
 ```
-\{\{- include "lib.utils.mergeList" (list $firstlist $secondlist) -\}\}
+{- include "lib.utils.mergeList" (list $firstlist $secondlist) -}
 ```
 
 ### MergeListOnKey
@@ -659,5 +661,66 @@ If an as required marked argument is missing, the template engine will intention
 #### Usage
 
 ```
-\{\{- include "lib.utils.mergeListOnKey" (dict "source" $.Values.sourceList "target" $.Values.targetList "key" "id") -\}\}
+{- include "lib.utils.mergeListOnKey" (dict "source" $.Values.sourceList "target" $.Values.targetList "key" "id") -}
+```
+
+### ExceptionList
+
+This function allows list blacklisting. This means, that you can give an list of exceptions ("blacklist") as argument. The template
+iterates over a given list with dictionary elements and removes elements, which match one of the value in the exception list.
+
+#### Arguments
+
+  * .exceptions - A list or space delimited string values, which are exceptions (Optional, Returns input list without modification)
+  * .list - Data of type slice (Optional, Returns Empty String).
+  * .key - Key checked for exception values (Optional, Defaults to "name")
+
+#### Returns
+
+YAML Structure, String
+
+#### Usage:
+
+```
+{ include "lib.utils.exceptionList" (dict "list" .Values.mylist "exceptions" (list "BLACKLISTED_VAR" "SHARED_HOME" "CLUSTERED" "DATADIR") "key" "special_key") }
+
+or
+
+{ include "lib.utils.exceptionList" (dict "list" .Values.mylist "exceptions" "BLACKLISTED_VAR SHARED_HOME DATADIR" "key" "special_key") }
+```
+
+#### Example
+
+Given this Input (Container Environment Variables):
+
+```
+environment:
+  - name: "HOME"
+    value: "/home/directory"
+  - name: "IMPORTANT_CONFIGURATION"
+    value: "important value"
+  - name: "PRESET_CONFIGURATION"
+    value: "generated"
+  - name: "PRESET_HOSTNAME"
+    value: "generated"
+```
+
+Calling Exception list:
+
+```
+{ include "lib.utils.exceptionList" (dict "list" $.Values.environment "exceptions" "PRESET_HOSTNAME PRESET_CONFIGURATION") }
+
+or
+
+{ include "lib.utils.exceptionList" (dict "list" $.Values.environment "exceptions" (list "PRESET_HOSTNAME" "PRESET_CONFIGURATION")) }
+
+```
+
+Results in:
+
+```
+- name: HOME
+  value: /home/directory
+- name: IMPORTANT_CONFIGURATION
+  value: important value
 ```

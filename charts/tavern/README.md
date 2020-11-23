@@ -24,9 +24,17 @@ Unofficial Tavern Helm Chart
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
 | cronjob.apiVersion | string | batch/v1beta1 | Declare API version for kind CronJob |
-| cronjob.conf | object | `{}` |  |
+| cronjob.conf.failedJobsHistoryLimit | int | `10` |  |
 | cronjob.enabled | bool | `true` | Deploy tavern as kind CronJob instead of kind Job (Reoccuring execution) |
 | cronjob.schedule | string | `"0 * * * *"` | Define the schedule for the cronjob to run |
+| environment[0].name | string | `"HOME"` |  |
+| environment[0].value | string | `"/home/directory"` |  |
+| environment[1].name | string | `"IMPORTANT_CONFIGURATION"` |  |
+| environment[1].value | string | `"important value"` |  |
+| environment[2].name | string | `"PRESET_CONFIGURATION"` |  |
+| environment[2].value | string | `"generated"` |  |
+| environment[3].name | string | `"PRESET_HOSTNAME"` |  |
+| environment[3].value | string | `"generated"` |  |
 | extraResources | list | `[]` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
