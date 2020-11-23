@@ -49,7 +49,7 @@ If release name contains chart name it will be used as a full name.
 
 
 {{/*
-  Sprig Template - Selector labels
+  Sprig Template - SelectorLabels
 */}}
 {{- define "lib.utils.selectorLabels" -}}
 {{- if and $.Values.selectorLabels (kindIs "map" $.Values.selectorLabels) }}
@@ -62,7 +62,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 
 
 {{/*
-  Sprig Template - Default labels
+  Sprig Template - DefaultLabels
 */}}
 {{- define "lib.utils.defaultLabels" -}}
 {{- include "lib.utils.selectorLabels" . }}
@@ -73,7 +73,7 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 
 
 {{/*
-  Sprig Template - Overwrite Labels
+  Sprig Template - OverwriteLabels
 */}}
 {{- define "lib.utils.overwriteLabels" -}}
   {{- if and $.Values.overwriteLabels (kindIs "map" $.Values.overwriteLabels) }}
@@ -85,7 +85,7 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 
 
 {{/*
-  Sprig Template - Common Labels
+  Sprig Template - CommonLabels
 */}}
 {{- define "lib.utils.commonLabels" -}}
   {{- include "lib.utils.overwriteLabels" . | indent 0 }}

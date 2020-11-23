@@ -52,7 +52,60 @@ it should do and what it should return.
 Common Templates.
 
 
+### SelectorLabels
 
+This template will return the default selectorLabels (Useable for Match/Selector Labels). In addition there is the
+option to overwrite these labels. If no selectorLabels are defined, the following labels are set:
+
+```
+app.kubernetes.io/name: { include "lib.utils.name" . }
+app.kubernetes.io/instance: { .Release.Name }
+```
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will intentionally.
+
+  * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+
+#### Keys
+
+This function enables the following keys on the values scope:
+
+```
+selectorLabels:
+  "selector.label": "selector.value"
+```
+
+#### Returns
+
+String/YAML Structure
+
+#### Usage
+
+```
+\{\{- include "lib.utils.selectorLabels" $) \}\}
+```
+
+### DefaultLabels
+
+This template represents the default templates. It includes the `SelectorLabel` template and sets the Application Version.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will intentionally.
+
+  * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+
+#### Returns
+
+String/YAML Structure
+
+#### Usage
+
+```
+\{\{- include "lib.utils.defaultLabels" $) \}\}
+```
 
 ### OverwriteLabels
 
@@ -133,8 +186,10 @@ as common labels.
 This function enables the following keys on the values scope:
 
 ```
-global:
-  imageRegistry: "company-registry/"
+overwriteLabels:
+  "overwrite.label": "overwrite.value"
+commonLabels:
+  "common.label": "common.value"
 ```
 
 #### Returns
