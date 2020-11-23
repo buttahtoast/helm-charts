@@ -7,6 +7,9 @@ metadata:
   labels: {{- include "lib.utils.labels" $ | nindent 4 }}
 spec:
   schedule: {{ $.Values.cronjob.schedule }}
+  {{- if and $.Values.cronjob.conf (kindIs "map" $.Values.cronjob.conf) -}}
+    {{- toYaml $.Values.cronjob.conf | nindent 2 }}
+  {{- end }}
   jobTemplate: {{- include "tavern.job" $ | nindent 4 }}
 {{- else }}
 apiVersion: {{ default "batch/v1" $.Values.job.apiVersion }}

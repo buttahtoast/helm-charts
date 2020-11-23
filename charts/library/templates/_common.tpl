@@ -32,7 +32,7 @@
   {{- else if $fullname_p }}
     {{- $name = $fullname_p -}}
   {{- else -}}
-    {{- $name_p := (default (include "lib.internal.name" $context) $name_p)
+    {{- $name_p := (default (include "lib.internal.name" $context) $name_p) }}
       {{- if or (contains $name_p $context.Release.Name) (contains $context.Release.Name $name_p) -}}
         {{- $name = $prefix -}}
       {{- else -}}
@@ -50,7 +50,7 @@
 {{- if and $.Values.selectorLabels (kindIs "map" $.Values.selectorLabels) }}
   {{- toYaml $.Values.selectorLabels | indent 0 }}
 {{- else }}
-app.kubernetes.io/name: {{ include "lib.utils.name" . }}
+app.kubernetes.io/name: {{ include "lib.internal.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 {{- end -}}

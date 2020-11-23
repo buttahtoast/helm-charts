@@ -116,3 +116,35 @@
     {{- end }}
   {{- end }}
 {{- end }}
+
+
+{{/*
+  Sprig Template - ExceptionList
+*/}}
+{{- define "lib.utils.exceptionList" -}}
+  {{- if and .list (kindIs "slice" .list) }}
+    {{- if .exceptions }}
+      {{- $key := (default "name" .key) }}
+      {{- $context := .context }}
+      {{- $filteredList := list }}
+      {{- $exceptionList := list }}
+      {{- if kindIs "slice" .exceptions }}
+        {{- $exceptionList = .exceptions }}
+      {{- else }}
+        {{- $exceptionList = (splitList " " .exceptions) }}
+      {{- end }}
+      {{- range .list  }}
+        {{- if kindIs "map" . }}
+          {{- if not (has (get . $key) $exceptionList) -}}
+            {{- $filteredList = append $filteredList . -}}
+          {{- end }}
+        {{- else }}
+          {{- $filteredList = append $filteredList . -}}
+        {{- end }}
+      {{- end }}
+      {{- toYaml $filteredList  | indent 0 }}
+    {{- else }}
+      {{- toYaml list | nindent 0 }}
+    {{- end }}
+  {{- end }}
+{{- end -}}

@@ -5,6 +5,7 @@ type: application
 version: 0.1.0
 appVersion: 1.11.1
 home: https://tavern.readthedocs.io/en/latest/
+icon: https://tavern.readthedocs.io/en/latest/_static/icon.png
 keywords:
   - python
   - tavern
