@@ -34,31 +34,55 @@ dependencies:
 
 Major Changes to functions are documented with the version affected. **Before upgrading the dependency version, check this section out!**
 
-| **Template** | **Chart Version** | **Change/Description** |
-| :----------- | :---------------- | :--------------------- |
-||||
+| **Template** | **Chart Version** | **Change/Description** | **Commits/PRs** |
+| :----------- | :---------------- | :--------------------- | :-------------- |
+|||||
 
 # Templates
 
 The available template functions are grouped by Data Type or Usage. Each describing how the template is called, what
 it should do and what it should return.
 
+**Template Index**
+
+* **[Common](#common)**
+  * Item i
+* **[Globals](#globals)**
+* **[Strings](#strings)**
+* **[Lists](#lists)**
+  * [HasValueByKey](#hasvaluebykey)
+  * [GetValueByKey](#getvaluebykey)
+  * [MergeList](#mergelist)
+  * [MergeListOnKey](#mergelistonkey)
+
 ## Common
 
 Common Templates.
 
-### Common Labels
+### SelectorLabels
 
-This template allows to define common labels. Common labels are appended to the base labels (no merge). By Using this template
-the key `.Values.commonLabels` is considered in your value structure. If the key has values and is type `map` the values are used
-as common labels.
+This template will return the default selectorLabels (Useable for Match/Selector Labels). In addition there is the
+option to overwrite these labels. If no selectorLabels are defined, the following labels are set:
+
+```
+app.kubernetes.io/name: { include "lib.utils.name" . }
+app.kubernetes.io/instance: { .Release.Name }
+```
 
 #### Arguments
 
-  If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will intentionally.
 
-  * `.labels` - Local labels which will be merged over all the other resulting labels.
-  * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+  * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+
+#### Keys
+
+This function enables the following keys on the values scope:
+
+```
+selectorLabels:
+  "selector.label": "selector.value"
+```
 
 #### Returns
 
@@ -67,10 +91,92 @@ String/YAML Structure
 #### Usage
 
 ```
-\{\{- include "lib.utils.labels" (dict "labels" (dict "custom.label" "value" "custom.label/2" "value") "context" $) \}\}
+\{\{- include "lib.utils.selectorLabels" $) \}\}
 ```
 
-### Common Labels
+### DefaultLabels
+
+This template represents the default templates. It includes the `SelectorLabel` template and sets the Application Version.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will intentionally.
+
+  * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+
+#### Returns
+
+String/YAML Structure
+
+#### Usage
+
+```
+\{\{- include "lib.utils.defaultLabels" $) \}\}
+```
+
+### OverwriteLabels
+
+This template allows to define overwritting labels. Overwrite labels overwrite the default labels (DefaultLabels Template). By Using this template
+the key `.Values.overwriteLabels` is considered in your value structure. If the key has values and is type `map` the values are used
+as common labels.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will intentionally.
+
+  * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+
+#### Keys
+
+This function enables the following keys on the values scope:
+
+```
+overwriteLabels:
+  "overwrite.label": "overwrite.value"
+```
+
+#### Returns
+
+String/YAML Structure
+
+#### Usage
+
+```
+\{\{- include "lib.utils.overwriteLabels" $) \}\}
+```
+
+### CommonLabels
+
+This template allows to define common labels. Common labels are appended to the base labels (no merge). By Using this template
+the key `.Values.commonLabels` is considered in your value structure. If the key has values and is type `map` the values are used
+as common labels.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will intentionally.
+
+  * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+
+#### Keys
+
+This function enables the following keys on the values scope:
+
+```
+commonLabels:
+  "common.label": "common.value"
+```
+
+#### Returns
+
+String/YAML Structure
+
+#### Usage
+
+```
+\{\{- include "lib.utils.commonLabels" $) \}\}
+```
+
+### Labels
 
 This template allows to define common labels. Common labels are appended to the base labels (no merge). By Using this template
 the key `.Values.commonLabels` is considered in your value structure. If the key has values and is type `map` the values are used
@@ -82,6 +188,17 @@ as common labels.
 
   * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
 
+#### Keys
+
+This function enables the following keys on the values scope:
+
+```
+overwriteLabels:
+  "overwrite.label": "overwrite.value"
+commonLabels:
+  "common.label": "common.value"
+```
+
 #### Returns
 
 String/YAML Structure
@@ -92,27 +209,37 @@ String/YAML Structure
 \{\{- include "lib.utils.labels" (dict "labels" (dict "custom.label" "value" "custom.label/2" "value") "context" $) \}\}
 ```
 
-### Labels
+### KubeCapabilities
 
-This template wraps around the Default, Overwrite and Common Labels. Therefor all the configurations possible
-configurations for the mentioned templates are also enabled through this template. In addition there is the possibility
-to add labels, which overwrite the result of the wrapper itself.
+This template allows to define a custom KubeCapabilities Version (replaces `$.Capabilities.KubeVersion.GitVersion`). This might be useful when
+trying to test the chart or having client versions that differ from the server version.
 
 #### Arguments
 
-  If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will intentionally.
 
-  * `.labels` - Local labels which will be merged over all the other resulting labels.
-  * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+  * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+
+#### Keys
+
+This function enables the following keys on the values scope:
+
+```
+kubeCapabilities: "1.19.0"
+```
 
 #### Returns
 
-String/YAML Structure
+String
 
 #### Usage
 
 ```
-\{\{- include "lib.utils.labels" (dict "labels" (dict "custom.label" "value" "custom.label/2" "value") "context" $) \}\}
+{- if semverCompare ">=1.19-0" (include "lib.utils.capabilities" $) }
+apiVersion: networking.k8s.io/v1
+{- else if semverCompare ">=1.14-0" (include "lib.utils.capabilities" $context) -}
+apiVersion: networking.k8s.io/v1beta1
+{- else -}
 ```
 
 ## Globals

@@ -23,7 +23,10 @@ Unofficial Tavern Helm Chart
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
-| cronjob.enabled | bool | `true` |  |
+| cronjob.apiVersion | string | batch/v1beta1 | Declare API version for kind CronJob |
+| cronjob.conf | object | `{}` |  |
+| cronjob.enabled | bool | `true` | Deploy tavern as kind CronJob instead of kind Job (Reoccuring execution) |
+| cronjob.schedule | string | `"0 * * * *"` | Define the schedule for the cronjob to run |
 | extraResources | list | `[]` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -34,6 +37,7 @@ Unofficial Tavern Helm Chart
 | ingress.hosts[0].host | string | `"chart-example.local"` |  |
 | ingress.hosts[0].paths | list | `[]` |  |
 | ingress.tls | list | `[]` |  |
+| job.apiVersion | string | batch/v1 | Declare API version for kind Job |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
