@@ -1,0 +1,6 @@
+{{- if .Values.extraResources }}
+---
+apiVersion: v1
+kind: List
+items: {{- include "lib.utils.template" (dict "value" .Values.extraResources "context" $) | nindent 2 }}
+{{- end }}

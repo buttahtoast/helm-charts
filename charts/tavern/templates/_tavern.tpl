@@ -1,5 +1,12 @@
-
-
+{{/*
+  Check if any Tavern Test were defined
+*/}}
+{{- define "tavern.has.tests" -}}
+  {{- $tavern_tests := (fromYaml (include "tavern.tests" $)) -}}
+  {{- if not (empty $tavern_tests.tests) -}}
+    {{- true -}}
+  {{- end -}}
+{{- end }}
 
 
 
@@ -13,9 +20,12 @@
     {{- range $.Values.tests }}
       {{- if .name }}
         {{- $tavern_test := . }}
+
+
+
         {{- $g_stages := list }}
         {{- if .test }}
-          {{- $tavern_test = (fromYaml (include "lib.utils.template" (dict "value" .test "extraValues" .values "extraValuesKey" "tavern" "context" $))) }}
+          {{- $_ := set $tavern_test "test" (fromYaml (include "lib.utils.template" (dict "value" .test "extraValues" .values "extraValuesKey" "tavern" "context" $))) }}
         {{- end }}
         {{- if .template }}
           {{- if not (include "lib.utils.hasValueByKey" (dict "list" $.Values.testTemplates "value" .template)) }}
@@ -25,10 +35,12 @@
             {{- $l_values := merge (default dict $l_test_template.values) (default dict .values) }}
             {{- $test_template := (fromYaml (include "lib.utils.template" (dict "value" $l_test_template.template "extraValues" $l_values "extraValuesKey" "tavern" "context" $))) }}
             {{- $g_stages = (fromYaml (include "lib.utils.mergeListOnKey" (dict "source" $test_template.stages "target" $tavern_test.stages "parentKey" "stages"))) }}
-            {{- $tavern_test = mergeOverwrite $test_template (fromYaml (include "lib.utils.template" (dict "value" .test "extraValues" $l_values "extraValuesKey" "tavern"  "context" $))) }}
+            {{- $_ := set $tavern_test "test" (mergeOverwrite $test_template (fromYaml (include "lib.utils.template" (dict "value" .test "extraValues" $l_values "extraValuesKey" "tavern"  "context" $)))) }}
           {{- end }}
         {{- end }}
-        {{- $_ := set $tavern_test "test_name" .name }}
+        {{- $_ := set $tavern_test.test "test_name" .name }}
+
+
         {{- $_S := (default . $g_stages) }}
         {{- if and $_S.stages (kindIs "slice" $_S.stages) }}
           {{- $stages := list }}
@@ -52,7 +64,7 @@
               {{- end }}
             {{- end }}
           {{- end }}
-          {{- $_ := set $tavern_test "stages" $stages }}
+          {{- $_ := set $tavern_test.test "stages" $stages }}
         {{- end }}
         {{- $tests = append $tests $tavern_test }}
       {{- end }}

@@ -1,27 +1,19 @@
 apiVersion: v2
 name: tavern
-description: Unofficial Tavern Helm Chart
-
-# A chart can be either an 'application' or a 'library' chart.
-#
-# Application charts are a collection of templates that can be packaged into versioned archives
-# to be deployed.
-#
-# Library charts provide useful utilities or functions for the chart developer. They're included as
-# a dependency of application charts to inject those utilities and functions into the rendering
-# pipeline. Library charts do not define any templates and therefore cannot be deployed.
+description: "Unofficial Tavern Helm Chart"
 type: application
-
-# This is the chart version. This version number should be incremented each time you make changes
-# to the chart and its templates, including the app version.
-version: 1.0.0
-
-# This is the version number of the application being deployed. This version number should be
-# incremented each time you make changes to the application.
-appVersion: 1.16.0
-
-## Dependency
+version: 0.1.0
+appVersion: 1.11.1
+home: https://tavern.readthedocs.io/en/latest/
+keywords:
+  - python
+  - tavern
+  - API testing
+  - pytest
 dependencies:
 - name: library
   version: ">=0.0.0"
   repository: "file://../library"
+maintainers:
+  - name: oliverbaehler
+    email: oliverbaehler@hotmail.com

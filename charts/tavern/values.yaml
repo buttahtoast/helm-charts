@@ -1,3 +1,13 @@
+## Common Tavern Labels
+##
+
+
+
+
+
+
+
+
 
 
 
@@ -96,34 +106,32 @@ tests:
   ## Test Suite
   - name: "Sample Suite"
 
-    ## Write As Secrect
-    stages:
 
-      ## Straight Test
-      - name: "Try to get user"
-        stage:
-          request:
-            url: "{host}/users/joebloggs"
-            method: GET
-            json:
-              clusterName: "test"
-          response:
-            status_code:
-              - 200
-              - 404
+    test:
+      stages:
 
-
-      ## Use Template
-      - name: "Some Stage"
-        template: "http_basic"
-        values:
-          endpoint: "Products"
-        stage:
-          request:
-            verify: true
+        ## Straight Test
+        - name: "Try to get user"
+          stage:
+            request:
+              url: "{host}/users/joebloggs"
+              method: GET
+              json:
+                clusterName: "test"
+            response:
+              status_code:
+                - 200
+                - 404
 
 
-
+        ## Use Template
+        - name: "Some Stage"
+          template: "http_basic"
+          values:
+            endpoint: "Products"
+          stage:
+            request:
+              verify: true
 
 
 
@@ -132,7 +140,21 @@ tests:
 
 
 
+##
+cronjob:
 
+  ## Enable Run as Cronjob
+  enabled: true
+
+
+
+##
+
+
+
+
+
+extraResources: []
 
 
 

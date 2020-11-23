@@ -1,6 +1,11 @@
 apiVersion: v2
 name: library
-description: Kubernetli Helm Library
+description: Buttahtoast Helm Library
 type: library
 version: 1.0.0
-appVersion: 1.0.0
+appVersion: 0.1.0
+keywords:
+  - library
+maintainers:
+  - name: oliverbaehler
+    email: oliverbaehler@hotmail.com

@@ -110,6 +110,246 @@ String/YAML Structure
 
 ## Globals
 
+
+### DockerImage
+
+This function overwrites local docker registries with global defined registries, if available. Returns the assembled output
+based on registry, repository and tag.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will intentionaly.
+
+  * `.registry` - Local Registry definition, see the structure below (Required).
+  * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+  * `.default` - Add a default value for the tag, if not set explicit (Optional, Defaults to "latest")
+
+#### Structure
+
+The following structure is expected for the key '.registry'. Keys with a '*' are optional. If on a parent key, this means you can
+add the structure with the parent key or just the structure within the parent key.
+
+```
+image*:
+  registry: docker.io
+  repository: bitnami/apache
+  tag*: latest
+
+or
+
+registry: docker.io
+repository: bitnami/apache
+tag*: latest
+```
+
+#### Keys
+
+This function enables the following keys on the global scope:
+
+```
+global:
+  imageRegistry: "company-registry/"
+```
+
+Each image referenced automatically is expected to have the above structure in the values (Example):
+
+```
+apache:
+  registry: docker.io
+  repository: bitnami/apache
+  tag*: latest
+
+or
+
+apache:
+  image:
+    registry: docker.io
+    repository: bitnami/apache
+    tag*: latest
+```
+
+Is included as:
+
+```
+      containers:
+        - name: apache
+          image: {{- include "lib.utils.image" (dict "registry" .Values.apache "context" $ "default" .Chart.AppVersion) }}
+```
+
+#### Returns
+
+String
+
+#### Usage
+
+```
+{{- include "lib.utils.image" (dict "registry" .Values.image "context" $ "default" .Chart.AppVersion) }}
+```
+
+
+### ImagePullPolicy
+
+This function overwrites local docker image pullpolicies with global defined pullpolicies, if available.
+
+####  Arguments
+
+If an as required marked argument is missing, the template engine will intentionally.
+
+  * `.imagePullPolicy` - Local docker image pullPolicy, which are overwritten if the global variable is set. If neither is set, an empty string is returned (Required).
+  * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+
+#### Structure
+
+The following structure is expected for the key '.persistence'. Keys with a '*' are optional. If on a parent key, this means you an
+add the structure with the parent key or just the structure within the parent key.
+
+```
+image*:
+  imagePullPolicy: "Always"
+
+or
+
+imagePullPolicy: "Always"  
+```
+
+Would both work with example:
+
+```
+{{- include "lib.utils.pullPolicy" (dict "imagePullPolicy" .Values "context" $) }}
+```
+#### Keys
+
+This function enables the following keys on the global scope:
+
+```
+global:
+  pullPolicy: "Always"
+```
+
+#### Returns
+
+String
+
+#### Usage
+
+```
+{{- include "lib.utils.pullPolicy" (dict "pullPolicy" .Values.image.pullpolicy "context" $) }}
+```
+
+
+
+
+
+
+
+
+
+
+### ImagePullsecrets
+
+This function merges local pullSecrets with global defined pullSecrets, if available.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will intentionally.
+
+  * `.pullSecrets` - Local pullSecrets, which are overwritten if the global variable is set. If neither is set, an empty string is returned (Optional, Defaults to empty).
+  * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+
+
+#### Keys
+
+This function enables the following keys:
+
+```
+global:
+  imagePullSecrets: []
+```
+
+#### Returns
+
+String/YAML Structure
+
+#### Usage
+
+```
+{{- include "lib.utils.imagePullSecrets" (dict "pullSecrets" .Values.imagePullSecrets "context" $) }}
+```
+
+
+### StorageClass
+
+This Function checks for a global storage class and returns it, if set.
+With the Parameter "persistence" you can pass your persistence structure. The function
+is looking for a storageClass definition. If the Kind of the "persistence" is string,
+it's assumed the storageClass was directly given. If not, the function will look for a .storageClass
+in the given structure.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will intentionally.
+
+  * `.persistence` - Local StorageClass/Persistence configuration, see the structure below.
+  * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+
+#### Structure
+
+The following structure is expected for the key '.persistence'. Keys with a '*' are optional. If on a parent key, this means you can
+add the structure with the parent key or just the structure within the parent key.
+
+```
+persistence*:
+  storageClass: "local-storage"
+
+or
+
+persistence: "local-storage"  
+```
+
+#### Keys
+
+This function enables the following keys:
+
+```
+global:
+  storageClass: "global-storage"
+```
+
+#### Returns
+
+String
+
+#### Usage
+
+```
+{{ include "lib.utils.storageClass" (dict "persistence" .Values.persistence "context" $) }}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Strings
 
 ### Template
@@ -187,18 +427,8 @@ String (1:1 return if not given as string)
 #### Usage
 
 ```
-{{ include "lib.utils.Todns-1123" "my-string" }}
+{{ include "lib.utils.toDns1123" "my-string" }}
 ```
-
-*/}}
-
-
-
-
-
-
-
-
 
 ## Lists
 
