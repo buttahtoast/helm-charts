@@ -357,6 +357,10 @@ global:
   # global.imageRegistry -- Global Docker Image Registry declaration. Will overwrite all child .registry fields.
   imageRegistry: ""
 
+  ## Global Default Image Tag
+  # global.defaultTag -- Global Docker Image Tag declaration. Will be used as default tag, if no tag is given by child
+  defaultTag: ""
+
   ## Global Docker Image PullPolicy
   # global.pullPolicy -- Global Docker Image Pull Policy declaration. Will overwrite all child .pullPolicy fields.
   imagePullPolicy: ""
@@ -374,13 +378,13 @@ global:
 ### DockerImage
 
 This function overwrites local docker registries with global defined registries, if available. Returns the assembled output
-based on registry, repository and tag.
+based on registry, repository and tag. The `$.global.defaultTag` value has precedence over the `.default` value.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionaly.
+If an as required marked argument is missing, the template engine will intentionally.
 
-  * `.registry` - Local Registry definition, see the structure below (Required).
+  * `.image` - Local Registry definition, see the structure below (Required).
   * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
   * `.default` - Add a default value for the tag, if not set explicit (Optional, Defaults to "latest")
 
@@ -412,6 +416,10 @@ global:
   ## Global Docker Image Registry
   # global.imageRegistry -- Global Docker Image Registry declaration. Will overwrite all child .registry fields.
   imageRegistry: "company-registry/"
+
+  ## Global Default Image Tag
+  # global.defaultTag -- Global Docker Image Tag declaration. Will be used as default tag, if no tag is given by child
+  defaultTag: "1.0.0"
 ```
 
 Each image referenced automatically is expected to have the above structure in the values (Example):
@@ -436,7 +444,7 @@ Is included as:
 ```
       containers:
         - name: apache
-          image: {- include "lib.utils.image" (dict "registry" .Values.apache "context" $ "default" .Chart.AppVersion) }
+          image: {- include "lib.utils.image" (dict "image" .Values.apache "context" $ "default" .Chart.AppVersion) }
 ```
 
 #### Returns

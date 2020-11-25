@@ -48,7 +48,7 @@
 */}}
 {{- define "lib.utils.selectorLabels" -}}
 {{- if and $.Values.selectorLabels (kindIs "map" $.Values.selectorLabels) }}
-  {{- toYaml $.Values.selectorLabels | indent 0 }}
+  {{- include "lib.utils.template" (dict "value" $.Values.selectorLabels "context" $) | indent 0 }}
 {{- else }}
 app.kubernetes.io/name: {{ include "lib.internal.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}

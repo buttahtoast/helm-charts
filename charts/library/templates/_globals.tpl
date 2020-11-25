@@ -2,31 +2,28 @@
   Sprig Template - DockerImage
 */}}
 {{- define "lib.utils.image" -}}
-  {{- if and .registry .context }}
-    {{- $registry := "" }}
-    {{- $repository := "" }}
-    {{- $tag := "" }}
-    {{- $global := dict }}
-    {{- $values := .registry }}
-    {{- if $values.image }}
-      {{- $registry = (required "Missing key '.image.registry' in image structure" $values.image.registry) -}}
-      {{- $repository = (required "Missing key '.image.repository' in image structure" $values.image.repository) -}}
-      {{- $tag = (default (default "" .default) $values.image.tag) -}}
-    {{- else }}
-      {{- $registry = (required "Missing key '.registry' in image structure" $values.registry) -}}
-      {{- $repository = (required "Missing key '.repository' in image structure" $values.repository) -}}
-      {{- $tag = (default (default "" .default) $values.tag) -}}
+  {{- if and .image .context }}
+    {{- $values := default .context .context.Values }}
+    {{- $image := .image }}
+    {{- if and $values.image (kindIs "map" ) $values.image}}
+      {{- $image = $values.image }}
     {{- end }}
-    {{- if .context.Values }}
-      {{- $global = .context.Values }}
-    {{- else }}
-      {{- $global = .context }}
-    {{- end }}
-    {{- if $global.global }}
-      {{- if $global.global.imageRegistry }}
-        {{- $registry = $global.global.imageRegistry -}}
+    {{- $registry := (required "Missing key '.registry' in image structure" $values.registry) -}}
+    {{- $repository := (required "Missing key '.repository' in image structure" $values.repository) -}}
+    {{- $tag := (default "" $values.tag) -}}
+    {{- if  $values.global }}
+      {{- if  $values.global.imageRegistry }}
+        {{- $registry =  $values.global.imageRegistry -}}
       {{- end -}}
+      {{- if  $values.global.defaultTag }}
+        {{- if not $tag }}
+          {{- $tag =  $values.global.defaultTag }}
+        {{- end }}
+      {{- end }}
     {{- end -}}
+    {{- if and (not $tag) .default }}
+      {{- $tag = .default }}
+    {{- end }}
     {{- if $tag }}
       {{- printf "%s/%s:%s" (trimSuffix "/" $registry) $repository (toString $tag) -}}
     {{- else }}
