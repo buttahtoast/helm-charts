@@ -85,7 +85,7 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- define "lib.utils.commonLabels" -}}
   {{- include "lib.utils.overwriteLabels" . | indent 0 }}
   {{- if and $.Values.commonLabels (kindIs "map" $.Values.commonLabels) }}
-    {{- include "lib.utils.utils.template" (dict "value" $.Values.commonLabels "context" $) | nindent 0 }}
+    {{- include "lib.utils.template" (dict "value" $.Values.commonLabels "context" $) | nindent 0 }}
   {{- end }}
 {{- end -}}
 

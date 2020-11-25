@@ -52,6 +52,7 @@ parse the file and that causes some issues. So don't forget to add a pair of `{}
   * [DefaultLabels](#defaultlabels)
   * [OverwriteLabels](#overwritelabels)
   * [CommonLabels](#commonlabels)
+  * [Labels](#labels)
   * [KubeCapabilities](#kubecapabilities)
 * **[Globals](#globals)**
   * [DockerImage](#dockerimage)
@@ -68,16 +69,16 @@ parse the file and that causes some issues. So don't forget to add a pair of `{}
   * [MergeList](#mergelist)
   * [MergeListOnKey](#mergelistonkey)
   * [ExceptionList](#exceptionlist)
+* **[Dictionaries](#dictionaries)**
+  * [ParentAppend](#parentAppend)
+  * [PrintYamlStructure](#printyamlstructure)
 * **[Extras](#extras)**
   * [Environment](#environment)
   * [ExtraResources](#extraresources)
-
-
-
 * **[Experimental](./templates/_experimental.tpl)**
 
 
-## Common
+## [Common](./templates/_common.tpl)
 
 Making use of all the common templates enable the following keys:
 
@@ -100,7 +101,7 @@ overwriteLabels: {}
 
 ## Selector Labels
 # selectorLabels -- Define default [selectorLabels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
-# @default -- `app.kubernetes.io/name: {{ include "lib.internal.name" . }}<br>app.kubernetes.io/instance: {{ .Release.Name }}`
+# @default -- `app.kubernetes.io/name: { include "lib.internal.name" . }<br>app.kubernetes.io/instance: { .Release.Name }`
 selectorLabels: {}
 
 ## Version Capabilities
@@ -170,13 +171,13 @@ This function enables the following keys on the values scope:
 ```
 ## Selector Labels
 # selectorLabels -- Define default [selectorLabels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
-# @default -- `app.kubernetes.io/name: {{ include "lib.internal.name" . }}<br>app.kubernetes.io/instance: {{ .Release.Name }}`
+# @default -- `app.kubernetes.io/name: { include "lib.internal.name" . }<br>app.kubernetes.io/instance: { .Release.Name }`
 selectorLabels: {}
 ```
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -196,7 +197,7 @@ If an as required marked argument is missing, the template engine will intention
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -228,7 +229,7 @@ overwriteLabels: {}
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -264,7 +265,7 @@ overwriteLabels: {}
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -301,7 +302,7 @@ overwriteLabels: {}
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -346,9 +347,9 @@ apiVersion: networking.k8s.io/v1beta1
 ```
 
 
-## [Globals](https://helm.sh/docs/chart_template_guide/subcharts_and_globals/)
+## [Globals](./templates/_globals.tpl)
 
-Making use of all the global functions enable the following global keys:
+Making use of all the global functions enable the following [global keys](https://helm.sh/docs/chart_template_guide/subcharts_and_globals/):
 
 ```
 global:
@@ -426,7 +427,7 @@ Each image referenced automatically is expected to have the above structure in t
 
 ```
 apache:
-  registry: docker.io
+  registry*: docker.io
   repository: bitnami/apache
   tag*: latest
 
@@ -434,9 +435,7 @@ or
 
 apache:
   image:
-    registry: docker.io
     repository: bitnami/apache
-    tag*: latest
 ```
 
 Is included as:
@@ -536,7 +535,7 @@ global:
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -597,7 +596,7 @@ String
 ```
 
 
-## Strings
+## [Strings](./templates/_strings.tpl)
 
 ### Template
 
@@ -616,7 +615,7 @@ If an as required marked argument is missing, the template engine will intention
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -643,7 +642,7 @@ If an as required marked argument is missing, the template engine will intention
 
 #### Returns
 
-String/YAML Structure
+String
 
 #### Usage
 
@@ -677,7 +676,7 @@ String (1:1 return if not given as string)
 { include "lib.utils.toDns1123" "my-string" }
 ```
 
-## Lists
+## [Lists](./templates/_lists.tpl)
 
 ### HasValueByKey
 
@@ -716,7 +715,7 @@ If an as required marked argument is missing, the template engine will intention
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -732,11 +731,11 @@ Merge two lists into one and returns the merged result.
 
 If an as required marked argument is missing, the template engine will intentionally.
 
-  * . - Expects a list with two elements (Required).
+  * ` .` - Expects a list with two elements (Required).
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -763,7 +762,7 @@ If an as required marked argument is missing, the template engine will intention
 
 #### Returns
 
-  String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -778,9 +777,9 @@ iterates over a given list with dictionary elements and removes elements, which 
 
 #### Arguments
 
-  * .exceptions - A list or space delimited string values, which are exceptions (Optional, Returns input list without modification)
-  * .list - Data of type slice (Optional, Returns Empty String).
-  * .key - Key checked for exception values (Optional, Defaults to "name")
+  * `.exceptions` - A list or space delimited string values, which are exceptions (Optional, Returns input list without modification)
+  * `.list` - Data of type slice (Optional, Returns Empty String).
+  * `.key` - Key checked for exception values (Optional, Defaults to "name")
 
 #### Returns
 
@@ -832,7 +831,70 @@ Results in:
   value: important value
 ```
 
-## Extras
+## [Dictionaries](./templates/_dicts.tpl)
+
+### ParentAppend
+
+This function allows to append a given interface-map to a new parent key and returns the resulting YAML structure.
+
+#### Arguments
+
+  If an as required marked argument is missing, the template engine will intentionally.
+
+  * `.key` - The new parent key for the given key structure (Optional, Defaults to `Values` key)
+  * `.append` - Key structure you want to append (Optional, Defaults to function Root Context)
+
+#### Returns
+
+YAML Structure, String
+
+#### Usage:
+
+```
+{- include "lib.utils.parentAppend" (dict "key" "parent" "append" $.Values) }
+
+or
+
+{- include "lib.utils.parentAppend"  $.Values }
+```
+
+
+### PrintYamlStructure
+
+This function allows to append a given struct to a new parent key and returns the resulting YAML structure.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will intentionally.
+
+  * `.structure` - Enter the structure seperated by '.' (Required)
+      E.g. the input of "Values.sub.key" will result in the output of:
+        Values:
+          sub:
+            key:
+
+  * `.data` - Data which will be inserted below the structure (Optional)
+
+#### Returns
+
+  String
+
+#### Usage:
+
+```
+{- include "lib.utils.printYAMLStructure" (dict "structure" $path "data" "my.structure.here") }
+```
+
+Will result in
+
+```
+my:
+  structure:
+    here:
+      {.data}
+```
+
+## [Extras](./templates/_extras.tpl)
 
 ### Environment
 
@@ -891,7 +953,7 @@ proxy:
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 Usage:
 
@@ -930,19 +992,10 @@ extraResources: []
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 Usage:
 
 ```
 env: {- include "lib.utils.extras.resources" $ | nindent 2 }
 ```
-
-
-
-
-
-
-
-
-*/}}

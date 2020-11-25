@@ -1,8 +1,10 @@
 # Buttahtoast Library
 
-![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
-This is our take on a library Chart. It contains simple functions which are (will be) used across all of our charts. Feel free the add or improve the existing templates.
+This is our take on a library Chart. It contains simple functions which are (will be) used across all of our charts. Feel free the add or improve the existing templates. This Chart is still under development/testing. Feel free to use it, if you find any issues with it, please create an issue/PR. We will try to get bugs fixed as soon as possible!
+
+**Homepage:** <https://github.com/buttahtoast/helm-charts/tree/master/charts/library>
 
 ## Maintainers
 
@@ -52,6 +54,7 @@ parse the file and that causes some issues. So don't forget to add a pair of `{}
   * [DefaultLabels](#defaultlabels)
   * [OverwriteLabels](#overwritelabels)
   * [CommonLabels](#commonlabels)
+  * [Labels](#labels)
   * [KubeCapabilities](#kubecapabilities)
 * **[Globals](#globals)**
   * [DockerImage](#dockerimage)
@@ -68,9 +71,45 @@ parse the file and that causes some issues. So don't forget to add a pair of `{}
   * [MergeList](#mergelist)
   * [MergeListOnKey](#mergelistonkey)
   * [ExceptionList](#exceptionlist)
+* **[Dictionaries](#dictionaries)**
+  * [ParentAppend](#parentAppend)
+  * [PrintYamlStructure](#printyamlstructure)
+* **[Extras](#extras)**
+  * [Environment](#environment)
+  * [ExtraResources](#extraresources)
 * **[Experimental](./templates/_experimental.tpl)**
 
-## Common
+## [Common](./templates/_common.tpl)
+
+Making use of all the common templates enable the following keys:
+
+```
+## Overwrite Name Template
+# nameOverride -- Overwrite "lib.internal.name" output
+nameOverride: ""
+
+## Overwrite Fullname Template
+# fullnameOverride -- Overwrite `lib.internal.fullname` output
+fullnameOverride: ""
+
+## Common Labels
+# commonLabels -- Common Labels are added to each kubernetes resource manifest. But will not be added to resources rendered by the common chart (eg. JMX Exporter)
+commonLabels: {}
+
+## Overwrite Labels
+# overwriteLabels -- Overwrites default labels, but not resource specific labels and common labels
+overwriteLabels: {}
+
+## Selector Labels
+# selectorLabels -- Define default [selectorLabels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
+# @default -- `app.kubernetes.io/name: { include "lib.internal.name" . }<br>app.kubernetes.io/instance: { .Release.Name }`
+selectorLabels: {}
+
+## Version Capabilities
+# kubeCapabilities -- Overwrite the Kube GitVersion
+# @default -- `$.Capabilities.KubeVersion.GitVersion`
+kubeCapabilities: ""
+```
 
 ### Fullname
 
@@ -90,8 +129,13 @@ If an as required marked argument is missing, the template engine will intention
 This function enables the following keys on the values scope:
 
 ```
-nameOverride: "SuffixOverwrite"
-fullnameOverride: "FullOverwrite"
+## Overwrite Name Template
+# nameOverride -- Overwrite "lib.internal.name" output
+nameOverride: ""
+
+## Overwrite Fullname Template
+# fullnameOverride -- Overwrite `lib.internal.fullname` output
+fullnameOverride: ""
 
 ```
 
@@ -126,13 +170,15 @@ If an as required marked argument is missing, the template engine will intention
 This function enables the following keys on the values scope:
 
 ```
-selectorLabels:
-  "selector.label": "selector.value"
+## Selector Labels
+# selectorLabels -- Define default [selectorLabels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
+# @default -- `app.kubernetes.io/name: { include "lib.internal.name" . }<br>app.kubernetes.io/instance: { .Release.Name }`
+selectorLabels: {}
 ```
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -152,7 +198,7 @@ If an as required marked argument is missing, the template engine will intention
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -177,13 +223,14 @@ If an as required marked argument is missing, the template engine will intention
 This function enables the following keys on the values scope:
 
 ```
-overwriteLabels:
-  "overwrite.label": "overwrite.value"
+## Overwrite Labels
+# overwriteLabels -- Overwrites default labels, but not resource specific labels and common labels
+overwriteLabels: {}
 ```
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -208,13 +255,18 @@ If an as required marked argument is missing, the template engine will intention
 This function enables the following keys on the values scope:
 
 ```
-commonLabels:
-  "common.label": "common.value"
+## Common Labels
+# commonLabels -- Common Labels are added to each kubernetes resource manifest. But will not be added to resources rendered by the common chart (eg. JMX Exporter)
+commonLabels: {}
+
+## Overwrite Labels
+# overwriteLabels -- Overwrites default labels, but not resource specific labels and common labels
+overwriteLabels: {}
 ```
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -239,15 +291,19 @@ as common labels.
 This function enables the following keys on the values scope:
 
 ```
-overwriteLabels:
-  "overwrite.label": "overwrite.value"
-commonLabels:
-  "common.label": "common.value"
+## Common Labels
+# commonLabels -- Common Labels are added to each kubernetes resource manifest. But will not be added to resources rendered by the common chart (eg. JMX Exporter)
+commonLabels: {}
+
+## Overwrite Labels
+# overwriteLabels -- Overwrites default labels, but not resource specific labels and common labels
+overwriteLabels: {}
+
 ```
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -271,6 +327,9 @@ If an as required marked argument is missing, the template engine will intention
 This function enables the following keys on the values scope:
 
 ```
+## Version Capabilities
+# kubeCapabilities -- Overwrite the Kube GitVersion
+# @default -- `$.Capabilities.KubeVersion.GitVersion`
 kubeCapabilities: "1.19.0"
 ```
 
@@ -288,18 +347,44 @@ apiVersion: networking.k8s.io/v1beta1
 {- else -}
 ```
 
-## Globals
+## [Globals](./templates/_globals.tpl)
+
+Making use of all the global functions enable the following [global keys](https://helm.sh/docs/chart_template_guide/subcharts_and_globals/):
+
+```
+global:
+
+  ## Global Docker Image Registry
+  # global.imageRegistry -- Global Docker Image Registry declaration. Will overwrite all child .registry fields.
+  imageRegistry: ""
+
+  ## Global Default Image Tag
+  # global.defaultTag -- Global Docker Image Tag declaration. Will be used as default tag, if no tag is given by child
+  defaultTag: ""
+
+  ## Global Docker Image PullPolicy
+  # global.pullPolicy -- Global Docker Image Pull Policy declaration. Will overwrite all child .pullPolicy fields.
+  imagePullPolicy: ""
+
+  ## Global StorageClass
+  # global.storageClass -- Global StorageClass declaration. Can be used to overwrite StorageClass fields.
+  storageClass: ""
+
+  ## Global Image Pull Secrets
+  # global.imagePullSecrets -- Global Docker Image Pull Secrets declaration. Added to local Docker Image Pull Secrets.
+  imagePullSecrets: []
+```
 
 ### DockerImage
 
 This function overwrites local docker registries with global defined registries, if available. Returns the assembled output
-based on registry, repository and tag.
+based on registry, repository and tag. The `$.global.defaultTag` value has precedence over the `.default` value.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionaly.
+If an as required marked argument is missing, the template engine will intentionally.
 
-  * `.registry` - Local Registry definition, see the structure below (Required).
+  * `.image` - Local Registry definition, see the structure below (Required).
   * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
   * `.default` - Add a default value for the tag, if not set explicit (Optional, Defaults to "latest")
 
@@ -327,14 +412,21 @@ This function enables the following keys on the global scope:
 
 ```
 global:
+
+  ## Global Docker Image Registry
+  # global.imageRegistry -- Global Docker Image Registry declaration. Will overwrite all child .registry fields.
   imageRegistry: "company-registry/"
+
+  ## Global Default Image Tag
+  # global.defaultTag -- Global Docker Image Tag declaration. Will be used as default tag, if no tag is given by child
+  defaultTag: "1.0.0"
 ```
 
 Each image referenced automatically is expected to have the above structure in the values (Example):
 
 ```
 apache:
-  registry: docker.io
+  registry*: docker.io
   repository: bitnami/apache
   tag*: latest
 
@@ -342,9 +434,7 @@ or
 
 apache:
   image:
-    registry: docker.io
     repository: bitnami/apache
-    tag*: latest
 ```
 
 Is included as:
@@ -352,7 +442,7 @@ Is included as:
 ```
       containers:
         - name: apache
-          image: {- include "lib.utils.image" (dict "registry" .Values.apache "context" $ "default" .Chart.AppVersion) }
+          image: {- include "lib.utils.image" (dict "image" .Values.apache "context" $ "default" .Chart.AppVersion) }
 ```
 
 #### Returns
@@ -401,7 +491,10 @@ This function enables the following keys on the global scope:
 
 ```
 global:
-  pullPolicy: "Always"
+
+  ## Global Docker Image PullPolicy
+  # global.pullPolicy -- Global Docker Image Pull Policy declaration. Will overwrite all child .pullPolicy fields.
+  imagePullPolicy: "Always"
 ```
 
 #### Returns
@@ -431,12 +524,15 @@ This function enables the following keys:
 
 ```
 global:
+
+  ## Global Image Pull Secrets
+  # global.imagePullSecrets -- Global Docker Image Pull Secrets declaration. Added to local Docker Image Pull Secrets.
   imagePullSecrets: []
 ```
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -479,7 +575,10 @@ This function enables the following keys:
 
 ```
 global:
-  storageClass: "global-storage"
+
+  ## Global StorageClass
+  # global.storageClass -- Global StorageClass declaration. Can be used to overwrite StorageClass fields.
+  storageClass: ""
 ```
 
 #### Returns
@@ -492,7 +591,7 @@ String
 { include "lib.utils.storageClass" (dict "persistence" .Values.persistence "context" $) }
 ```
 
-## Strings
+## [Strings](./templates/_strings.tpl)
 
 ### Template
 
@@ -511,7 +610,7 @@ If an as required marked argument is missing, the template engine will intention
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -537,7 +636,7 @@ If an as required marked argument is missing, the template engine will intention
 
 #### Returns
 
-String/YAML Structure
+String
 
 #### Usage
 
@@ -571,7 +670,7 @@ String (1:1 return if not given as string)
 { include "lib.utils.toDns1123" "my-string" }
 ```
 
-## Lists
+## [Lists](./templates/_lists.tpl)
 
 ### HasValueByKey
 
@@ -609,7 +708,7 @@ If an as required marked argument is missing, the template engine will intention
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -625,11 +724,11 @@ Merge two lists into one and returns the merged result.
 
 If an as required marked argument is missing, the template engine will intentionally.
 
-  * . - Expects a list with two elements (Required).
+  * ` .` - Expects a list with two elements (Required).
 
 #### Returns
 
-String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -656,7 +755,7 @@ If an as required marked argument is missing, the template engine will intention
 
 #### Returns
 
-  String/YAML Structure
+YAML Structure, String
 
 #### Usage
 
@@ -671,9 +770,9 @@ iterates over a given list with dictionary elements and removes elements, which 
 
 #### Arguments
 
-  * .exceptions - A list or space delimited string values, which are exceptions (Optional, Returns input list without modification)
-  * .list - Data of type slice (Optional, Returns Empty String).
-  * .key - Key checked for exception values (Optional, Defaults to "name")
+  * `.exceptions` - A list or space delimited string values, which are exceptions (Optional, Returns input list without modification)
+  * `.list` - Data of type slice (Optional, Returns Empty String).
+  * `.key` - Key checked for exception values (Optional, Defaults to "name")
 
 #### Returns
 
@@ -723,4 +822,172 @@ Results in:
   value: /home/directory
 - name: IMPORTANT_CONFIGURATION
   value: important value
+```
+
+## [Dictionaries](./templates/_dicts.tpl)
+
+### ParentAppend
+
+This function allows to append a given interface-map to a new parent key and returns the resulting YAML structure.
+
+#### Arguments
+
+  If an as required marked argument is missing, the template engine will intentionally.
+
+  * `.key` - The new parent key for the given key structure (Optional, Defaults to `Values` key)
+  * `.append` - Key structure you want to append (Optional, Defaults to function Root Context)
+
+#### Returns
+
+YAML Structure, String
+
+#### Usage:
+
+```
+{- include "lib.utils.parentAppend" (dict "key" "parent" "append" $.Values) }
+
+or
+
+{- include "lib.utils.parentAppend"  $.Values }
+```
+
+### PrintYamlStructure
+
+This function allows to append a given struct to a new parent key and returns the resulting YAML structure.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will intentionally.
+
+  * `.structure` - Enter the structure seperated by '.' (Required)
+      E.g. the input of "Values.sub.key" will result in the output of:
+        Values:
+          sub:
+            key:
+
+  * `.data` - Data which will be inserted below the structure (Optional)
+
+#### Returns
+
+  String
+
+#### Usage:
+
+```
+{- include "lib.utils.printYAMLStructure" (dict "structure" $path "data" "my.structure.here") }
+```
+
+Will result in
+
+```
+my:
+  structure:
+    here:
+      {.data}
+```
+
+## [Extras](./templates/_extras.tpl)
+
+### Environment
+
+Returns useful environment variables being used for container. In addition adds built-in proxy support to your chart.
+Meaning proxy will be set directly in environment variables returned by the template.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will intentionally.
+
+  * `.` - Inherited Root Context (Required)
+
+#### Keys
+
+This function enables the following keys:
+
+```
+proxy:
+
+  ## HTTP Proxy Configuration
+  httpProxy:
+
+    ## HTTP Proxy Host Configuration
+    # proxy.httpProxy.host -- Configure HTTP Proxy Hostname/IP (without protocol://)
+    host: ""
+
+    ## HTTP Proxy Port Configuration
+    # proxy.httpProxy.port -- (int) Configure HTTP Proxy Port
+    port:
+
+    ## HTTP Proxy Protocol Configuration
+    # proxy.httpProxy.protocol -- Configure HTTP Proxy Protocol (http/https)
+    # @default -- http
+    protocol: ""
+
+  ## HTTPS Proxy Configuration
+  httpsProxy:
+
+    ## HTTPS Proxy Host Configuration
+    # proxy.httpsProxy.host -- Configure HTTPS Proxy Hostname/IP (without protocol://)
+    host: ""
+
+    ## HTTP Proxy Port Configuration
+    # proxy.httpsProxy.port -- (int) Configure HTTPS Proxy Port
+    port:
+
+    ## HTTP Proxy Protocol Configuration
+    # proxy.httpsProxy.protocol -- Configure HTTPS Proxy Protocol (http/https)
+    # @default -- http
+    protocol: ""
+
+  ## No Proxy Hosts Configuration
+  # proxy.noProxy -- Configure No Proxy Hosts
+  noProxy: [ "localhost", "127.0.0.1" ]
+```
+
+#### Returns
+
+YAML Structure, String
+
+Usage:
+
+```
+env: {- include "lib.utils.extras.environment" $ | nindent 2 }
+```
+
+## ExtraResources
+
+Allows to have extra resources in the chart. Returns kind List with all given kubernetes extra resources.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will intentionally.
+
+  * `.` - Inherited Root Context (Required)
+
+#### Keys
+
+This function enables the following keys:
+
+```
+## Raw Kubernetes resources
+# extraResources --
+extraResources: []
+#
+# - kind: ConfigMap
+#   apiVersion: v1
+#   metadata:
+#     name: example-configmap
+#   data:
+#     database: mongodb
+#     database_uri: mongodb://localhost:27017
+#
+```
+
+#### Returns
+
+YAML Structure, String
+
+Usage:
+
+```
+env: {- include "lib.utils.extras.resources" $ | nindent 2 }
 ```

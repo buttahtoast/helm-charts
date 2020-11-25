@@ -5,13 +5,13 @@
   {{- if and .image .context }}
     {{- $values := default .context .context.Values }}
     {{- $image := .image }}
-    {{- if and $values.image (kindIs "map" ) $values.image}}
-      {{- $image = $values.image }}
+    {{- if and $image.image (kindIs "map" $image.image) }}
+      {{- $image = $image.image }}
     {{- end }}
-    {{- $registry := (required "Missing key '.registry' in image structure" $values.registry) -}}
-    {{- $repository := (required "Missing key '.repository' in image structure" $values.repository) -}}
-    {{- $tag := (default "" $values.tag) -}}
-    {{- if  $values.global }}
+    {{- $registry := $image.registry -}}
+    {{- $repository := (required "Missing key '.repository' in image structure" $image.repository) -}}
+    {{- $tag := (default "" $image.tag) -}}
+    {{- if $values.global }}
       {{- if  $values.global.imageRegistry }}
         {{- $registry =  $values.global.imageRegistry -}}
       {{- end -}}
@@ -21,13 +21,19 @@
         {{- end }}
       {{- end }}
     {{- end -}}
+    {{- $imagePath := "" }}
+    {{- if and $registry $repository }}
+      {{- $imagePath = (printf "%s/%s" (trimSuffix "/" $registry) $repository) }}
+    {{- else }}
+      {{- $imagePath = $repository }}
+    {{- end }}
     {{- if and (not $tag) .default }}
       {{- $tag = .default }}
     {{- end }}
     {{- if $tag }}
-      {{- printf "%s/%s:%s" (trimSuffix "/" $registry) $repository (toString $tag) -}}
+      {{- printf "%s:%s" $imagePath (toString $tag) -}}
     {{- else }}
-      {{- printf "%s/%s" (trimSuffix "/" $registry) $repository -}}
+      {{- printf "%s" $imagePath -}}
     {{- end }}
   {{- else }}
     {{- fail "Template requires '.registry' and '.context' as arguments" }}
@@ -39,15 +45,13 @@
   Sprig Template - ImagePullPolicy
 */}}
 {{- define "lib.utils.imagePullPolicy" -}}
-  {{- if and .imagePullPolicy .context }}
-    {{- $policy := "" }}
-    {{- $tag := "" }}
+  {{- if .context }}
     {{- $values := default .context .context.Values }}
-    {{- if .pullPolicy.image }}
-      {{- $policy = .pullPolicy.image.imagePullPolicy -}}
-    {{- else }}
-      {{- $policy = .imagePullPolicy -}}
+    {{- $imagePullPolicy := .imagePullPolicy }}
+    {{- if and $imagePullPolicy.image (kindIs "map" $imagePullPolicy.image) }}
+      {{- $imagePullPolicy = $imagePullPolicy.image -}}
     {{- end }}
+    {{- $policy := $imagePullPolicy.imagePullPolicy -}}
     {{- if $values.global }}
       {{- if $values.global.pullPolicy }}
         {{- $policy = $values.global.pullPolicy }}
@@ -55,7 +59,7 @@
     {{- end }}
     {{- printf "%s" (default "" $policy) }}
   {{- else }}
-    {{- fail "Template requires '.pullPolicy' and '.context' as arguments" }}
+    {{- fail "Template requires '.context' as argument" }}
   {{- end }}
 {{- end -}}
 
@@ -76,7 +80,7 @@
       {{- toYaml $secrets | nindent 0 }}
     {{- end }}
   {{- else }}
-    {{- fail "Template requires '.context' as arguments" }}
+    {{- fail "Template requires '.context' as argument" }}
   {{- end }}
 {{- end }}
 
@@ -102,6 +106,6 @@
       {{- printf "\"%s\"" $storageClass -}}
     {{- end }}
   {{- else }}
-    {{- fail "Template requires '.context' as arguments" }}
+    {{- fail "Template requires '.context' as argument" }}
   {{- end }}
 {{- end -}}

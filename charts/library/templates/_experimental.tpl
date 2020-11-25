@@ -1,6 +1,6 @@
 {{/*
   Everything in here is not considered Stable and shouldn't be used!
-}}
+*/}}
 
 
 {{- define "stringPath" -}}
