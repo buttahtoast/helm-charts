@@ -1,33 +1,27 @@
 {{- $tavern_tests := (fromYaml (include "tavern.tests" $)) }}
 
-{{ include "tavern.tests" $  }}
-
-
-OUT: {{ include "tavern.has.tests" $ }}
-
 
 {{- if $tavern_tests.tests }}
   {{- range $tavern_tests.tests }}
-     {{ $test_name := include "lib.utils.toDns1123" .name }}
     {{- if .secret }}
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ include "lib.utils.fullname" (dict "name" $test_name "context" $) }}
+  name: {{ include "lib.utils.fullname" (dict "name" .name "context" $) }}
   labels: {{- include "lib.utils.labels" $ | nindent 4 }}
 type: Opaque
 data:
-  {{ $test_name }}_test.yaml: {{- toYaml .test | b64enc | nindent 4 }}
+  {{ .name }}_test.yaml: {{- toYaml .test | b64enc | nindent 4 }}
     {{- else }}
 ---
 kind: "ConfigMap"
 apiVersion: "v1"
 metadata:
-  name: {{ include "lib.utils.fullname" (dict "name" $test_name "context" $) }}
+  name: {{ include "lib.utils.fullname" (dict "name" .name "context" $) }}
   labels: {{- include "lib.utils.labels" $ | nindent 4 }}
 data:
-  {{ $test_name }}_test.yaml: | {{ toYaml .test | nindent 4 }}
+  {{ .name }}_test.yaml: | {{ toYaml .test | nindent 4 }}
     {{- end }}
   {{- end }}
 {{- end }}

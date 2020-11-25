@@ -20,9 +20,7 @@
     {{- range $.Values.tests }}
       {{- if .name }}
         {{- $tavern_test := . }}
-
-
-
+        {{ $_ := set $tavern_test "name" (include "lib.utils.toDns1123" .name) }}
         {{- $g_stages := list }}
         {{- if .test }}
           {{- $_ := set $tavern_test "test" (fromYaml (include "lib.utils.template" (dict "value" .test "extraValues" .values "extraValuesKey" "tavern" "context" $))) }}

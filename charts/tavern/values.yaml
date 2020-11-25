@@ -88,7 +88,7 @@ testTemplates:
 
 
 
-## TestSuites
+## TestSuitesA
 tests:
 
     ## Test Name
@@ -154,7 +154,7 @@ cronjob:
 
   ## Enable Run as Cronjob
   # cronjob.enabled -- Deploy tavern as kind CronJob instead of kind Job (Reoccuring execution)
-  enabled: true
+  enabled: false
 
   ## Custom API Version
   # cronjob.apiVersion -- Declare API version for kind CronJob

@@ -1,3 +1,8 @@
+{{/*
+  Everything in here is not considered Stable and shouldn't be used!
+}}
+
+
 {{- define "stringPath" -}}
   {{- if and .path .dictionary -}}
     {{- $path := splitList "." (.path | trimAll "." ) -}}
@@ -16,7 +21,6 @@
             {{- $dictionary = $l_dictionary }}
           {{- end }}
         {{- else }}
-
           {{- if (hasKey $dictionary .) -}}
             {{- $dictionary = get $dictionary . -}}
           {{- end -}}
