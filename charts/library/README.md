@@ -899,9 +899,9 @@ If an as required marked argument is missing, the template engine will intention
 
   * `.` - Inherited Root Context (Required)
 
-#### Keys
+#### Structure
 
-This function enables the following keys:
+This template supports the following key structure:
 
 ```
 proxy:
