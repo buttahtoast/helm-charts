@@ -112,6 +112,7 @@ kubeCapabilities: ""
 ```
 
 ### Fullname
+---
 
 Extended Function to return a fullname.
 
@@ -150,6 +151,7 @@ String
 ```
 
 ### SelectorLabels
+---
 
 This template will return the default selectorLabels (Useable for Match/Selector Labels). In addition there is the
 option to overwrite these labels. If no selectorLabels are defined, the following labels are set:
@@ -187,6 +189,7 @@ YAML Structure, String
 ```
 
 ### DefaultLabels
+---
 
 This template represents the default templates. It includes the `SelectorLabel` template and sets the Application Version.
 
@@ -239,6 +242,7 @@ YAML Structure, String
 ```
 
 ### CommonLabels
+---
 
 This template allows to define common labels. Common labels are appended to the base labels (no merge). By Using this template
 the key `.Values.commonLabels` is considered in your value structure. If the key has values and is type `map` the values are used
@@ -275,6 +279,7 @@ YAML Structure, String
 ```
 
 ### Labels
+---
 
 This template allows to define common labels. Common labels are appended to the base labels (no merge). By Using this template
 the key `.Values.commonLabels` is considered in your value structure. If the key has values and is type `map` the values are used
@@ -312,6 +317,7 @@ YAML Structure, String
 ```
 
 ### KubeCapabilities
+---
 
 This template allows to define a custom KubeCapabilities Version (replaces `$.Capabilities.KubeVersion.GitVersion`). This might be useful when
 trying to test the chart or having client versions that differ from the server version.
@@ -376,6 +382,7 @@ global:
 ```
 
 ### DockerImage
+---
 
 This function overwrites local docker registries with global defined registries, if available. Returns the assembled output
 based on registry, repository and tag. The `$.global.defaultTag` value has precedence over the `.default` value.
@@ -456,6 +463,7 @@ String
 ```
 
 ### ImagePullPolicy
+---
 
 This function overwrites local docker image pullpolicies with global defined pullpolicies, if available.
 
@@ -508,6 +516,7 @@ String
 ```
 
 ### ImagePullsecrets
+---
 
 This function merges local pullSecrets with global defined pullSecrets, if available.
 
@@ -541,6 +550,7 @@ YAML Structure, String
 ```
 
 ### StorageClass
+---
 
 This Function checks for a global storage class and returns it, if set.
 With the Parameter "persistence" you can pass your persistence structure. The function
@@ -594,6 +604,7 @@ String
 ## [Strings](./templates/_strings.tpl)
 
 ### Template
+---
 
 This function allows to render String/Map input with the go template engine. Since the
 go template engine doesn't directly accept maps, maps are dumped in YAML format. If you want to
@@ -623,6 +634,7 @@ or
 ```
 
 ### Stringify
+---
 
 This function allows to pass a list and create a single string, with a specific delimiter
 
@@ -645,6 +657,7 @@ String
 ```
 
 ### ToDns1123
+---
 
 Converts the given string into DNS1123 accepted format. The format has the following conditions:
 
@@ -673,6 +686,7 @@ String (1:1 return if not given as string)
 ## [Lists](./templates/_lists.tpl)
 
 ### HasValueByKey
+---
 
 Loops through subdicts in a given lists checking the given key for the given value. if matched, true is returned.
 
@@ -695,6 +709,7 @@ Boolean
 ```
 
 ### GetValueByKey
+---
 
 Loops through subdicts in a given lists checking the given key for the given value. if matched, the value of the entire dict is returned.
 
@@ -737,6 +752,7 @@ YAML Structure, String
 ```
 
 ### MergeListOnKey
+---
 
 The default behavior for merging lists in array don't allow a combination of two elements of the different lists.
 Either you append the lists or completely overwrite the previous list. With this function you can merge list elements
@@ -764,6 +780,7 @@ YAML Structure, String
 ```
 
 ### ExceptionList
+---
 
 This function allows list blacklisting. This means, that you can give an list of exceptions ("blacklist") as argument. The template
 iterates over a given list with dictionary elements and removes elements, which match one of the value in the exception list.
@@ -827,6 +844,7 @@ Results in:
 ## [Dictionaries](./templates/_dicts.tpl)
 
 ### ParentAppend
+---
 
 This function allows to append a given interface-map to a new parent key and returns the resulting YAML structure.
 
@@ -852,6 +870,7 @@ or
 ```
 
 ### PrintYamlStructure
+---
 
 This function allows to append a given struct to a new parent key and returns the resulting YAML structure.
 
@@ -889,6 +908,7 @@ my:
 ## [Extras](./templates/_extras.tpl)
 
 ### Environment
+---
 
 Returns useful environment variables being used for container. In addition adds built-in proxy support to your chart.
 Meaning proxy will be set directly in environment variables returned by the template.
@@ -953,7 +973,8 @@ Usage:
 env: {- include "lib.utils.extras.environment" $ | nindent 2 }
 ```
 
-## ExtraResources
+### ExtraResources
+---
 
 Allows to have extra resources in the chart. Returns kind List with all given kubernetes extra resources.
 
