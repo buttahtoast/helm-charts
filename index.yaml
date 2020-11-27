@@ -27,6 +27,23 @@ entries:
     urls:
     - https://github.com/Kubernetli/helm-charts/releases/download/example-0.1.0/example-0.1.0.tgz
     version: 0.1.0
+  library:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2020-11-27T12:51:51.363355958Z"
+    description: Buttahtoast Helm Library
+    digest: 6d3bf7efb3aeb39579c41e2ec046625a1859490952d1f7ca41a7d0aa79d78285
+    home: https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    keywords:
+    - library
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    name: library
+    type: library
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/library-0.1.0/library-0.1.0.tgz
+    version: 0.1.0
   xample-2:
   - apiVersion: v2
     appVersion: 1.16.0
