@@ -1,11 +1,10 @@
 #
-# Template based on origin https://github.com/helm/charts-repo-actions-demo/blob/master/.github/workflows/lint-test.yaml
+# Reference: https://github.com/helm/chart-testing-action
 #
 name: Helm Chart Linting and Testing
 on: pull_request
 jobs:
-
-  lint:
+  chart-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -14,26 +13,20 @@ jobs:
       - name: Fetch history
         run: git fetch --prune --unshallow
 
-      - name: Run chart-testing (lint)
-        uses: helm/chart-testing-action@v1.0.0-rc.2
+      - name: Chart Linting
+        id: lint
+        uses: helm/chart-testing-action@v1.0.0
         with:
-          config: ct.yaml
           command: lint
-  test:
-    runs-on: ubuntu-latest
-    needs: lint
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Fetch history
-        run: git fetch --prune --unshallow
 
       - name: Create kind cluster
-        uses: helm/kind-action@v1.0.0-rc.1
+        uses: helm/kind-action@v1.0.0
+        # Only build a kind cluster if there are chart changes to test.
+        if: steps.lint.outputs.changed == 'true'
 
-      - name: Run chart-testing (install)
-        uses: helm/chart-testing-action@v1.0.0-rc.2
+      - name: Chart Installation
+        uses: helm/chart-testing-action@v1.0.0
+        # Only test if there are any changes
+        if: steps.lint.outputs.changed == 'true'
         with:
-          config: ct.yaml
           command: install
