@@ -57,7 +57,9 @@
         {{- $policy = $values.global.pullPolicy }}
       {{- end }}
     {{- end }}
-    {{- printf "%s" (default "" $policy) }}
+    {{- if $policy }}
+      {{- printf "%s" $policy }}
+    {{- end }}
   {{- else }}
     {{- fail "Template requires '.context' as argument" }}
   {{- end }}
