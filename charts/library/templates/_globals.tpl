@@ -53,11 +53,13 @@
     {{- end }}
     {{- $policy := $imagePullPolicy.imagePullPolicy -}}
     {{- if $values.global }}
-      {{- if $values.global.pullPolicy }}
-        {{- $policy = $values.global.pullPolicy }}
+      {{- if $values.global.imagePullPolicy }}
+        {{- $policy = $values.global.imagePullPolicy }}
       {{- end }}
     {{- end }}
-    {{- printf "%s" (default "" $policy) }}
+    {{- if $policy }}
+      {{- printf "%s" $policy }}
+    {{- end }}
   {{- else }}
     {{- fail "Template requires '.context' as argument" }}
   {{- end }}

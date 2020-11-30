@@ -2,7 +2,7 @@ apiVersion: v2
 name: library
 description: Buttahtoast Helm Library
 type: library
-version: 0.1.0
+version: 0.1.1
 appVersion: 0.1.0
 home: https://github.com/buttahtoast/helm-charts/tree/master/charts/library
 keywords:
