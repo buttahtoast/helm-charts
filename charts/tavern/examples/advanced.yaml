@@ -101,10 +101,9 @@ testTemplates:
         template: "http_get"
         values:
           endpoint: "product/"
-          product: "{{ . }}"
           json:
             <<: *base_data
-            product: "me"
+            product: "{{ . }}"
         {{- end }}
       {{- end }}
     {{- end }}
