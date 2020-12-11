@@ -27,7 +27,7 @@ tavern:
   debug: false
 
   ## Tavern Default Mount Mode
-  ##
+  ## tavern.defaultMode -- Default File mode for Test Suite mounts
   defaultMode: "0550"
 
 
@@ -71,8 +71,6 @@ annotations: {}
 
 ## Cronjob Configuration
 ##
-
-
 cronjob:
 
   ## Enable Run as Cronjob
@@ -92,8 +90,6 @@ cronjob:
 ## Job Configuration
 ## If Tavern is not enabled as kind Cronjob, it's deployed as kind Job.
 ##
-
-
 job:
 
   ## Job Configuration
@@ -249,10 +245,8 @@ containerFields: {}
 # extraResources -- Define additional kubernetes manifests
 extraResources: []
 
-
-## Test Configuration
+## Tavern Test Configuration
 ##
-
 
 ## Test Stage Templates
 # stageTemplates -- Tavern Test Stage Templates (See the examples)
@@ -286,7 +280,6 @@ stageTemplates: []
 #          - 200
 #          - 404
 #
-
 
 ## Test Suite Templates
 # testTemplates -- Tavern Test Suite Templates (See the examples)
@@ -337,8 +330,6 @@ testTemplates: []
 #            showAll: true
 #        {{- end }}
 #
-
-
 
 
 ## Test Suites
@@ -392,34 +383,21 @@ tests: []
 #              verify: true
 #
 #
-#
-#
-#
-#
-#
-#
-#
 # ## Template Suite
 #
-#
-#
-# ## Advanced Template Suite
-#
-#
-#
-#
-#
-#
-#    ## Test Name
+#    Test Suite Name
+#    tests[1].name -- Test Suite Name
 #  - name: "Template Suite"
 #
-#    ## Referenced Template
+#    Reference the Test Suite template to use
+#    tests[1].template -- Test Suite Secret
 #    template: "http_stage"
 #
-#    ## Deploy as Secret
-#    secret: true
+#    Stores Test Suite in Secret instead of configmap
+#    tests[1].secret -- Test Suite Secret
 #
-#    ## Values Used for Template
+#    Test Suite Values
+#    tests[1].values -- Go Sprig Values accessible under `$.tavern` for the entire Suite
 #    values:
 #      enable_products: true
 #
@@ -430,32 +408,8 @@ tests: []
 #          stage:
 #            test: "me"
 #
-#  ## Test Suite
-#  - name: "Sample Suite"
-#
-#
-#    test:
-#      stages:
-#
-#        ## Straight Test
-#        - name: "Try to get user"
-#          stage:
-#            request:
-#              url: "{host}/users/joebloggs"
-#              method: GET
-#              json:
-#                clusterName: "test"
-#            response:
-#              status_code:
-#                - 200
-#                - 404
-#
-#
-#        ## Use Template
-#        - name: "Some Stage"
-#          template: "http_basic"
-#          values:
-#            endpoint: "Products"
+#    ## Overwrites the stages in the template and executes a merge
+#        - name: "user_test"
 #          stage:
 #            request:
 #              verify: true
