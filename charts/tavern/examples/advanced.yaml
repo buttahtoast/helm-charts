@@ -113,14 +113,6 @@ testTemplates:
 ## Tavern Test Suites
 tests:
 
-  # Overtwrites/Merges with
-  - name: "Base Call"
-    stage:
-      request:
-        method: POST
-        json:
-          extraData: "extraValue"
-
   # Single Tavern Stage for Suite
   ## Will be last stage to be executed
   - name: "Product Suite"
