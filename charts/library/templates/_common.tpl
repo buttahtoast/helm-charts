@@ -61,7 +61,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 */}}
 {{- define "lib.utils.defaultLabels" -}}
 {{- include "lib.utils.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
+{{- if and .Chart.AppVersion (not .versionunspecific) }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 {{- end -}}
@@ -94,7 +94,9 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
   Sprig Template - Labels
 */}}
 {{- define "lib.utils.labels" -}}
+  {{- $_ := set (default . .context) "versionunspecific" (default false .versionUnspecific ) -}}
   {{- toYaml (mergeOverwrite (fromYaml (include "lib.utils.commonLabels" (default . .context))) (default dict .labels)) | indent 0 }}
+  {{- $_ := unset (default . .context) "versionunspecific" }}
 {{- end -}}
 
 
