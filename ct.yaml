@@ -3,6 +3,8 @@
 remote: origin
 chart-dirs:
   - charts
+chart-repos:
+  - buttahtoast=https://buttahtoast.github.io/helm-charts/
 check-version-increment: true
 debug: true
 validate-chart-schema: true
