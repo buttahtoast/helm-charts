@@ -1,0 +1,462 @@
+## Global Values
+##
+global:
+
+  ## Global Docker Image Registry
+  # global.imageRegistry -- Global Docker Image Registry declaration. Will overwrite all child .registry fields.
+  imageRegistry: ""
+
+  ## Global Docker Image PullPolicy
+  # global.pullPolicy -- Global Docker Image Pull Policy declaration. Will overwrite all child .pullPolicy fields.
+  imagePullPolicy: ""
+
+  ## Global Image Pull Secrets
+  # global.imagePullSecrets -- Global Docker Image Pull Secrets declaration. Added to local Docker Image Pull Secrets.
+  imagePullSecrets: []
+
+## Tavern Configuration
+##
+tavern:
+
+  ## Tavern Test Directory
+  # tavern.test_directory -- Directory where all your tests are mounted
+  test_directory: "/tavern"
+
+  ## Tavern Debug Mode
+  # tavern.debug -- Enables logging on DEBUG level
+  debug: false
+
+  ## Tavern Default Mount Mode
+  ##
+  defaultMode: "0550"
+
+
+## Common Configuration
+##
+
+
+## Overwrite Name Template
+# nameOverride -- Overwrite "lib.internal.name" output
+nameOverride: ""
+
+## Overwrite Fullname Template
+# fullnameOverride -- Overwrite `lib.internal.fullname` output
+fullnameOverride: ""
+
+## Common Labels
+# commonLabels -- Common Labels are added to each kubernetes resource manifest. But will not be added to resources rendered by the common chart (eg. JMX Exporter)
+commonLabels: {}
+
+## Overwrite Labels
+# overwriteLabels -- Overwrites default labels, but not resource specific labels and common labels
+overwriteLabels: {}
+
+
+## CronJob/Job Configuration
+##
+
+
+## Custom API Version
+# apiVersion -- Declare API version for Cronjob/Job resource
+apiVersion: ""
+
+## Labels
+# Labels for the Cronjob/Job resource
+labels: {}
+
+## Annotations
+# Annotations for the Cronjob/Job resource
+annotations: {}
+
+
+## Cronjob Configuration
+##
+
+
+cronjob:
+
+  ## Enable Run as Cronjob
+  # cronjob.enabled -- Deploy tavern as kind CronJob instead of kind Job (Reoccuring execution)
+  enabled: false
+
+  ## Schedule
+  # cronjob.schedule -- Define the schedule for the cronjob to run
+  schedule: "0 * * * *"
+
+  ## CronJob Configuration
+  # cronjob.conf -- Additional Configurations for CronJob resource
+  conf:
+    failedJobsHistoryLimit: 10
+
+
+## Job Configuration
+## If Tavern is not enabled as kind Cronjob, it's deployed as kind Job.
+##
+
+
+job:
+
+  ## Job Configuration
+  # job.conf -- Additional Configurations for CronJob resource
+  conf:
+    ttlSecondsAfterFinished: 120
+
+
+## Pod Configuration
+##
+
+
+## Image Pull Secrets
+# imagePullSecrets -- Define [ImagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/). Will be overwritten if set by global variable.
+imagePullSecrets: []
+
+## Pod Labels
+# podLabels -- Pod [labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) are only added for the pod
+podLabels: {}
+
+## Pod Annotations
+# podAnnotations -- Pod [annotations](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) are only added for the pod
+podAnnotations: {}
+
+## Extra Pod Fields
+# podFields -- Add extra field to the [Pod Template](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#podtemplate-v1-core) if not available as value.
+podFields: {}
+#  hostNetwork: true
+
+## Additional Kubernetes Volumes
+# volumes -- Additional [Volumes](https://kubernetes.io/docs/concepts/storage/volumes/)
+volumes: []
+#  - name: cache
+#    emptyDir: {}
+#  - name: share
+#    persistentVolumeClaim:
+#      claimName: 'release-name-library-testing-shared'
+
+## RestartPolicy Configuration
+# restartPolicy -- Restart policy for all containers within the One of Always, OnFailure, Never. Default to Always. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy
+restartPolicy: "OnFailure"
+
+## Affinity Configuration
+# affinity -- Pod [Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity)
+affinity: {}
+
+## NodeSelector Configuration
+# nodeSelector -- Pod [NodeSelector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
+nodeSelector: {}
+
+## Tolerations Configuration
+# tolerations -- Pod [Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
+tolerations: {}
+
+## Priority Configuration
+# priorityClassName -- Pod [priorityClassName](https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass)
+priorityClassName: ""
+
+## Pod SecurityContext Configuration
+# podSecurityContext -- Pod [SecurityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
+podSecurityContext:
+  runAsUser: 1500
+  runAsGroup: 1500
+  fsGroup: 1500
+
+## Pod Initcontainers
+# initContainers -- Pod [initContainers](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/)
+initContainers: []
+#  - name: init-myservice
+#    image: busybox:1.28
+#    command: ['sh', '-c', "until nslookup myservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done"]
+
+## Pod SideCar Containers
+# sidecars -- Allows to add sidecars to your [maincar]](https://kubernetes.io/docs/concepts/workloads/pods/#using-pods)
+sidecars: []
+
+#
+## -- Container
+## Reference: https://kubernetes.io/de/docs/concepts/containers/
+## Container API Object - https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#container-v1-core
+#
+
+## Docker Image definition.
+image:
+  # image.registry -- Configure Docker Registry. Will be overwritten if set by global variable.
+  registry: docker.io
+  # image.repository -- Configure Docker Repository
+  repository: buttahtoast/docker-tavern
+  # image.pullPolicy -- Configure Docker Pull Policy. Will be overwritten if set by global variable.
+  pullPolicy:
+  # image.tag -- Configure Docker Image tag
+  # @default -- Tag defaults to `.Chart.Appversion`, if not set
+  tag:
+
+## Container Resources
+# resources -- Configure Container [Resource](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)
+resources: {}
+#  requests:
+#    memory: "64Mi"
+#    cpu: "250m"
+#  limits:
+#    memory: "128Mi"
+#    cpu: "500m"
+
+## Container Command
+# command -- Configure executed container command
+command: {}
+
+## Container Command Args
+# args -- Configure arguments for executed command
+args: {}
+
+## Environment Variables
+# environment -- Configure Environment Variables (Refer to values.yaml)
+environment: {}
+# - name: "MY_ENV"
+#   value: "someValue"
+#   secret: true
+# - name: SOME_SPEC
+#   valueFrom:
+#     fieldRef:
+#       fieldPath: spec.*
+#
+
+## Container Ports
+# ports -- Configure Container Ports
+ports: {}
+# - name: "health"
+#   containerPort: 9090
+#   protocol: TCP
+
+## Additional Volume Mounts
+# volumeMounts -- Configure Container [volumeMounts](https://kubernetes.io/docs/tasks/configure-pod-container/configure-volume-storage/)
+volumeMounts: {}
+#  - name: "cache"
+#    mountPath: /cache
+#  - name: "share"
+#    mountPath: /var/data/share
+
+## Container SecurityContext
+# securityContext -- Container [SecurityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
+securityContext:
+  allowPrivilegeEscalation: false
+
+## Container SecurityContext
+# containerFields -- Container extra fields
+containerFields: {}
+#  stdinOnce: true
+
+
+## ExtraResources Configuration
+##
+# extraResources -- Define additional kubernetes manifests
+extraResources: []
+
+
+## Test Configuration
+##
+
+
+## Test Stage Templates
+# stageTemplates -- Tavern Test Stage Templates (See the examples)
+stageTemplates: []
+#
+#  Stage Template Name
+#  stageTemplates[0].name -- Stage Template Name
+#  - name: "http_basic"
+#
+#  Stage Template Values
+#  stageTemplates[0].values -- Go Sprig Values accessible under `$.tavern` in the template
+#    values:
+#      endpoint: "here"
+#
+#  Stage Tavern Template
+#  stageTemplates[0].template -- Multiline key containing tavern stage template
+#    template: |
+#      request:
+#        url: "{host}/users/{{ $.tavern.endpoint }}"
+#        verify: false
+#        method: GET
+#        auth:
+#          - "{tavern.env_vars.BASIC_AUTH_USER}"
+#          - "{tavern.env_vars.BASIC_AUTH_PASSWD}"
+#        json:
+#          test: true
+#        headers:
+#          content-type: application/json
+#      response:
+#        status_code:
+#          - 200
+#          - 404
+#
+
+
+## Test Suite Templates
+# testTemplates -- Tavern Test Suite Templates (See the examples)
+testTemplates: []
+#
+#  Test Suite Template Name
+#  testTemplates[0].name -- Suite Template Name (Required)
+#  - name: "http_stage"
+#
+#  Test Suite Template Values
+#  testTemplates[0].values -- Go Sprig Values accessible under `$.tavern` in the template
+#    values:
+#      test_products: true
+#
+#  Tavern Test Suite Template
+#  testTemplates[0].template -- Multiline key containing tavern test suite template
+#    template: |
+#
+#      stages:
+#
+#        ## Straight Test
+#        - name: "Direct Test"
+#          stage:
+#            request:
+#              url: "{host}/users/joebloggs"
+#              method: GET
+#            response:
+#              status_code:
+#                - 200
+#                - 404
+#
+#        ## Include Stage Templates
+#        - name: "user_test"
+#          template: "http_basic"
+#          values:
+#            endpoint: "users"
+#          stage:
+#            request:
+#              verify: true
+#
+#        ## Use Go Sprig Logic to render Template
+#        {{- if $.tavern.test_products }}
+#        - name: "product_test"
+#          template: "http_basic"
+#          values:
+#            endpoint: "Products"
+#          json:
+#            showAll: true
+#        {{- end }}
+#
+
+
+
+
+## Test Suites
+# tests -- Tavern Test Suites which will be executed
+tests: []
+#
+# Simple Test Suite
+# Does not use Test Suite Template, but Stage Template
+#
+#  Test Suite Name
+#  tests[0].name -- Test Suite Name
+#  - name: "Sample Suite"
+#
+#  Stores Test Suite in Secret instead of configmap
+#  tests[0].secret -- Test Suite Secret
+#    secret: true
+#
+#  Test Suite Values
+#  tests[0].values -- Go Sprig Values accessible under `$.tavern` for the entire Suite
+#    values:
+#      enable_products: true
+#
+#  Tavern Test Suite Definition
+#
+#
+#    test:
+#      stages:
+#
+#        ## Straight Test
+#        - name: "Try to get user"
+#          stage:
+#            request:
+#              url: "{host}/users/joebloggs"
+#              method: GET
+#              json:
+#                clusterName: "test"
+#            response:
+#              status_code:
+#                - 200
+#                - 404
+#
+#
+#        ## Use Template
+#        - name: "Some Stage"
+#          template: "http_basic"
+#          priority: 10
+#          values:
+#            endpoint: "Products"
+#          stage:
+#            request:
+#              verify: true
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# ## Template Suite
+#
+#
+#
+# ## Advanced Template Suite
+#
+#
+#
+#
+#
+#
+#    ## Test Name
+#  - name: "Template Suite"
+#
+#    ## Referenced Template
+#    template: "http_stage"
+#
+#    ## Deploy as Secret
+#    secret: true
+#
+#    ## Values Used for Template
+#    values:
+#      enable_products: true
+#
+#    ## Tavern Test Definition
+#    test:
+#      stages:
+#        - name: "test_name"
+#          stage:
+#            test: "me"
+#
+#  ## Test Suite
+#  - name: "Sample Suite"
+#
+#
+#    test:
+#      stages:
+#
+#        ## Straight Test
+#        - name: "Try to get user"
+#          stage:
+#            request:
+#              url: "{host}/users/joebloggs"
+#              method: GET
+#              json:
+#                clusterName: "test"
+#            response:
+#              status_code:
+#                - 200
+#                - 404
+#
+#
+#        ## Use Template
+#        - name: "Some Stage"
+#          template: "http_basic"
+#          values:
+#            endpoint: "Products"
+#          stage:
+#            request:
+#              verify: true
+#

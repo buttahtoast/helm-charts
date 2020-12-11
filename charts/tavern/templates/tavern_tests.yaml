@@ -1,0 +1,25 @@
+{{- $tavern_tests := (fromYaml (include "tavern.tests" $)) -}}
+{{- if $tavern_tests.tests }}
+  {{- range $tavern_tests.tests }}
+    {{- if .secret }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "lib.utils.fullname" (dict "name" .name "context" $) }}
+  labels: {{- include "lib.utils.labels" $ | nindent 4 }}
+type: Opaque
+data:
+  {{ .name }}: {{- toYaml .test | b64enc | nindent 4 }}
+    {{- else }}
+---
+kind: "ConfigMap"
+apiVersion: "v1"
+metadata:
+  name: {{ include "lib.utils.fullname" (dict "name" .name "context" $) }}
+  labels: {{- include "lib.utils.labels" $ | nindent 4 }}
+data:
+  {{ .name }}: |- {{- toYaml .test | nindent 4 }}
+    {{- end }}
+  {{- end }}
+{{- end }}
