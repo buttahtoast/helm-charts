@@ -30,6 +30,22 @@ entries:
   library:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2020-12-11T12:18:17.347088727Z"
+    description: Buttahtoast Helm Library
+    digest: c2bdc7211ae4b9d370e9dd3f5e1414260406d31c7212abe8091d6e3c3c54344e
+    home: https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    keywords:
+    - library
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    name: library
+    type: library
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/library-0.2.0/library-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2020-11-30T22:19:03.543005093Z"
     description: Buttahtoast Helm Library
     digest: 0023eeb589d72eac77c0b633e3183fc30abee0e81f6f836b2139c3f6bd590940
