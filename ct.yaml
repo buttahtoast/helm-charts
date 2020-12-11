@@ -4,8 +4,7 @@ remote: origin
 chart-dirs:
   - charts
 chart-repos:
-  - bitnami=https://charts.bitnami.com
-  - stable=https://kubernetes-charts.storage.googleapis.com
+  - buttahtoast=https://buttahtoast.github.io/helm-charts/
 check-version-increment: true
 debug: true
 validate-chart-schema: true

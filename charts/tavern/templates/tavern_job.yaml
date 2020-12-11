@@ -1,0 +1,131 @@
+{{- include "tavern.manifest" $ | nindent 0 }}
+
+{{- define "tavern.manifest" -}}
+  {{- if $.Values.cronjob.enabled }}
+apiVersion: {{ default "batch/v1beta1" $.Values.apiVersion }}
+kind: CronJob
+metadata:
+  name: {{ include "lib.utils.fullname" $ }}
+  labels: {{- include "lib.utils.labels" $ | nindent 4 }}
+    {{- if and $.Values.annotations (kindIs "map" $.Values.annotations) }}
+  annotations: {{- toYaml $.Values.annotations | nindent 4 }}
+    {{- end }}
+spec:
+  schedule: {{ $.Values.cronjob.schedule }}
+    {{- if and $.Values.cronjob.conf (kindIs "map" $.Values.cronjob.conf) -}}
+      {{- toYaml $.Values.cronjob.conf | nindent 2 }}
+    {{- end }}
+  jobTemplate: {{- include "tavern.job" $ | nindent 4 }}
+  {{- else }}
+apiVersion: {{ default "batch/v1" $.Values.apiVersion }}
+kind: Job
+metadata:
+  name: {{ include "lib.utils.fullname" $ }}
+  labels: {{- include "lib.utils.labels" (dict "labels" $.Values.labels "context" $) | nindent 4 }}
+    {{- if and $.Values.annotations (kindIs "map" $.Values.annotations) }}
+  annotations: {{- toYaml $.Values.annotations | nindent 4 }}
+    {{- end }}
+    {{- include "tavern.job" $ | nindent 0 }}
+  {{- end }}
+{{- end -}}
+
+{{- define "tavern.job" }}
+  {{- $tavern_tests := (fromYaml (include "tavern.tests" $)) -}}
+spec:
+  {{- if and $.Values.job.conf (kindIs "map" $.Values.job.conf) -}}
+    {{- toYaml $.Values.job.conf | nindent 2 }}
+  {{- end }}
+  template:
+    metadata:
+      labels: {{- include "lib.utils.labels" (dict "labels" $.Values.podLabels "versionUnspecific" "true" "context" $) | nindent 8 }}
+  {{- if and $.Values.podAnnotations (kindIs "map" $.Values.podAnnotations)}}
+      annotations: {{- toYaml $.Values.podAnnotations | nindent 8 }}
+  {{- end }}
+    spec:
+    {{- if $.Values.podFields }}
+      {{- include "lib.utils.template" (dict "value" $.Values.podFields "context" $) | nindent 6 }}
+    {{- end }}
+    {{- $pullSecrets := include "lib.utils.imagePullSecrets" (dict "pullSecrets" $.Values.imagePullSecrets "context" $) }}
+    {{- if $pullSecrets }}
+      imagePullSecrets: {{- toYaml $pullSecrets | indent 8 }}
+    {{- end }}
+    {{- with $.Values.affinity }}
+      affinity: {{- include "lib.utils.template" (dict "value" . "context" $) | nindent 8 }}
+    {{- end }}
+    {{- with $.Values.nodeSelector }}
+      nodeSelector: {{- include "lib.utils.template" (dict "value" . "context" $) | nindent 8 }}
+    {{- end }}
+    {{- with $.Values.tolerations }}
+      tolerations: {{- include "lib.utils.template" (dict "value" . "context" $) | nindent 8 }}
+    {{- end }}
+    {{- with $.Values.priorityClassName }}
+      priorityClassName: {{- include "lib.utils.template" (dict "value" . "context" $) | nindent 8 }}
+    {{- end }}
+    {{- with $.Values.podSecurityContext }}
+      securityContext: {{- include "lib.utils.template" (dict "value" . "context" $) | nindent 8 }}
+    {{- end }}
+    {{- if and $.Values.initContainers (kindIs "slice" $.Values.initContainers) }}
+      initContainers: {{- include "lib.utils.template" (dict "value" $.Values.initContainers "context" $) | nindent 8 }}
+    {{- end }}
+      restartPolicy: {{ $.Values.restartPolicy }}
+      containers:
+      - name: tavern
+        image: {{ include "lib.utils.image" (dict "image" $.Values.image "context" $ ) }}
+    {{- if and $.Values.containerFields (kindIs "map" $.Values.containerFields) }}
+      {{- toYaml $.Values.containerFields | nindent 8 }}
+    {{- end }}
+    {{- with $.Values.securityContext }}
+        securityContext: {{- toYaml . | nindent 10 }}
+    {{- end }}
+        env: {{- include "tavern.environment" $ | nindent 10 }}
+    {{- if $.Values.command }}
+        command: {{- toYaml $.Values.command | nindent 10 }}
+    {{- end }}
+    {{- if $.Values.args }}
+        args: {{- toYaml $.Values.args | nindent 10 }}
+    {{- end }}
+    {{- with $.Values.ports }}
+        ports: {{- toYaml . | nindent 10 }}
+    {{- end }}
+    {{- with $.Values.resources }}
+        resources: {{- toYaml . | nindent 10 }}
+    {{- end }}
+    {{- if or $tavern_tests.tests $.Values.volumeMounts }}
+        volumeMounts:
+      {{- if $.Values.volumeMounts }}
+        {{- include "lib.utils.template" (dict "value" $.Values.volumeMounts "context" $) | nindent 10 }}
+      {{- end }}
+      {{- if $tavern_tests.tests }}
+        {{- range $tavern_tests.tests }}
+          - name: {{ .name }}
+            mountPath: {{ include "tavern.test_directory" $ }}/test_{{ .name }}.tavern.yaml
+            subPath: {{ .name }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if and $.Values.sidecars (kindIs "slice" $.Values.sidecars) }}
+      {{- include "lib.utils.template" (dict "value" $.Values.sidecars "context" $)| nindent 6 }}
+    {{- end }}
+    {{- if or $tavern_tests.tests $.Values.volumes }}
+      volumes:
+      {{- if $tavern_tests.tests }}
+        {{- range $tavern_tests.tests }}
+          {{- $ref := include "lib.utils.fullname" (dict "name" .name "context" $) }}
+          {{- if .secret }}
+        - name: {{ .name }}
+          secret:
+            secretName: {{ $ref }}
+            defaultMode: {{ $.Values.tavern.defaultMode }}
+          {{- else }}
+        - name: {{ .name }}
+          configMap:
+            name: {{ $ref }}
+            defaultMode: {{ $.Values.tavern.defaultMode }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      {{- if $.Values.volumes }}
+        {{- include "lib.utils.template" (dict "value" $.Values.volumes "context" $) | nindent 8 }}
+      {{- end }}
+    {{- end }}
+{{- end }}

@@ -1,0 +1,152 @@
+
+## Declare Environment Variables
+environment:
+  - name: "HOST"
+    value: "localhost:8080"
+  - name: "BASIC_AUTH_USER"
+    value: "user"
+  - name: "BASIC_AUTH_PASSWD"
+    value: "password"
+
+
+extraResources:
+
+  ## Python Scripts to integrate with Tavern Tests
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: "{{ cat (include \"lib.utils.fullname\" $) \"-scripts\" | nospace }}"
+    data:
+      testing_utils.py: |
+        def message_says_hello(response):
+            """Make sure that the response was friendly
+            """
+            assert response.json().get("message") == "hello world"
+
+## Declare the Configmap as volume
+volumes:
+  - name: scripts
+    configMap:
+      name: "{{ cat (include \"lib.utils.fullname\" $) \"-scripts\" | nospace }}"
+
+
+## Mount the Common Values
+volumeMounts:
+  - name: scripts
+    mountPath: "/scripts"
+
+## Custom Value Structure
+common:
+  country: "Switzerland"
+
+
+## Tavern Stage Templates
+stageTemplates:
+  - name: "http_get"
+    values:
+      endpoint: "/user"
+      secure: true
+      json: {}
+      response: [ 200 ]
+    template: |
+      request:
+        url: '{tavern.env_vars.HOST}/{{ default "/user" $.tavern.endpoint | trimAll "/" }}'
+        method: GET
+        {{- if $.tavern.secure }}
+        auth:
+          - "{tavern.env_vars.BASIC_AUTH_USER}"
+          - "{tavern.env_vars.BASIC_AUTH_PASSWD}"
+        {{- end }}
+        {{- if and $.tavern.json (kindIs "map" $.tavern.json ) }}
+        json: {{- toYaml $.tavern.json | nindent 10 }}
+        {{- end }}
+        headers:
+          content-type: "application/json"
+      response:
+        status_code: {{- toYaml $.tavern.response | nindent 10 }}
+
+## Tavern Test Suite Templates
+testTemplates:
+ - name: "get_api"
+   values:
+     get_products: []
+     test_products: true
+   template: |
+    # Declaring Stages for Suite Template
+    ##
+    stages:
+
+      # Using YAML Anchors
+      ## https://support.atlassian.com/bitbucket-cloud/docs/yaml-anchors/
+      - name: "Base Call"
+        stage:
+          request:
+            url: '{tavern.env_vars.HOST}/home'
+            method: GET
+            json: &base_data
+              country: {{ $.Values.common.country }}
+            headers:
+              content-type: "application/json"
+          response:
+            verify_response_with:
+              function: "testing_utils:message_says_hello"
+
+      # Using GO Sprig Logic
+      ## http://masterminds.github.io/sprig/
+    {{- if $.tavern.test_products }}
+      ## Get Products
+      {{- if and $.tavern.get_products (kindIs "slice" $.tavern.get_products) }}
+        {{- range $.tavern.get_products }}
+      - name: "Test Product {{ . }}"
+        template: "http_get"
+        values:
+          endpoint: "product/"
+          product: "{{ . }}"
+          json:
+            <<: *base_data
+            product: "me"
+        {{- end }}
+      {{- end }}
+    {{- end }}
+
+
+## Tavern Test Suites
+tests:
+
+  # Overtwrites/Merges with
+  - name: "Base Call"
+    stage:
+      request:
+        method: POST
+        json:
+          extraData: "extraValue"
+
+  # Single Tavern Stage for Suite
+  ## Will be last stage to be executed
+  - name: "Product Suite"
+    template: "get_api"
+    values:
+      get_products: [ "Shirt", "Shorts", "Socks" ]
+    test:
+      stages:
+
+        # Overtwrites/Merges with "Base Call" stage from Suite Template
+        # Merged Stages will be executed at the end of the suite eventhough
+        # they are the first stage defined in the template
+        - name: "Base Call"
+          stage:
+            request:
+              method: POST
+              json:
+                extraData: "extraValue"
+
+        # Single Tavern Stage for Suite (Will be last stage to be executed)
+        - name: "Test Admin User"
+          template: "http_get"
+          values:
+            endpoint: "user?name=admin"
+          stage:
+            response:
+              status_code:
+                - 200
+                - 301
