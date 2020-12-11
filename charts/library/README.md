@@ -1,6 +1,6 @@
 # Buttahtoast Library
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 This is our take on a library Chart. It contains simple functions which are (will be) used across all of our charts. Feel free the add or improve the existing templates. This Chart is still under development/testing. Feel free to use it, if you find any issues with it, please create an issue/PR. We will try to get bugs fixed as soon as possible!
 
@@ -281,15 +281,15 @@ YAML Structure, String
 ### Labels
 ---
 
-This template allows to define common labels. Common labels are appended to the base labels (no merge). By Using this template
-the key `.Values.commonLabels` is considered in your value structure. If the key has values and is type `map` the values are used
-as common labels.
+This template wraps around all the other label templates. Therefor all their functionalities are available with this template. In addition it's possible to pass labels, which overwrite the result of all the label templates.
 
 #### Arguments
 
   If an as required marked argument is missing, the template engine will intentionally.
 
-  * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
+  * `./.context` - Inherited Root Context (Required).
+  * `.labels` - Labels which overwrite the resulting labels of all the other label templates.
+  * `.versionUnspecific` - Removes the version label. Useful when you don't want your resource to be changed on version update (Spec Change).
 
 #### Keys
 
@@ -369,7 +369,7 @@ global:
   defaultTag: ""
 
   ## Global Docker Image PullPolicy
-  # global.pullPolicy -- Global Docker Image Pull Policy declaration. Will overwrite all child .pullPolicy fields.
+  # global.imagePullPolicy -- Global Docker Image Pull Policy declaration. Will overwrite all child .pullPolicy fields.
   imagePullPolicy: ""
 
   ## Global StorageClass
@@ -501,7 +501,7 @@ This function enables the following keys on the global scope:
 global:
 
   ## Global Docker Image PullPolicy
-  # global.pullPolicy -- Global Docker Image Pull Policy declaration. Will overwrite all child .pullPolicy fields.
+  # global.imagePullPolicy -- Global Docker Image Pull Policy declaration. Will overwrite all child .pullPolicy fields.
   imagePullPolicy: "Always"
 ```
 

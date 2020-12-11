@@ -15,8 +15,6 @@
         {{- end }}
       {{- end }}
     {{- end }}
-  {{- else }}
-    {{- fail "Template requires '.value' as argument" }}
   {{- end }}
 {{- end -}}
 
@@ -38,8 +36,6 @@
         {{- end }}
       {{- end }}
     {{- end }}
-  {{- else }}
-    {{- fail "Template requires '.value' as argument" }}
   {{- end }}
 {{- end -}}
 
