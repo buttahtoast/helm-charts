@@ -1,13 +1,11 @@
-# Jira Software
+# Tavern
 {{ template "chart.deprecationWarning" . }}
 
 {{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}
 
+{{ template "chart.description" . }}
 
 The chart is under active development and may contain bugs/unfinished documentation. Any testing/contributions are welcome! :)
-
-
-{{ template "chart.description" . }}
 
 {{ template "chart.homepageLine" . }}
 
@@ -47,6 +45,8 @@ Tavern tests are implemented under the key `$.Values.tests`. Each element of thi
 ## Using Templates
 
 This chart provides the functionality to create templates, which can be rereferenced. The templates allow you to implement go sprig logic and therefor might dramatically improve your tavern test suites.
+
+**NOTE**: While tavern statements use single `{ .. }` I had to replace the go sprig `{{ .. }}` as well with single `{ .. }` because of the documenting engine.
 
 ### Stage
 
