@@ -1,10 +1,10 @@
-# Jira Software
+# Tavern
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
-
-The chart is under active development and may contain bugs/unfinished documentation. Any testing/contributions are welcome! :)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 Unofficial Tavern Helm Chart
+
+The chart is under active development and may contain bugs/unfinished documentation. Any testing/contributions are welcome! :)
 
 **Homepage:** <https://tavern.readthedocs.io/en/latest/>
 
@@ -86,6 +86,8 @@ Tavern tests are implemented under the key `$.Values.tests`. Each element of thi
 ## Using Templates
 
 This chart provides the functionality to create templates, which can be rereferenced. The templates allow you to implement go sprig logic and therefor might dramatically improve your tavern test suites.
+
+**NOTE**: While tavern statements use single `{ .. }` I had to replace the go sprig `\{\{ .. }}` as well with single `{ .. }` because of the documenting engine.
 
 ### Stage
 
@@ -193,22 +195,34 @@ Referencing in a tavern test suite:
 ## Tavern Test Suites
 tests:
 
-  # Test Suite without Template
-  - name: "Base Call"
-    test:
-      stages:
-      request:
-        method: POST
-        json:
-          extraData: "extraValue"
-
-  # Single Tavern Stage for Suite
-  ## Will be last stage to be executed
+  # Single Tavern Stage for Suite using Template
   - name: "Product Suite"
+    template: "testtplname"
     values:
-      enable_base: false
+      get_products: [ "Shirt", "Shorts", "Socks" ]
     test:
       stages:
+
+        # Overtwrites/Merges with "Base Call" stage from Suite Template
+        # Merged Stages will be executed at the end of the suite eventhough
+        # they are the first stage defined in the template
+        - name: "Base Call"
+          stage:
+            request:
+              method: POST
+              json:
+                extraData: "extraValue"
+
+        # Single Tavern Stage for Suite (Will be last stage to be executed)
+        - name: "Test Admin User"
+          template: "http_get"
+          values:
+            endpoint: "user?name=admin"
+          stage:
+            response:
+              status_code:
+                - 200
+                - 301
 
 ```
 
