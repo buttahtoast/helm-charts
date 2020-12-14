@@ -52,6 +52,30 @@ entries:
   tavern:
   - apiVersion: v2
     appVersion: 1.0.3
+    created: "2020-12-14T15:00:58.141503125Z"
+    dependencies:
+    - name: library
+      repository: https://buttahtoast.github.io/helm-charts/
+      version: 0.2.0
+    description: Unofficial Tavern Helm Chart
+    digest: cb4ee6fd62908743f71167d86e872b973b9b9d2625e6c1334e0eb184031717da
+    home: https://tavern.readthedocs.io/en/latest/
+    icon: https://tavern.readthedocs.io/en/latest/_static/icon.png
+    keywords:
+    - python
+    - tavern
+    - API testing
+    - pytest
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    name: tavern
+    type: application
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.1.2/tavern-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.0.3
     created: "2020-12-13T13:16:46.194749823Z"
     dependencies:
     - name: library
