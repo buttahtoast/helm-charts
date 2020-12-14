@@ -1,0 +1,1 @@
+testse: | {{- include "csgo.environment" $ | nindent 2 }}
