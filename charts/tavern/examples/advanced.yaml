@@ -112,8 +112,24 @@ testTemplates:
 ## Tavern Test Suites
 tests:
 
-  # Single Tavern Stage for Suite
-  ## Will be last stage to be executed
+  # Single Tavern Stage for Suite using Template
+  - name: "Standalone Suite"
+    test:
+      stages:
+        - name: "Standalone Stage"
+          request:
+            url: '{tavern.env_vars.HOST}/home'
+            method: GET
+            json:
+              country: {{ $.Values.common.country }}
+            headers:
+              content-type: "application/json"
+          response:
+            verify_response_with:
+              function: "testing_utils:message_says_hello"
+
+
+  # Single Tavern Stage for Suite using Template
   - name: "Product Suite"
     template: "get_api"
     values:
