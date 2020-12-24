@@ -1,3 +1,23 @@
+{{/*
+  CSGO - Ports
+*/}}
+{{- define "csgo.ports" -}}
+  {{- if not (eq ($.Values.config.port | toString) ($.Values.config.port_tv | toString)) }}
+    {{- if $.Values.statefulset.ports }}
+      {{- toYaml $.Values.statefulset.ports | nindent 0 }}
+    {{- end }}
+- name: srcds
+  containerPort: {{ $.Values.config.port }}
+  protocol: TCP
+    {{- if $.Values.tv.enabled }}
+- name: srcds-tv
+  containerPort: {{ $.Values.tv.port }}
+  protocol: TCP
+    {{- end }}
+  {{- else }}
+    {{- fail "SRCDS Port can not be the same value as TV Port" }}
+  {{- end }}
+{{- end }}
 
 
 {{/*
@@ -9,20 +29,22 @@
 - name: SRCDS_RCONPW
   valueFrom:
     secretKeyRef:
-      name: mysecret
+      name: {{ include "lib.utils.fullname" $ }}-config
       key: SRCDS_RCONPW
   {{- end }}
   {{- if and $config.password (kindIs "string" $config.password)  }}
 - name: SRCDS_PW
   valueFrom:
     secretKeyRef:
-      name: mysecret
+      name: {{ include "lib.utils.fullname" $ }}-config
       key: SRCDS_PW
   {{- end }}
 - name: "SRCDS_PORT"
   value: {{ $config.port }}
+  {{- if $.Values.tv.enabled }}
 - name: "SRCDS_TV_PORT"
-  value: {{ $config.tv_port }}
+  value: {{ $.Values.tv.port }}
+  {{- end }}
 - name: "SRCDS_HOSTNAME"
   value: {{ $config.hostname }}
 - name: "SRCDS_NET_PUBLIC_ADDRESS"
@@ -57,8 +79,8 @@
 - name: SRCDS_WORKSHOP_AUTHKEY
   valueFrom:
     secretKeyRef:
-      name: mysecret
-      key: username
+      name: {{ include "lib.utils.fullname" $ }}
+      key: SRCDS_WORKSHOP_AUTHKEY
   {{- end }}
   {{- if and $config.workshop.additional_args (kindIs "slice" $config.workshop.additional_args) }}
 - name: ADDITIONAL_ARGS
