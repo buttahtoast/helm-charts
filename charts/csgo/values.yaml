@@ -780,7 +780,7 @@ persistence:
 
   ##  PVC Access Modes
   # persistence.accessModes -- Configure PVC [Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes)
-  accessModes: [ "ReadWriteMany" ]
+  accessModes: [ "ReadWriteOnce" ]
 
   ##  PVC Storage Class
   # persistence.storageClass -- Configure PVC [Storage Class](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1)
