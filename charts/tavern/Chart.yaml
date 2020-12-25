@@ -2,7 +2,7 @@ apiVersion: v2
 name: tavern
 description: "Unofficial Tavern Helm Chart"
 type: application
-version: 0.1.3
+version: 0.2.0
 appVersion: 1.0.3
 home: "https://tavern.readthedocs.io/en/latest/"
 icon: "https://tavern.readthedocs.io/en/latest/_static/icon.png"
@@ -12,14 +12,14 @@ keywords:
   - API testing
   - pytest
 dependencies:
-  - name: "library"
-    version: 0.2.0
-    repository: https://buttahtoast.github.io/helm-charts/
+ - name: manifests
+   version: ">=0.1.0"
+   repository: https://bedag.github.io/helm-charts
 maintainers:
   - name: oliverbaehler
     email: oliverbaehler@hotmail.com
   - name: chifu1234
-    email: kk@sudo-i.net    
+    email: kk@sudo-i.net
 annotations:
   artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/prerelease: "true"

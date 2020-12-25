@@ -1,5 +1,0 @@
-{{- if and $.Values.extraResources (kindIs "slice" $.Values.extraResources) }}
-  {{- range $.Values.extraResources }}
----{{- include "lib.utils.template" (dict "value" . "context" $) | nindent 0 }}
-  {{- end }}
-{{- end }}

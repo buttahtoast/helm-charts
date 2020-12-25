@@ -1,3 +1,23 @@
+## Tavern Configuration
+tavern:
+  asCronjob: true
+
+## Job (CronJob) Configuration
+# Watch out when having a * as first character.
+job:
+  schedule: "{{ printf \"%s\" \"* * * * 0\" | quote }}"
+
+  ## Add Extra Resource as Volume
+  volumes:
+    - name: scripts
+      configMap:
+        name: "{{ cat (include \"lib.utils.fullname\" $) \"-scripts\" | nospace }}"
+
+  ## Mount custom volume into pod
+  volumeMounts:
+    - name: scripts
+      mountPath: "/scripts"
+
 
 ## Declare Environment Variables
 environment:
@@ -8,37 +28,28 @@ environment:
   - name: "BASIC_AUTH_PASSWD"
     value: "password"
 
-
+## Extra Resources
+# Manifests compatible extra resoures
 extraResources:
 
   ## Python Scripts to integrate with Tavern Tests
-  - apiVersion: v1
-    kind: ConfigMap
-    metadata:
-      name: "{{ cat (include \"lib.utils.fullname\" $) \"-scripts\" | nospace }}"
-    data:
-      testing_utils.py: |
-        def message_says_hello(response):
-            """Make sure that the response was friendly
-            """
-            assert response.json().get("message") == "hello world"
+  - type: "raw"
+    manifest: |
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: "{{ cat (include "lib.utils.fullname" $) "-scripts" | nospace }}"
+      data:
+        testing_utils.py: |
+          def message_says_hello(response):
+              """Make sure that the response was friendly
+              """
+              assert response.json().get("message") == "hello world"
 
-## Declare the Configmap as volume
-volumes:
-  - name: scripts
-    configMap:
-      name: "{{ cat (include \"lib.utils.fullname\" $) \"-scripts\" | nospace }}"
-
-
-## Mount the Common Values
-volumeMounts:
-  - name: scripts
-    mountPath: "/scripts"
 
 ## Custom Value Structure
 common:
   country: "Switzerland"
-
 
 ## Tavern Stage Templates
 stageTemplates:
@@ -121,7 +132,7 @@ tests:
             url: '{tavern.env_vars.HOST}/home'
             method: GET
             json:
-              country: {{ $.Values.common.country }}
+              country: "{{ $.Values.common.country }}"
             headers:
               content-type: "application/json"
           response:
