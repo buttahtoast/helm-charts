@@ -74,7 +74,7 @@ Major Changes to functions are documented with the version affected. **Before up
 | pdb.maxUnavailable | string | `nil` | Number or percentage of pods which is allowed to be unavailable during a disruption |
 | pdb.minAvailable | string | `nil` | Number or percentage of pods which must be available during a disruption. If neither `minAvailable` or `maxUnavailable` is set, de Policy defaults to `minAvailable: 1` |
 | pdb.selectorLabels | object | `bedag-lib.selectorLabels` | Define SelectorLabels for the pdb |
-| persistence.accessModes | list | `["ReadWriteMany"]` | Configure PVC [Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) |
+| persistence.accessModes | list | `["ReadWriteOnce"]` | Configure PVC [Access Modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) |
 | persistence.annotations | object | `{}` | Configure PVC additional Annotations |
 | persistence.dataSource | string | `nil` | Data Sources are currently only supported for [CSI Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#volume-snapshot-and-restore-volume-from-snapshot-support) |
 | persistence.enabled | bool | `true` | Enable Persistence |
