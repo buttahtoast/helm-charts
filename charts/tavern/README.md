@@ -1,6 +1,6 @@
 # Tavern
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 Unofficial Tavern Helm Chart
 
@@ -19,7 +19,7 @@ The chart is under active development and may contain bugs/unfinished documentat
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://buttahtoast.github.io/helm-charts/ | library | 0.2.0 |
+| https://bedag.github.io/helm-charts | manifests | >=0.1.0 |
 
 # Major Changes
 
@@ -33,52 +33,87 @@ Major Changes to functions are documented with the version affected. **Before up
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| affinity | object | `{}` | Pod [Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) |
-| annotations | object | `{}` |  |
-| apiVersion | string | `""` | Declare API version for Cronjob/Job resource |
-| args | object | `{}` | Configure arguments for executed command |
-| command | object | `{}` | Configure executed container command |
 | commonLabels | object | `{}` | Common Labels are added to each kubernetes resource manifest. But will not be added to resources rendered by the common chart (eg. JMX Exporter) |
-| containerFields | object | `{}` | Container extra fields |
-| cronjob.conf | object | `{"failedJobsHistoryLimit":10}` | Additional Configurations for CronJob resource |
-| cronjob.enabled | bool | `false` | Deploy tavern as kind CronJob instead of kind Job (Reoccuring execution) |
-| cronjob.schedule | string | `"0 * * * *"` | Define the schedule for the cronjob to run |
-| environment | object | `{}` | Configure Environment Variables (Refer to values.yaml) |
-| extraResources | list | `[]` | Define additional kubernetes manifests |
-| fullnameOverride | string | `""` | Overwrite `lib.internal.fullname` output |
-| global.imagePullPolicy | string | `""` |  |
+| extraResources | list | `[]` | Enter Extra Resources managed by the release |
+| fullnameOverride | string | `""` | Overwrite "bedag-lib.fullname" output |
+| global.imagePullPolicy | string | `""` | Global Docker Image Pull Policy declaration. Will overwrite all child .pullPolicy fields. |
 | global.imagePullSecrets | list | `[]` | Global Docker Image Pull Secrets declaration. Added to local Docker Image Pull Secrets. |
 | global.imageRegistry | string | `""` | Global Docker Image Registry declaration. Will overwrite all child .registry fields. |
-| image.pullPolicy | string | `nil` | Configure Docker Pull Policy. Will be overwritten if set by global variable. |
-| image.registry | string | `"docker.io"` | Configure Docker Registry. Will be overwritten if set by global variable. |
-| image.repository | string | `"buttahtoast/docker-tavern"` | Configure Docker Repository |
-| image.tag | string | Tag defaults to `.Chart.Appversion`, if not set | Configure Docker Image tag |
-| imagePullSecrets | list | `[]` | Define [ImagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/). Will be overwritten if set by global variable. |
-| initContainers | list | `[]` | Pod [initContainers](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) |
-| job.conf | object | `{"ttlSecondsAfterFinished":120}` | Additional Configurations for CronJob resource |
-| labels | object | `{}` |  |
-| nameOverride | string | `""` | Overwrite "lib.internal.name" output |
-| nodeSelector | object | `{}` | Pod [NodeSelector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
+| job.activeDeadlineSeconds | int | `nil` | Specifies the duration in seconds relative to the startTime that the job may be active before the system tries to terminate it; value must be positive integer. |
+| job.affinity | object | `{}` | Pod [Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) |
+| job.annotations | object | `{}` | Configure CronJob Annotations |
+| job.apiVersion | string | `""` | Configure the api version used for the CronJob resource. |
+| job.args | object | `{}` | Configure arguments for executed command |
+| job.backoffLimit | int | 6 | Specifies the number of retries before marking this job failed. |
+| job.command | object | `{}` | Configure executed container command |
+| job.completions | int | `nil` | Specifies the desired number of successfully finished pods the job should be run with [More Info](https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/). |
+| job.concurrencyPolicy | string | `nil` | Specifies how to treat concurrent executions of a Job. Valid values are: - "Allow" (default): allows CronJobs to run concurrently; - "Forbid": forbids concurrent runs, skipping next run if previous run hasn't finished yet; - "Replace": cancels currently running job and replaces it with a new one. |
+| job.containerFields | object | `{}` | Extra fields used on the container definition |
+| job.containerName | string | `.Chart.Name` | Configure Container Name |
+| job.enabled | bool | `true` | Enable CronJob Resource |
+| job.environment | object | `{}` | Configure Environment Variables (Refer to values.yaml) |
+| job.extraFields | object | `{}` | Extra fields used on the Job resource |
+| job.failedJobsHistoryLimit | int | `1` | The number of failed finished jobs to retain. This is a pointer to distinguish between explicit zero and not specified. |
+| job.forceRedeploy | bool | `false` |  |
+| job.image.pullPolicy | string | `nil` | Configure Docker Pull Policy. Will be overwritten if set by global variable. |
+| job.image.registry | string | `"docker.io"` | Configure Docker Registry. Will be overwritten if set by global variable. |
+| job.image.repository | string | `"buttahtoast/docker-tavern"` | Configure Docker Repository |
+| job.image.tag | string | Tag defaults to `.Chart.Appversion`, if not set | Configure Docker Image tag |
+| job.imagePullSecrets | list | `[]` | Define [ImagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/). Will be overwritten if set by global variable. |
+| job.initContainers | list | `[]` | Pod [initContainers](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) |
+| job.labels | object | `{}` | Configure CronJob additional Labels |
+| job.lifecycle | object | `{}` | Container [Lifecycle](https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/) |
+| job.livenessProbe | object | `{}` | Container [LivenessProbe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-liveness-command) |
+| job.nodeSelector | object | `{}` | Pod [NodeSelector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
+| job.parallelism | int | `nil` | manualSelector controls generation of pod labels and pod selectors. Leave `manualSelector` unset unless you are certain what you are doing. |
+| job.podAnnotations | object | `{}` | Pod [annotations](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) are only added for the pod |
+| job.podFields | object | `{}` | Add extra field to the [Pod Template](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#podtemplate-v1-core) if not available as value. |
+| job.podLabels | object | `{}` | Pod [labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) are only added for the pod |
+| job.podSecurityContext | object | `{"fsGroup":1500,"runAsGroup":1500,"runAsUser":1500}` | Pod [SecurityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) |
+| job.ports | object | `{}` | Configure Container Ports |
+| job.priorityClassName | string | `""` | Pod [priorityClassName](https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass) |
+| job.readinessProbe | object | `{}` | Container [ReadinessProbe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-readiness-probes) |
+| job.resources | object | `{}` | Configure Container [Resource](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) |
+| job.restartPolicy | string | `"OnFailure"` | Restart policy for all containers within the pod. One of Always, OnFailure, Never. Default to Always. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy |
+| job.schedule | string | `"0 * * * *"` | The schedule in Cron format, see https://crontab.guru/. |
+| job.securityContext | object | `{}` | Container [SecurityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) |
+| job.selector | object | `{}` | A label query over pods that should match the pod count. Normally, the system sets this field for you. |
+| job.serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
+| job.serviceAccount.apiVersion | string | v1 | Configure the api version used |
+| job.serviceAccount.automountServiceAccountToken | bool | `true` | (bool) AutomountServiceAccountToken indicates whether pods running as this service account should have an API token automatically mounted. |
+| job.serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
+| job.serviceAccount.enabled | bool | `false` | Specifies whether a service account is enabled or not |
+| job.serviceAccount.globalPullSecrets | bool | `false` | Evaluate global set pullsecrets and mount, if set |
+| job.serviceAccount.imagePullSecrets | list | `[]` | ImagePullSecrets is a list of references to secrets in the same namespace to use for pulling any images in pods that reference this ServiceAccount. |
+| job.serviceAccount.labels | object | `{}` | Merges given labels with common labels |
+| job.serviceAccount.name | string | `bedag-lib.fullname` | If not set and create is true, a name is generated using the fullname template |
+| job.serviceAccount.secrets | list | `[]` | Secrets is the list of secrets allowed to be used by pods running using this ServiceAccount |
+| job.sidecars | list | `[]` | Allows to add sidecars to your [maincar]](https://kubernetes.io/docs/concepts/workloads/pods/#using-pods) |
+| job.startingDeadlineSeconds | string | `nil` | Optional deadline in seconds for starting the job if it misses scheduled time for any reason. Missed jobs executions will be counted as failed ones. |
+| job.startupProbe | object | `{}` | Container [StartupProbe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-startup-probes) |
+| job.successfulJobsHistoryLimit | string | 3 | The number of successful finished jobs to retain. This is a pointer to distinguish between explicit zero and not specified. |
+| job.suspend | string | false | The number of successful finished jobs to retain. This is a pointer to distinguish between explicit zero and not specified. |
+| job.tolerations | object | `{}` | Pod [Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
+| job.ttlSecondsAfterFinished | string | `nil` | ttlSecondsAfterFinished limits the lifetime of a Job that has finished execution (either Complete or Failed). |
+| job.volumeMounts | object | `{}` | Configure Container [volumeMounts](https://kubernetes.io/docs/tasks/configure-pod-container/configure-volume-storage/) |
+| job.volumes | list | `[]` | Additional [Volumes](https://kubernetes.io/docs/concepts/storage/volumes/) |
+| nameOverride | string | `""` | Overwrite "bedag-lib.name" output |
 | overwriteLabels | object | `{}` | Overwrites default labels, but not resource specific labels and common labels |
-| podAnnotations | object | `{}` | Pod [annotations](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) are only added for the pod |
-| podFields | object | `{}` | Add extra field to the [Pod Template](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#podtemplate-v1-core) if not available as value. |
-| podLabels | object | `{}` | Pod [labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) are only added for the pod |
-| podSecurityContext | object | `{"fsGroup":1500,"runAsGroup":1500,"runAsUser":1500}` | Pod [SecurityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) |
-| ports | object | `{}` | Configure Container Ports |
-| priorityClassName | string | `""` | Pod [priorityClassName](https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass) |
-| resources | object | `{}` | Configure Container [Resource](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) |
-| restartPolicy | string | `"OnFailure"` | Restart policy for all containers within the One of Always, OnFailure, Never. Default to Always. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy |
-| securityContext | object | `{"allowPrivilegeEscalation":false}` | Container [SecurityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) |
-| sidecars | list | `[]` | Allows to add sidecars to your [maincar]](https://kubernetes.io/docs/concepts/workloads/pods/#using-pods) |
+| proxy.httpProxy.host | string | `""` | Configure HTTP Proxy Hostname/IP (without protocol://) |
+| proxy.httpProxy.port | int | `nil` | Configure HTTP Proxy Port |
+| proxy.httpProxy.protocol | string | http | Configure HTTP Proxy Protocol (http/https) |
+| proxy.httpsProxy.host | string | `""` | Configure HTTPS Proxy Hostname/IP (without protocol://) |
+| proxy.httpsProxy.port | int | `nil` | Configure HTTPS Proxy Port |
+| proxy.httpsProxy.protocol | string | http | Configure HTTPS Proxy Protocol (http/https) |
+| proxy.noProxy | list | `[ "localhost", "127.0.0.1" ]` | Configure No Proxy Hosts |
+| selectorLabels | object | `app.kubernetes.io/name: crowd-software<br>app.kubernetes.io/instance: test` | Define default [selectorLabels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) |
 | stageTemplates | list | `[]` | Tavern Test Stage Templates (See the examples) |
+| tavern.asCronjob | bool | `false` | Runs Tavern as Cronjob, instead of Job |
 | tavern.debug | bool | `false` | Enables logging on DEBUG level |
-| tavern.defaultMode | string | `"0550"` |  |
+| tavern.defaultMode | string | `"0550"` | Default File mode for Test Suite mounts |
 | tavern.test_directory | string | `"/tavern"` | Directory where all your tests are mounted |
 | testTemplates | list | `[]` | Tavern Test Suite Templates (See the examples) |
 | tests | list | `[]` | Tavern Test Suites which will be executed |
-| tolerations | object | `{}` | Pod [Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
-| volumeMounts | object | `{}` | Configure Container [volumeMounts](https://kubernetes.io/docs/tasks/configure-pod-container/configure-volume-storage/) |
-| volumes | list | `[]` | Additional [Volumes](https://kubernetes.io/docs/concepts/storage/volumes/) |
 
 # Implementing Tests
 
@@ -86,7 +121,7 @@ Tavern tests are implemented under the key `$.Values.tests`. Each element of thi
 
 ## Using Templates
 
-This chart provides the functionality to create templates, which can be rereferenced. The templates allow you to implement go sprig logic and therefor might dramatically improve your tavern test suites.
+This chart provides the functionality to create templates, which can be re referenced. The templates allow you to implement go sprig logic and therefor might dramatically improve your tavern test suites.
 
 **NOTE**: While tavern statements use single `{ .. }` I had to replace the go sprig `\{\{ .. }}` as well with single `{ .. }` because of the documenting engine.
 
