@@ -1,0 +1,41 @@
+# CSGO Server
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+This is a helm chart for all the docker image variants published by [cm2network](https://hub.docker.com/r/cm2network/csgo/). Container configurations can be looked up on the referenced link.
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+# Install Chart
+
+```
+helm install csgo --set persistence.enabled=false -n server
+```
+
+# Major Changes
+
+Major Changes to functions are documented with the version affected. **Before upgrading the dependency version, check this section out!**
+
+| **Template** | **Chart Version** | **Change/Description** | **Commits/PRs** |
+| :----------- | :---------------- | :--------------------- | :-------------- |
+|||||
+
+
+{{/*
+  Chart Values
+*/}}
+{{ template "chart.valuesSection" . }}
+
+
+{{/*
+  Chart Sources
+*/}}
+{{ template "chart.sourcesSection" . }}
+
+{{/*
+  Chart Requirements
+*/}}
+{{ template "chart.requirementsSection" . }}
