@@ -40,41 +40,37 @@
       key: SRCDS_PW
   {{- end }}
 - name: "SRCDS_PORT"
-  value: {{ $config.port }}
+  value: {{ $config.port | quote }}
   {{- if $.Values.tv.enabled }}
 - name: "SRCDS_TV_PORT"
-  value: {{ $.Values.tv.port }}
+  value: {{ $.Values.tv.port | quote }}
   {{- end }}
 - name: "SRCDS_HOSTNAME"
-  value: {{ $config.hostname }}
+  value: {{ $config.hostname | quote }}
 - name: "SRCDS_NET_PUBLIC_ADDRESS"
-  value: {{ $config.public_address }}
+  value: {{ $config.public_address | quote }}
 - name: "SRCDS_IP"
-  value: {{ $config.local_address }}
+  value: {{ $config.local_address | quote }}
 - name: "SRCDS_FPSMAX"
-  value: {{ $config.maxfps }}
+  value: {{ $config.maxfps | quote }}
 - name: "SRCDS_TICKRATE"
-  value: {{ $config.tickrate }}
+  value: {{ $config.tickrate | quote }}
 - name: "SRCDS_MAXPLAYERS"
-  value: {{ $config.maxplayers }}
+  value: {{ $config.maxplayers | quote }}
 - name: "SRCDS_REGION"
-  value: {{ $config.region }}
+  value: {{ $config.region | quote }}
 - name: "SRCDS_STARTMAP"
-  value: {{ $config.map.start }}
+  value: {{ $config.map.start | quote }}
 - name: "SRCDS_MAPGROUP"
-  value: {{ $config.map.group }}
+  value: {{ $config.map.group | quote }}
 - name: "SRCDS_GAMETYPE"
-  value: {{ $config.game.type }}
+  value: {{ $config.game.type | quote }}
 - name: "SRCDS_GAMEMODE"
-  value: {{ $config.game.mode }}
-  {{- if and $config.workshop.start_map (kindIs "int" $config.workshop.start_map) }}
+  value: {{ $config.game.mode  | quote}}
 - name: "SRCDS_WORKSHOP_START_MAP"
-  value: {{ $config.workshop.start_map }}
-  {{- end }}
-  {{- if and $config.workshop.collection (kindIs "int" $config.workshop.collection) }}
+  value: {{ $config.workshop.start_map | quote }}
 - name: "SRCDS_HOST_WORKSHOP_COLLECTION"
-  value: {{ $config.workshop.collection }}
-  {{- end }}
+  value: {{ $config.workshop.collection | quote }}
   {{- if and $config.workshop.auth (kindIs "string" $config.workshop.auth) }}
 - name: SRCDS_WORKSHOP_AUTHKEY
   valueFrom:

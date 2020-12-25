@@ -27,73 +27,81 @@ global:
 config:
 
   ## Environment Variable: SRCDS_RCONPW="changeme" (value can be overwritten by csgo/cfg/server.cfg)
-  # config.rcon_password - `SRCDS_RCONPW` Configuration (Will be stored as secret)
+  # config.rcon_password -- `SRCDS_RCONPW` Configuration (Will be stored as secret)
   rcon_password: ""
 
   ## Environment Variable: SRCDS_PW="changeme" (value can be overwritten by csgo/cfg/server.cfg)
-  # config.password - `SRCDS_PW` Configuration (Will be stored as secret)
+  # config.password -- `SRCDS_PW` Configuration (Will be stored as secret)
   password: ""
 
   ## Environment Variable: SRCDS_PORT=27015
-  # config.password - `SRCDS_PORT` Configuration - Published Server Port
+  # config.password -- `SRCDS_PORT` Configuration - Published Server Port
   port: 27015
 
   ## Environment Variable: SRCDS_HOSTNAME="New CSGO Server" (first launch only)
-  # config.hostname - `SRCDS_HOSTNAME` Configuration - Server hostname
+  # config.hostname -- `SRCDS_HOSTNAME` Configuration - Server hostname
   hostname: "Custom CS GO Server"
 
   ## Environment Variable: SRCDS_NET_PUBLIC_ADDRESS="0" (public facing ip, useful for local network setups)
-  # config.public_address - `SRCDS_NET_PUBLIC_ADDRESS` Configuration - Published address
+  # config.public_address -- `SRCDS_NET_PUBLIC_ADDRESS` Configuration - Published address
   public_address: "0"
 
   ## Environment Variable: SRCDS_IP="0" (local ip to bind)
-  # config.local_address - `SRCDS_IP` Configuration - Local address binding
+  # config.local_address -- `SRCDS_IP` Configuration - Local address binding
   local_address: "0"
 
   ## Environment Variable: SRCDS_FPSMAX=300
-  # config.maxfps - `SRCDS_FPSMAX` Configuration - Maximum FPS
+  # config.maxfps -- `SRCDS_FPSMAX` Configuration - Maximum FPS
   maxfps: 300
 
   ## Environment Variable: SRCDS_TICKRATE=128
-  # config.tickrate - `SRCDS_TICKRATE` Configuration - Server Tickrate (Refresh rate)
+  # config.tickrate -- `SRCDS_TICKRATE` Configuration - Server Tickrate (Refresh rate)
   tickrate: 128
 
   ## Environment Variable: SRCDS_MAXPLAYERS=14
-  # config.tickrate - `SRCDS_MAXPLAYERS` Configuration - Maximum Players
+  # config.tickrate -- `SRCDS_MAXPLAYERS` Configuration - Maximum Players
   maxplayers: 14
 
   ## Environment Variable: SRCDS_REGION=3
-  # config.tickrate - `SRCDS_REGION` Configuration - +⁺[Server Region](https://github.com/GameServerManagers/Game-Server-Configs/blob/master/CounterStrikeGlobalOffensive/server.cfg#L36)
+  # config.tickrate -- `SRCDS_REGION` Configuration - [Server Region](https://github.com/GameServerManagers/Game-Server-Configs/blob/master/CounterStrikeGlobalOffensive/server.cfg#L36)
   region: 3
 
   map:
 
     ## Environment Variable: SRCDS_STARTMAP="de_dust2"
+    # config.map.start -- `SRCDS_STARTMAP` Configuration - Start Map
     start: "de_dust2"
 
     ## Environment Variable: SRCDS_MAPGROUP="mg_active"
+    # config.map.group -- `SRCDS_MAPGROUP` Configuration - Active [Mapgroup](https://wiki.nitrado.net/en/CS:GO_Server_Configuration)
     group: "mg_active"
 
   game:
 
     ## Environment Variable: SRCDS_GAMETYPE=0
+    # config.game.type -- `SRCDS_GAMETYPE` Configuration - [Game Type](https://developer.valvesoftware.com/wiki/CSGO_Game_Mode_Commands)
     type: 0
 
     ## Environment Variable: SRCDS_GAMEMODE=1
+    # config.game.mode -- `SRCDS_GAMEMODE` Configuration - [Game Mode](https://developer.valvesoftware.com/wiki/CSGO_Game_Mode_Commands)
     mode: 1
 
   workshop:
 
     ## Environment Variable: SRCDS_WORKSHOP_START_MAP=0
+    # config.workshop.start_map -- `SRCDS_WORKSHOP_START_MAP` Configuration - Map loaded on server restart
     start_map: 0
 
     ## Environment Variable: SRCDS_HOST_WORKSHOP_COLLECTION=1
+    # config.workshop.collection -- `SRCDS_HOST_WORKSHOP_COLLECTION` Configuration - Workshop map [collection](https://developer.valvesoftware.com/wiki/CSGO_Workshop_For_Server_Operators)
     collection: 1
 
     ## Environment Variable: SRCDS_WORKSHOP_AUTHKEY="" (required to use host_workshop_map)
+    # config.workshop.auth -- `SRCDS_WORKSHOP_AUTHKEY` Configuration - Required to use host_workshop_map
     auth: ""
 
   ## Environment Variable: ADDITIONAL_ARGS="" (Pass additional arguments to srcds. Make sure to escape correctly!)
+  # config.additional_args -- `ADDITIONAL_ARGS` Configuration - Adaitional execution arguments
   additional_args: []
 
 
@@ -102,9 +110,11 @@ config:
 tv:
 
   ## Enable Broadcasting
+  # tv.enabled -- Enable GO broadcasting (Enables Service and Port)
   enabled: true
 
   ## Environment Variable: SRCDS_TV_PORT=27020
+  # tv.port -- `SRCDS_TV_PORT` Configuration - Pod port for broadcasting
   port: 27020
 
   #
@@ -520,11 +530,10 @@ statefulset:
   ## LivenessProbe Configuration
   # statefulset.livenessProbe -- Container [LivenessProbe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-liveness-command)
   livenessProbe:
-    {}
-  #  httpGet:
-  #    path: /health
-  #    port: http
-  #  initialDelaySeconds: 60
+    tcpSocket:
+      port: "srcds"
+    initialDelaySeconds: 30
+    periodSeconds: 10
 
   ## StartupProbe Configuration
   # statefulset.startupProbe -- Container [StartupProbe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-startup-probes)
