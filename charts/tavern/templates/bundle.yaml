@@ -1,0 +1,75 @@
+{{/*
+
+Copyright © 2020 Oliver Baehler
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+{{ $t := fromYaml (include "tavern.bundle" $) }}
+*/}}
+
+{{- include "bedag-lib.manifest.bundle" (dict "bundle" (fromYaml (include "tavern.bundle" $)) "context" $) | nindent 0 }}
+
+{{/*
+  Tavern Chart Bundle
+*/}}
+{{- define "tavern.bundle" -}}
+  {{- $tavern_tests := (fromYaml (include "tavern.tests" $)) -}}
+resources:
+  {{- if and $.Values.extraResources (kindIs "slice" $.Values.extraResources) }}
+    {{- toYaml $.Values.extraResources | nindent 2 }}
+  {{- end }}
+  {{- if $.Values.tavern.asCronjob }}
+  - type: "cronjob"
+  {{- else }}
+  - type: "job"
+  {{- end }}
+    values: {{ toYaml $.Values.job | nindent 6 }}
+    overwrites:
+
+      {{/* VolumeMounts */}}
+      volumeMounts:
+      {{- if $.Values.job.volumeMounts }}
+        {{- toYaml $.Values.job.volumeMounts | nindent 8 }}
+      {{- end }}
+      {{- if $tavern_tests.tests }}
+          volumeMounts:
+        {{- if $tavern_tests.tests }}
+          {{- range $tavern_tests.tests }}
+            - name: {{ .name }}
+              mountPath: {{ include "tavern.test_directory" $ }}/test_{{ .name }}.tavern.yaml
+              subPath: {{ .name }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+
+      {{/* Volumes */}}
+      volumes:
+      {{- if $.Values.job.volumes }}
+        {{- toYaml $.Values.job.volumes | nindent 8 }}
+      {{- end }}
+      {{- if $tavern_tests.tests }}
+        {{- range $tavern_tests.tests }}
+          {{- $ref := include "lib.utils.fullname" (dict "name" .name "context" $) }}
+          {{- if .secret }}
+        - name: {{ .name }}
+          secret:
+            secretName: {{ $ref }}
+            defaultMode: {{ $.Values.tavern.defaultMode }}
+          {{- else }}
+        - name: {{ .name }}
+          configMap:
+            name: {{ $ref }}
+            defaultMode: {{ $.Values.tavern.defaultMode }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+{{- end }}
