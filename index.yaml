@@ -115,6 +115,38 @@ entries:
     version: 0.1.0
   tavern:
   - annotations:
+      artifacthub.io/containsSecurityUpdates: "true"
+      artifacthub.io/images: |
+        - name: tavern
+          image: buttahtoast/docker-tavern:1.0.4
+      artifacthub.io/prerelease: "true"
+    apiVersion: v2
+    appVersion: 1.0.4
+    created: "2020-12-27T14:17:24.561290687Z"
+    dependencies:
+    - name: manifests
+      repository: https://bedag.github.io/helm-charts
+      version: '>=0.1.0'
+    description: Unofficial Tavern Helm Chart
+    digest: ff0d8cabcba4e8fd6b8e53bde0294ea6887ce11f1a23d8ed44e4f515418367a5
+    home: https://tavern.readthedocs.io/en/latest/
+    icon: https://tavern.readthedocs.io/en/latest/_static/icon.png
+    keywords:
+    - python
+    - tavern
+    - API testing
+    - pytest
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: tavern
+    type: application
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.2.3/tavern-0.2.3.tgz
+    version: 0.2.3
+  - annotations:
       artifacthub.io/containsSecurityUpdates: "false"
       artifacthub.io/images: |
         - name: tavern
