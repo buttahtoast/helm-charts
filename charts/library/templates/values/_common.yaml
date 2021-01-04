@@ -2,6 +2,9 @@
   Common Values - Template
 */}}
 {{- define "lib.values.common" -}}
+## Common Values
+##
+
 ## Overwrite Name Template
 # nameOverride -- Overwrite "lib.internal.name" output
 nameOverride: ""
@@ -26,5 +29,4 @@ selectorLabels: {}
 # kubeCapabilities -- Overwrite the Kube GitVersion
 # @default -- `$.Capabilities.KubeVersion.GitVersion`
 kubeCapabilities: ""
-```
 {{- end }}

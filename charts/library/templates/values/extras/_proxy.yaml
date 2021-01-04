@@ -2,6 +2,8 @@
   Extra Values Proxy - Template
 */}}
 {{- define "lib.values.extras.proxy" -}}
+## Proxy Values 
+##
 proxy:
 
   ## HTTP Proxy Configuration

@@ -1,0 +1,10 @@
+{{/*
+  All Values - Template
+*/}}
+{{- define "lib.values.all" -}}
+{{- include "lib.values.globals" $ }}
+
+{{- include "lib.values.common" $ }}
+
+{{- include "lib.values.extras.proxy" $ }}
+{{- end -}}

@@ -2,6 +2,8 @@
   Global Values - Template
 */}}
 {{- define "lib.values.globals" -}}
+## Global Values 
+##
 global:
 
   ## Global Docker Image Registry
