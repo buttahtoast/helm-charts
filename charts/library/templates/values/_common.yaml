@@ -14,7 +14,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 ## Common Labels
-# commonLabels -- Common Labels are added to each kubernetes resource manifest. But will not be added to resources rendered by the common chart (eg. JMX Exporter)
+# commonLabels -- Common Labels are added to each kubernetes resource manifest.
 commonLabels: {}
 
 ## Overwrite Labels
