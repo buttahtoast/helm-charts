@@ -341,7 +341,7 @@ based on registry, repository and tag. The `$.global.defaultTag` value has prece
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.image` - Local Registry definition, see the structure below (Required).
   * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
@@ -595,7 +595,7 @@ This function allows to pass a list and create a single string, with a specific 
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.list` - Expects input of type slice. If not given as slice, nothing will be returned (Required).
   * `.context` - Inherited Root Context (Required).

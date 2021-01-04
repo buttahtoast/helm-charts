@@ -6,11 +6,11 @@
 ##
 
 ## Overwrite Name Template
-# nameOverride -- Overwrite "lib.internal.name" output
+# nameOverride -- Overwrite "lib.internal.common.name" output
 nameOverride: ""
 
 ## Overwrite Fullname Template
-# fullnameOverride -- Overwrite `lib.internal.fullname` output
+# fullnameOverride -- Overwrite `lib.utils.common.fullname` output
 fullnameOverride: ""
 
 ## Common Labels
