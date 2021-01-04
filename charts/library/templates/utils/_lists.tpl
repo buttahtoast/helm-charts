@@ -1,7 +1,7 @@
 {{/*
   Sprig Template - HasValueByKey
 */}}
-{{- define "lib.utils.hasValueByKey" -}}
+{{- define "lib.utils.lists.hasValueByKey" -}}
   {{- if .value }}
     {{- if .list }}
       {{- $key := default "name" .key }}
@@ -22,7 +22,7 @@
 {{/*
   Sprig Template - GetValueByKey
 */}}
-{{- define "lib.utils.getValueByKey" -}}
+{{- define "lib.utils.lists.getValueByKey" -}}
   {{- if and .list .value }}
     {{- if .list }}
       {{- $key := default "name" .key }}
@@ -42,7 +42,7 @@
 {{/*
   Sprig Template - MergeList
 */}}
-{{- define "lib.utils.mergeList" -}}
+{{- define "lib.utils.lists.mergeList" -}}
     {{- $mergedList := (concat (default list (index . 0)) (default list (index . 1)) | uniq) -}}
     {{- if gt (len $mergedList) 0 }}
         {{- toYaml $mergedList | indent 0 }}
@@ -52,7 +52,7 @@
 {{/*
   Sprig Template - MergeListOnKey
 */}}
-{{- define "lib.utils.mergeListOnKey" -}}
+{{- define "lib.utils.lists.mergeListOnKey" -}}
   {{- if and (and .source (kindIs "slice" .source)) (and .target (kindIs "slice" .target)) }}
     {{- $cache := dict "output" list "input" (dict "onKey" (default "name" .key) "refList" .source "targetList" .target) "keys" (dict "allyKeys" list "refKeyList" list "targetKeyList" list "overlappingKeyList" list) "lists" (dict "overlappingItems" list "refListFilter" list "targetListFilter" list)}}
     {{- range $cache.input.refList }}
@@ -74,16 +74,16 @@
       {{- end }}
       {{- if $cache.keys.overlappingKeyList }}
         {{- range $cache.keys.overlappingKeyList }}
-          {{- $_ := set $cache.lists "overlappingItems" (append $cache.lists.overlappingItems (merge (fromYaml (include "lib.utils.getValueByKey" (dict "list" $cache.input.refList "value" .))) (fromYaml (include "lib.utils.getValueByKey" (dict "list" $cache.input.targetList "value" .))))) }}
+          {{- $_ := set $cache.lists "overlappingItems" (append $cache.lists.overlappingItems (merge (fromYaml (include "lib.utils.lists.getValueByKey" (dict "list" $cache.input.refList "value" .))) (fromYaml (include "lib.utils.lists.getValueByKey" (dict "list" $cache.input.targetList "value" .))))) }}
         {{- end }}
         {{- range $cache.input.refList }}
           {{- if not (has (get . $cache.input.onKey) $cache.keys.overlappingKeyList) }}
-            {{- $_ := set $cache.lists "refListFilter" (append $cache.lists.refListFilter (fromYaml (include "lib.utils.getValueByKey" (dict "list" $cache.input.refList "value" (get . $cache.input.onKey))))) }}
+            {{- $_ := set $cache.lists "refListFilter" (append $cache.lists.refListFilter (fromYaml (include "lib.utils.lists.getValueByKey" (dict "list" $cache.input.refList "value" (get . $cache.input.onKey))))) }}
           {{- end }}
         {{- end }}
         {{- range $cache.input.targetList }}
           {{- if not (has (get . $cache.input.onKey) $cache.keys.overlappingKeyList) }}
-            {{- $_ := set $cache.lists "targetListFilter" (append $cache.lists.targetListFilter (fromYaml (include "lib.utils.getValueByKey" (dict "list" $cache.input.targetList "value" (get . $cache.input.onKey))))) }}
+            {{- $_ := set $cache.lists "targetListFilter" (append $cache.lists.targetListFilter (fromYaml (include "lib.utils.lists.getValueByKey" (dict "list" $cache.input.targetList "value" (get . $cache.input.onKey))))) }}
           {{- end }}
         {{- end }}
         {{- $_ := set $cache "output" (concat $cache.lists.refListFilter $cache.lists.targetListFilter $cache.lists.overlappingItems) }}
@@ -117,7 +117,7 @@
 {{/*
   Sprig Template - ExceptionList
 */}}
-{{- define "lib.utils.exceptionList" -}}
+{{- define "lib.utils.lists.exceptionList" -}}
   {{- if and .list (kindIs "slice" .list) }}
     {{- if .exceptions }}
       {{- $key := (default "name" .key) }}

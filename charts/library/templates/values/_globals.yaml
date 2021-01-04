@@ -1,0 +1,28 @@
+{{/*
+  Global Values - Template
+*/}}
+{{- define "lib.values.globals" -}}
+## Global Values 
+##
+global:
+
+  ## Global Docker Image Registry
+  # global.imageRegistry -- Global Docker Image Registry declaration. Will overwrite all child .registry fields.
+  imageRegistry: ""
+
+  ## Global Default Image Tag
+  # global.defaultTag -- Global Docker Image Tag declaration. Will be used as default tag, if no tag is given by child
+  defaultTag: ""
+
+  ## Global Docker Image PullPolicy
+  # global.imagePullPolicy -- Global Docker Image Pull Policy declaration. Will overwrite all child .pullPolicy fields.
+  imagePullPolicy: ""
+
+  ## Global StorageClass
+  # global.storageClass -- Global StorageClass declaration. Can be used to overwrite StorageClass fields.
+  storageClass: ""
+
+  ## Global Image Pull Secrets
+  # global.imagePullSecrets -- Global Docker Image Pull Secrets declaration. Added to local Docker Image Pull Secrets.
+  imagePullSecrets: []
+{{- end }}
