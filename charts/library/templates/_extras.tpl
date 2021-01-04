@@ -23,7 +23,7 @@
     fieldRef:
       fieldPath: spec.serviceAccountName
 {{- if .Values.proxy }}
-    {{- $proxy := (fromYaml (include "lib.utils.template" (dict "value" .Values.proxy "context" $))) }}
+    {{- $proxy := (fromYaml (include "lib.utils.strings.template" (dict "value" .Values.proxy "context" $))) }}
     {{- if $proxy.httpProxy }}
         {{- if and ($proxy.httpProxy.host) ($proxy.httpProxy.port) }}
 - name: "HTTP_PROXY"
@@ -56,6 +56,6 @@
 ---
 apiVersion: v1
 kind: List
-items: {{- include "lib.utils.template" (dict "value" $.Values.extraResources "context" $) | nindent 2 }}
+items: {{- include "lib.utils.strings.template" (dict "value" $.Values.extraResources "context" $) | nindent 2 }}
   {{- end }}
 {{- end }}

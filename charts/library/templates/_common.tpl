@@ -39,7 +39,7 @@
         {{- $name = (printf "%s-%s" $prefix $name_p) -}}
      {{- end -}}
   {{- end -}}
-  {{- printf "%s" (include "lib.utils.toDns1123" $name) }}
+  {{- printf "%s" (include "lib.utils.strings.toDns1123" $name) }}
 {{- end -}}
 
 
@@ -72,7 +72,7 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 */}}
 {{- define "lib.utils.overwriteLabels" -}}
   {{- if and $.Values.overwriteLabels (kindIs "map" $.Values.overwriteLabels) }}
-    {{- include "lib.utils.template" (dict "value" $.Values.overwriteLabels "context" $) | nindent 0 }}
+    {{- include "lib.utils.strings.template" (dict "value" $.Values.overwriteLabels "context" $) | nindent 0 }}
   {{- else }}
     {{- include "lib.utils.defaultLabels" . | indent 0}}
   {{- end }}
@@ -85,7 +85,7 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- define "lib.utils.commonLabels" -}}
   {{- include "lib.utils.overwriteLabels" . | indent 0 }}
   {{- if and $.Values.commonLabels (kindIs "map" $.Values.commonLabels) }}
-    {{- include "lib.utils.template" (dict "value" $.Values.commonLabels "context" $) | nindent 0 }}
+    {{- include "lib.utils.strings.template" (dict "value" $.Values.commonLabels "context" $) | nindent 0 }}
   {{- end }}
 {{- end -}}
 

@@ -117,7 +117,7 @@ Extended Function to return a fullname.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.`/`.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
   * `.name` - Define a custom name, without prefix. The given value will appended to an evaluated prefix. Becomes suffix of the `$.Values.fullnameOverride` property, if set. Can also be set through `.context.name`.
@@ -162,7 +162,7 @@ app.kubernetes.io/instance: { .Release.Name }
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
 
@@ -194,7 +194,7 @@ This template represents the default templates. It includes the `SelectorLabel` 
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
 
@@ -216,7 +216,7 @@ as common labels.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
 
@@ -249,7 +249,7 @@ as common labels.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
 
@@ -284,7 +284,7 @@ This template wraps around all the other label templates. Therefor all their fun
 
 #### Arguments
 
-  If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `./.context` - Inherited Root Context (Required).
   * `.labels` - Labels which overwrite the resulting labels of all the other label templates.
@@ -323,7 +323,7 @@ trying to test the chart or having client versions that differ from the server v
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
 
@@ -471,7 +471,7 @@ This function overwrites local docker image pullpolicies with global defined pul
 
 ####  Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.imagePullPolicy` - Local docker image pullPolicy, which are overwritten if the global variable is set. If neither is set, an empty string is returned (Required).
   * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
@@ -524,7 +524,7 @@ This function merges local pullSecrets with global defined pullSecrets, if avail
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.pullSecrets` - Local pullSecrets, which are overwritten if the global variable is set. If neither is set, an empty string is returned (Optional, Defaults to empty).
   * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
@@ -563,7 +563,7 @@ in the given structure.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.persistence` - Local StorageClass/Persistence configuration, see the structure below.
   * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
@@ -616,7 +616,7 @@ to render it as part of the YAML Structure, use +|. This YAML multiline indicato
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.value` - Content you want to template. If a Go Struct, it will be dumped to YAML, since the tpl function only allows strings (Required).
   * `.extraValues` - Extra values you want to make available for the template function. Can be accessed through $.extraVars
@@ -673,7 +673,7 @@ If the input is not of type string, it's returned as is.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionaly.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - The input you want to process by this function
 
@@ -696,7 +696,7 @@ Loops through subdicts in a given lists checking the given key for the given val
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.list` - Expects a list with dictionaries as elements (Required)
   * `.value` - The value you are looking for in the dicts (Required)
@@ -720,7 +720,7 @@ Loops through subdicts in a given lists checking the given key for the given val
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.list` - Expects a list with dictionaries as elements (Required)
   * `.value` - The value you are looking for in the dicts (Required)
@@ -742,7 +742,7 @@ Merge two lists into one and returns the merged result.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * ` .` - Expects a list with two elements (Required).
 
@@ -766,7 +766,7 @@ as the same element and merged specifically together.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.source` - Base list (Required). If undefined, template will return no value.
   * `.target` - List merged over source list (Required). If undefined, template will return no value.
@@ -791,6 +791,8 @@ This function allows list blacklisting. This means, that you can give an list of
 iterates over a given list with dictionary elements and removes elements, which match one of the value in the exception list.
 
 #### Arguments
+
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.exceptions` - A list or space delimited string values, which are exceptions (Optional, Returns input list without modification)
   * `.list` - Data of type slice (Optional, Returns Empty String).
@@ -855,7 +857,7 @@ This function allows to append a given interface-map to a new parent key and ret
 
 #### Arguments
 
-  If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.key` - The new parent key for the given key structure (Optional, Defaults to `Values` key)
   * `.append` - Key structure you want to append (Optional, Defaults to function Root Context)
@@ -882,7 +884,7 @@ This function allows to append a given struct to a new parent key and returns th
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.structure` - Enter the structure seperated by '.' (Required)
       E.g. the input of "Values.sub.key" will result in the output of:
@@ -921,7 +923,7 @@ Meaning proxy will be set directly in environment variables returned by the temp
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - Inherited Root Context (Required)
 
@@ -986,7 +988,7 @@ Allows to have extra resources in the chart. Returns kind List with all given ku
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - Inherited Root Context (Required)
 

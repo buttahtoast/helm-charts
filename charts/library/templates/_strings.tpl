@@ -23,7 +23,7 @@
   {{- if and .list .context }}
     {{- $delimiter := (default " " .delimiter) -}}
     {{- if kindIs "slice" .list }}
-        {{- printf "%s" (include "lib.utils.template" (dict "value" (.list | join $delimiter) "context" .context)) | indent 0 }}
+        {{- printf "%s" (include "lib.utils.strings.template" (dict "value" (.list | join $delimiter) "context" .context)) | indent 0 }}
     {{- end }}
   {{- else }}
     {{- fail "Template requires '.list' and '.context' as arguments" }}
