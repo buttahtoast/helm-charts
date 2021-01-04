@@ -38,6 +38,29 @@ entries:
       artifacthub.io/prerelease: "true"
     apiVersion: v2
     appVersion: 0.1.0
+    created: "2021-01-04T16:59:30.66666826Z"
+    description: Buttahtoast Helm Library
+    digest: 48f876b16b9dbfb6ad26db88f237a48e9c3242dfca335deb80cd267c282ab99d
+    home: https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    icon: https://avatars0.githubusercontent.com/u/67652090?s=400&u=874d1c989b0afc2789865be01051f0bbfc84ae32&v=4
+    keywords:
+    - library
+    - sprig
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: library
+    type: library
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/library-0.3.0/library-0.3.0.tgz
+    version: 0.3.0
+  - annotations:
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/prerelease: "true"
+    apiVersion: v2
+    appVersion: 0.1.0
     created: "2020-12-24T14:09:50.641207953Z"
     description: Buttahtoast Helm Library
     digest: abd6d8c3afceb885f2fbb907c9d37d935ff60d88f9971399ea88db1437936046
