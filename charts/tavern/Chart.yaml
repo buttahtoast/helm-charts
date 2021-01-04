@@ -2,8 +2,8 @@ apiVersion: v2
 name: tavern
 description: "Unofficial Tavern Helm Chart"
 type: application
-version: 0.2.1
-appVersion: 1.0.3
+version: 0.2.3
+appVersion: 1.0.4
 home: "https://tavern.readthedocs.io/en/latest/"
 icon: "https://tavern.readthedocs.io/en/latest/_static/icon.png"
 keywords:
@@ -21,8 +21,8 @@ maintainers:
   - name: chifu1234
     email: kk@sudo-i.net
 annotations:
-  artifacthub.io/containsSecurityUpdates: "false"
+  artifacthub.io/containsSecurityUpdates: "true"
   artifacthub.io/prerelease: "true"
   artifacthub.io/images: |
     - name: tavern
-      image: buttahtoast/docker-tavern:1.0.3
+      image: buttahtoast/docker-tavern:1.0.4

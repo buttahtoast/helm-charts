@@ -1,7 +1,7 @@
 {{/*
   Sprig Template - DockerImage
 */}}
-{{- define "lib.utils.image" -}}
+{{- define "lib.utils.globals.image" -}}
   {{- if and .image .context }}
     {{- $values := default .context .context.Values }}
     {{- $image := .image }}
@@ -44,7 +44,7 @@
 {{/*
   Sprig Template - ImagePullPolicy
 */}}
-{{- define "lib.utils.imagePullPolicy" -}}
+{{- define "lib.utils.globals.imagePullPolicy" -}}
   {{- if .context }}
     {{- $values := default .context .context.Values }}
     {{- $imagePullPolicy := .imagePullPolicy }}
@@ -69,7 +69,7 @@
 {{/*
   Sprig Template - ImagePullsecrets
 */}}
-{{- define "lib.utils.imagePullSecrets" -}}
+{{- define "lib.utils.globals.imagePullSecrets" -}}
   {{- if .context }}
     {{- $secrets := (default "" .pullSecrets)}}
     {{- $values := default .context .context.Values }}
@@ -90,7 +90,7 @@
 {{/*
   Sprig Template - StorageClass
 */}}
-{{- define "lib.utils.storageClass" -}}
+{{- define "lib.utils.globals.storageClass" -}}
   {{- if .context }}
     {{- $storageClass := "" }}
     {{- $values := default .context .context.Values }}

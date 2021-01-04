@@ -35,7 +35,7 @@ Major Changes to functions are documented with the version affected. **Before up
 
 | **Template** | **Chart Version** | **Change/Description** | **Commits/PRs** |
 | :----------- | :---------------- | :--------------------- | :-------------- |
-|||||
+| All **string**, **list**, **globals** and **dict** templates | `0.3.0` | Added for each template category the category as template name path. (eg. all string templates = `lib.utils.strings.*`).||
 
 
 # Templates
@@ -460,7 +460,7 @@ String
 #### Usage
 
 ```
-{- include "lib.utils.image" (dict "registry" .Values.image "context" $ "default" .Chart.AppVersion) }
+{- include "lib.utils.globals.image" (dict "registry" .Values.image "context" $ "default" .Chart.AppVersion) }
 ```
 
 
@@ -493,7 +493,7 @@ imagePullPolicy: "Always"
 Would both work with example:
 
 ```
-{- include "lib.utils.pullPolicy" (dict "imagePullPolicy" .Values "context" $) }
+{- include "lib.utils.globals.pullPolicy" (dict "imagePullPolicy" .Values "context" $) }
 ```
 #### Keys
 
@@ -514,7 +514,7 @@ String
 #### Usage
 
 ```
-{- include "lib.utils.pullPolicy" (dict "pullPolicy" .Values.image.pullpolicy "context" $) }
+{- include "lib.utils.globals.imagePullPolicy" (dict "pullPolicy" .Values.image.pullpolicy "context" $) }
 ```
 
 ### ImagePullsecrets
@@ -549,7 +549,7 @@ YAML Structure, String
 #### Usage
 
 ```
-{- include "lib.utils.imagePullSecrets" (dict "pullSecrets" .Values.imagePullSecrets "context" $) }
+{- include "lib.utils.globals.imagePullSecrets" (dict "pullSecrets" .Values.imagePullSecrets "context" $) }
 ```
 
 ### StorageClass
@@ -601,7 +601,7 @@ String
 #### Usage
 
 ```
-{ include "lib.utils.storageClass" (dict "persistence" .Values.persistence "context" $) }
+{ include "lib.utils.globals.storageClass" (dict "persistence" .Values.persistence "context" $) }
 ```
 
 ## [Strings](./templates/_strings.tpl)
@@ -629,7 +629,7 @@ YAML Structure, String
 #### Usage
 
 ```
-{ include "lib.utils.template" (dict "value" .Values.path.to.the.Value "context" $ "extraValues" $extraValues) }
+{ include "lib.utils.strings.template" (dict "value" .Values.path.to.the.Value "context" $ "extraValues" $extraValues) }
 
 or
 
@@ -657,7 +657,7 @@ String
 #### Usage
 
 ```
-{ include "lib.utils.stringify" ( dict "list" (default (list 1 2 3) .Values.someList) "delimiter" ", " "context" $) }
+{ include "lib.utils.strings.stringify" ( dict "list" (default (list 1 2 3) .Values.someList) "delimiter" ", " "context" $) }
 ```
 
 ### ToDns1123
@@ -684,7 +684,7 @@ String (1:1 return if not given as string)
 #### Usage
 
 ```
-{ include "lib.utils.toDns1123" "my-string" }
+{ include "lib.utils.strings.toDns1123" "my-string" }
 ```
 
 ## [Lists](./templates/_lists.tpl)
@@ -709,7 +709,7 @@ Boolean
 #### Usage
 
 ```
-{- include "lib.utils.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
+{- include "lib.utils.lists.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
 ```
 
 
@@ -733,7 +733,7 @@ YAML Structure, String
 #### Usage
 
 ```
-{- include "lib.utils.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
+{- include "lib.utils.lists.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
 ```
 
 ### MergeList
@@ -753,7 +753,7 @@ YAML Structure, String
 #### Usage
 
 ```
-{- include "lib.utils.mergeList" (list $firstlist $secondlist) -}
+{- include "lib.utils.lists.mergeList" (list $firstlist $secondlist) -}
 ```
 
 ### MergeListOnKey
@@ -781,7 +781,7 @@ YAML Structure, String
 #### Usage
 
 ```
-{- include "lib.utils.mergeListOnKey" (dict "source" $.Values.sourceList "target" $.Values.targetList "key" "id") -}
+{- include "lib.utils.lists.mergeListOnKey" (dict "source" $.Values.sourceList "target" $.Values.targetList "key" "id") -}
 ```
 
 ### ExceptionList
@@ -803,11 +803,11 @@ YAML Structure, String
 #### Usage:
 
 ```
-{ include "lib.utils.exceptionList" (dict "list" .Values.mylist "exceptions" (list "BLACKLISTED_VAR" "SHARED_HOME" "CLUSTERED" "DATADIR") "key" "special_key") }
+{ include "lib.utils.lists.exceptionList" (dict "list" .Values.mylist "exceptions" (list "BLACKLISTED_VAR" "SHARED_HOME" "CLUSTERED" "DATADIR") "key" "special_key") }
 
 or
 
-{ include "lib.utils.exceptionList" (dict "list" .Values.mylist "exceptions" "BLACKLISTED_VAR SHARED_HOME DATADIR" "key" "special_key") }
+{ include "lib.utils.lists.exceptionList" (dict "list" .Values.mylist "exceptions" "BLACKLISTED_VAR SHARED_HOME DATADIR" "key" "special_key") }
 ```
 
 #### Example
@@ -867,11 +867,11 @@ YAML Structure, String
 #### Usage:
 
 ```
-{- include "lib.utils.parentAppend" (dict "key" "parent" "append" $.Values) }
+{- include "lib.utils.dicts.parentAppend" (dict "key" "parent" "append" $.Values) }
 
 or
 
-{- include "lib.utils.parentAppend"  $.Values }
+{- include "lib.utils.dicts.parentAppend"  $.Values }
 ```
 
 
@@ -899,7 +899,7 @@ If an as required marked argument is missing, the template engine will intention
 #### Usage:
 
 ```
-{- include "lib.utils.printYAMLStructure" (dict "structure" $path "data" "my.structure.here") }
+{- include "lib.utils.dicts.printYAMLStructure" (dict "structure" $path "data" "my.structure.here") }
 ```
 
 Will result in

@@ -1,7 +1,7 @@
 {{/*
   Sprig Template - Template
 */}}
-{{- define "lib.utils.template" -}}
+{{- define "lib.utils.stings.template" -}}
   {{- if .context }}
     {{- $_ := set .context (default "extraVars" .extraValuesKey) (default dict .extraValues) }}
     {{- if typeIs "string" .value }}
@@ -19,7 +19,7 @@
 {{/*
   Sprig Template - Stringify
 */}}
-{{- define "lib.utils.stringify" -}}
+{{- define "lib.utils.stings.stringify" -}}
   {{- if and .list .context }}
     {{- $delimiter := (default " " .delimiter) -}}
     {{- if kindIs "slice" .list }}
@@ -34,7 +34,7 @@
 {{/*
   Sprig Template - ToDns1123
 */}}
-{{- define "lib.utils.toDns1123" -}}
+{{- define "lib.utils.stings.toDns1123" -}}
   {{- if (kindIs "string" .) }}
     {{- printf "%s" (regexReplaceAll "[^a-z0-9-.]" (lower .) "${1}-") | trunc 63 | trimSuffix "-" | trimPrefix "-" }}
   {{- else }}

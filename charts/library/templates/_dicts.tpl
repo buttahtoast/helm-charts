@@ -1,7 +1,7 @@
 {{/*
   Sprig Template - ParentAppend
 */}}
-{{- define "lib.utils.parentAppend" -}}
+{{- define "lib.utils.dicts.parentAppend" -}}
   {{- $baseDict := dict -}}
   {{- $_ := set $baseDict (default .key "Values") (default . .append) -}}
   {{- toYaml $_ | indent 0 }}
@@ -11,7 +11,7 @@
 {{/*
   Sprig Template - PrintYamlStructure
 */}}
-{{- define "lib.utils.printYAMLStructure" -}}
+{{- define "lib.utils.dicts.printYAMLStructure" -}}
   {{- if .structure }}
     {{ $structure := trimAll "." .structure }}
     {{- $i := 0 }}
