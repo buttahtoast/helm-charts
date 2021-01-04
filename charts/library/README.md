@@ -1,6 +1,6 @@
 # Buttahtoast Library
 
-![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 This is our take on a library Chart. It contains simple functions which are (will be) used across all of our charts. Feel free the add or improve the existing templates. This Chart is still under development/testing. Feel free to use it, if you find any issues with it, please create an issue/PR. We will try to get bugs fixed as soon as possible!
 
@@ -39,7 +39,7 @@ Major Changes to functions are documented with the version affected. **Before up
 
 | **Template** | **Chart Version** | **Change/Description** | **Commits/PRs** |
 | :----------- | :---------------- | :--------------------- | :-------------- |
-|||||
+| All **string**, **list**, **globals** and **dict** templates | `0.3.0` | Added for each template category the category as template name path. (eg. all string templates = `lib.utils.strings.*`).| [Pull Request](https://github.com/buttahtoast/helm-charts/pull/15) |
 
 # Templates
 
@@ -78,39 +78,13 @@ parse the file and that causes some issues. So don't forget to add a pair of `{}
 * **[Extras](#extras)**
   * [Environment](#environment)
   * [ExtraResources](#extraresources)
-* **[Experimental](./templates/_experimental.tpl)**
+* **[Experimental](./templates/utils/_experimental.tpl)**
 
-## [Common](./templates/_common.tpl)
+## [Common](./templates/utils/_common.tpl)
 
 Making use of all the common templates enable the following keys:
 
-```
-## Overwrite Name Template
-# nameOverride -- Overwrite "lib.internal.name" output
-nameOverride: ""
-
-## Overwrite Fullname Template
-# fullnameOverride -- Overwrite `lib.internal.fullname` output
-fullnameOverride: ""
-
-## Common Labels
-# commonLabels -- Common Labels are added to each kubernetes resource manifest. But will not be added to resources rendered by the common chart (eg. JMX Exporter)
-commonLabels: {}
-
-## Overwrite Labels
-# overwriteLabels -- Overwrites default labels, but not resource specific labels and common labels
-overwriteLabels: {}
-
-## Selector Labels
-# selectorLabels -- Define default [selectorLabels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
-# @default -- `app.kubernetes.io/name: { include "lib.internal.name" . }<br>app.kubernetes.io/instance: { .Release.Name }`
-selectorLabels: {}
-
-## Version Capabilities
-# kubeCapabilities -- Overwrite the Kube GitVersion
-# @default -- `$.Capabilities.KubeVersion.GitVersion`
-kubeCapabilities: ""
-```
+  * [All Common Values can be found here](./templates/values/_common.yaml)
 
 ### Fullname
 ---
@@ -119,7 +93,7 @@ Extended Function to return a fullname.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.`/`.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
   * `.name` - Define a custom name, without prefix. The given value will appended to an evaluated prefix. Becomes suffix of the `$.Values.fullnameOverride` property, if set. Can also be set through `.context.name`.
@@ -148,7 +122,7 @@ String
 #### Usage
 
 ```
-{- include "lib.utils.selectorLabels" $) }
+{- include "lib.utils.common.fullname" $) }
 ```
 
 ### SelectorLabels
@@ -158,13 +132,13 @@ This template will return the default selectorLabels (Useable for Match/Selector
 option to overwrite these labels. If no selectorLabels are defined, the following labels are set:
 
 ```
-app.kubernetes.io/name: { include "lib.utils.name" . }
+app.kubernetes.io/name: { include "lib.utils.common.name" . }
 app.kubernetes.io/instance: { .Release.Name }
 ```
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
 
@@ -186,7 +160,7 @@ YAML Structure, String
 #### Usage
 
 ```
-{- include "lib.utils.selectorLabels" $) }
+{- include "lib.utils.common.selectorLabels" $) }
 ```
 
 ### DefaultLabels
@@ -196,7 +170,7 @@ This template represents the default templates. It includes the `SelectorLabel` 
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
 
@@ -207,7 +181,7 @@ YAML Structure, String
 #### Usage
 
 ```
-{- include "lib.utils.defaultLabels" $) }
+{- include "lib.utils.common.defaultLabels" $) }
 ```
 
 ### OverwriteLabels
@@ -218,7 +192,7 @@ as common labels.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
 
@@ -239,7 +213,7 @@ YAML Structure, String
 #### Usage
 
 ```
-{- include "lib.utils.overwriteLabels" $) }
+{- include "lib.utils.common.overwriteLabels" $) }
 ```
 
 ### CommonLabels
@@ -251,7 +225,7 @@ as common labels.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
 
@@ -276,7 +250,7 @@ YAML Structure, String
 #### Usage
 
 ```
-{- include "lib.utils.commonLabels" $) }
+{- include "lib.utils.common.commonLabels" $) }
 ```
 
 ### Labels
@@ -286,7 +260,7 @@ This template wraps around all the other label templates. Therefor all their fun
 
 #### Arguments
 
-  If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `./.context` - Inherited Root Context (Required).
   * `.labels` - Labels which overwrite the resulting labels of all the other label templates.
@@ -314,7 +288,7 @@ YAML Structure, String
 #### Usage
 
 ```
-{- include "lib.utils.labels" (dict "labels" (dict "custom.label" "value" "custom.label/2" "value") "context" $) }
+{- include "lib.utils.common.labels" (dict "labels" (dict "custom.label" "value" "custom.label/2" "value") "context" $) }
 ```
 
 ### KubeCapabilities
@@ -325,7 +299,7 @@ trying to test the chart or having client versions that differ from the server v
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
 
@@ -347,40 +321,18 @@ String
 #### Usage
 
 ```
-{- if semverCompare ">=1.19-0" (include "lib.utils.capabilities" $) }
+{- if semverCompare ">=1.19-0" (include "lib.utils.common.capabilities" $) }
 apiVersion: networking.k8s.io/v1
-{- else if semverCompare ">=1.14-0" (include "lib.utils.capabilities" $context) -}
+{- else if semverCompare ">=1.14-0" (include "lib.utils.common.capabilities" $context) -}
 apiVersion: networking.k8s.io/v1beta1
 {- else -}
 ```
 
-## [Globals](./templates/_globals.tpl)
+## [Globals](./templates/utils/_globals.tpl)
 
-Making use of all the global functions enable the following [global keys](https://helm.sh/docs/chart_template_guide/subcharts_and_globals/):
+Making use of all the global functions enable the following [global keys](https://helm.sh/docs/chart_template_guide/subcharts_and_globals/).
 
-```
-global:
-
-  ## Global Docker Image Registry
-  # global.imageRegistry -- Global Docker Image Registry declaration. Will overwrite all child .registry fields.
-  imageRegistry: ""
-
-  ## Global Default Image Tag
-  # global.defaultTag -- Global Docker Image Tag declaration. Will be used as default tag, if no tag is given by child
-  defaultTag: ""
-
-  ## Global Docker Image PullPolicy
-  # global.imagePullPolicy -- Global Docker Image Pull Policy declaration. Will overwrite all child .pullPolicy fields.
-  imagePullPolicy: ""
-
-  ## Global StorageClass
-  # global.storageClass -- Global StorageClass declaration. Can be used to overwrite StorageClass fields.
-  storageClass: ""
-
-  ## Global Image Pull Secrets
-  # global.imagePullSecrets -- Global Docker Image Pull Secrets declaration. Added to local Docker Image Pull Secrets.
-  imagePullSecrets: []
-```
+  * [All Global Values can be found here](./templates/values/_globals.yaml)
 
 ### DockerImage
 ---
@@ -450,7 +402,7 @@ Is included as:
 ```
       containers:
         - name: apache
-          image: {- include "lib.utils.image" (dict "image" .Values.apache "context" $ "default" .Chart.AppVersion) }
+          image: {- include "lib.utils.globals.image" (dict "image" .Values.apache "context" $ "default" .Chart.AppVersion) }
 ```
 
 #### Returns
@@ -460,7 +412,7 @@ String
 #### Usage
 
 ```
-{- include "lib.utils.image" (dict "registry" .Values.image "context" $ "default" .Chart.AppVersion) }
+{- include "lib.utils.globals.image" (dict "registry" .Values.image "context" $ "default" .Chart.AppVersion) }
 ```
 
 ### ImagePullPolicy
@@ -470,7 +422,7 @@ This function overwrites local docker image pullpolicies with global defined pul
 
 ####  Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.imagePullPolicy` - Local docker image pullPolicy, which are overwritten if the global variable is set. If neither is set, an empty string is returned (Required).
   * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
@@ -492,7 +444,7 @@ imagePullPolicy: "Always"
 Would both work with example:
 
 ```
-{- include "lib.utils.pullPolicy" (dict "imagePullPolicy" .Values "context" $) }
+{- include "lib.utils.globals.pullPolicy" (dict "imagePullPolicy" .Values "context" $) }
 ```
 #### Keys
 
@@ -513,7 +465,7 @@ String
 #### Usage
 
 ```
-{- include "lib.utils.pullPolicy" (dict "pullPolicy" .Values.image.pullpolicy "context" $) }
+{- include "lib.utils.globals.imagePullPolicy" (dict "pullPolicy" .Values.image.pullpolicy "context" $) }
 ```
 
 ### ImagePullsecrets
@@ -523,7 +475,7 @@ This function merges local pullSecrets with global defined pullSecrets, if avail
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.pullSecrets` - Local pullSecrets, which are overwritten if the global variable is set. If neither is set, an empty string is returned (Optional, Defaults to empty).
   * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
@@ -547,7 +499,7 @@ YAML Structure, String
 #### Usage
 
 ```
-{- include "lib.utils.imagePullSecrets" (dict "pullSecrets" .Values.imagePullSecrets "context" $) }
+{- include "lib.utils.globals.imagePullSecrets" (dict "pullSecrets" .Values.imagePullSecrets "context" $) }
 ```
 
 ### StorageClass
@@ -561,7 +513,7 @@ in the given structure.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.persistence` - Local StorageClass/Persistence configuration, see the structure below.
   * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
@@ -599,10 +551,10 @@ String
 #### Usage
 
 ```
-{ include "lib.utils.storageClass" (dict "persistence" .Values.persistence "context" $) }
+{ include "lib.utils.globals.storageClass" (dict "persistence" .Values.persistence "context" $) }
 ```
 
-## [Strings](./templates/_strings.tpl)
+## [Strings](./templates/utils/_strings.tpl)
 
 ### Template
 ---
@@ -614,7 +566,7 @@ to render it as part of the YAML Structure, use +|. This YAML multiline indicato
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.value` - Content you want to template. If a Go Struct, it will be dumped to YAML, since the tpl function only allows strings (Required).
   * `.extraValues` - Extra values you want to make available for the template function. Can be accessed through $.extraVars
@@ -627,11 +579,11 @@ YAML Structure, String
 #### Usage
 
 ```
-{ include "lib.utils.template" (dict "value" .Values.path.to.the.Value "context" $ "extraValues" $extraValues) }
+{ include "lib.utils.strings.template" (dict "value" .Values.path.to.the.Value "context" $ "extraValues" $extraValues) }
 
 or
 
-{ $structure := fromYaml (include "lib.utils.template" (dict "value" .Values.path.to.the.Value "context" $)) }
+{ $structure := fromYaml (include "lib.utils.strings.template" (dict "value" .Values.path.to.the.Value "context" $)) }
 ```
 
 ### Stringify
@@ -654,7 +606,7 @@ String
 #### Usage
 
 ```
-{ include "lib.utils.stringify" ( dict "list" (default (list 1 2 3) .Values.someList) "delimiter" ", " "context" $) }
+{ include "lib.utils.strings.stringify" ( dict "list" (default (list 1 2 3) .Values.someList) "delimiter" ", " "context" $) }
 ```
 
 ### ToDns1123
@@ -670,7 +622,7 @@ If the input is not of type string, it's returned as is.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionaly.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - The input you want to process by this function
 
@@ -681,10 +633,10 @@ String (1:1 return if not given as string)
 #### Usage
 
 ```
-{ include "lib.utils.toDns1123" "my-string" }
+{ include "lib.utils.strings.toDns1123" "my-string" }
 ```
 
-## [Lists](./templates/_lists.tpl)
+## [Lists](./templates/utils/_lists.tpl)
 
 ### HasValueByKey
 ---
@@ -693,7 +645,7 @@ Loops through subdicts in a given lists checking the given key for the given val
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.list` - Expects a list with dictionaries as elements (Required)
   * `.value` - The value you are looking for in the dicts (Required)
@@ -706,7 +658,7 @@ Boolean
 #### Usage
 
 ```
-{- include "lib.utils.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
+{- include "lib.utils.lists.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
 ```
 
 ### GetValueByKey
@@ -716,7 +668,7 @@ Loops through subdicts in a given lists checking the given key for the given val
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.list` - Expects a list with dictionaries as elements (Required)
   * `.value` - The value you are looking for in the dicts (Required)
@@ -729,7 +681,7 @@ YAML Structure, String
 #### Usage
 
 ```
-{- include "lib.utils.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
+{- include "lib.utils.lists.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
 ```
 
 ### MergeList
@@ -738,7 +690,7 @@ Merge two lists into one and returns the merged result.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * ` .` - Expects a list with two elements (Required).
 
@@ -749,7 +701,7 @@ YAML Structure, String
 #### Usage
 
 ```
-{- include "lib.utils.mergeList" (list $firstlist $secondlist) -}
+{- include "lib.utils.lists.mergeList" (list $firstlist $secondlist) -}
 ```
 
 ### MergeListOnKey
@@ -762,7 +714,7 @@ as the same element and merged specifically together.
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.source` - Base list (Required). If undefined, template will return no value.
   * `.target` - List merged over source list (Required). If undefined, template will return no value.
@@ -777,7 +729,7 @@ YAML Structure, String
 #### Usage
 
 ```
-{- include "lib.utils.mergeListOnKey" (dict "source" $.Values.sourceList "target" $.Values.targetList "key" "id") -}
+{- include "lib.utils.lists.mergeListOnKey" (dict "source" $.Values.sourceList "target" $.Values.targetList "key" "id") -}
 ```
 
 ### ExceptionList
@@ -787,6 +739,8 @@ This function allows list blacklisting. This means, that you can give an list of
 iterates over a given list with dictionary elements and removes elements, which match one of the value in the exception list.
 
 #### Arguments
+
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.exceptions` - A list or space delimited string values, which are exceptions (Optional, Returns input list without modification)
   * `.list` - Data of type slice (Optional, Returns Empty String).
@@ -799,11 +753,11 @@ YAML Structure, String
 #### Usage:
 
 ```
-{ include "lib.utils.exceptionList" (dict "list" .Values.mylist "exceptions" (list "BLACKLISTED_VAR" "SHARED_HOME" "CLUSTERED" "DATADIR") "key" "special_key") }
+{ include "lib.utils.lists.exceptionList" (dict "list" .Values.mylist "exceptions" (list "BLACKLISTED_VAR" "SHARED_HOME" "CLUSTERED" "DATADIR") "key" "special_key") }
 
 or
 
-{ include "lib.utils.exceptionList" (dict "list" .Values.mylist "exceptions" "BLACKLISTED_VAR SHARED_HOME DATADIR" "key" "special_key") }
+{ include "lib.utils.lists.exceptionList" (dict "list" .Values.mylist "exceptions" "BLACKLISTED_VAR SHARED_HOME DATADIR" "key" "special_key") }
 ```
 
 #### Example
@@ -825,11 +779,11 @@ environment:
 Calling Exception list:
 
 ```
-{ include "lib.utils.exceptionList" (dict "list" $.Values.environment "exceptions" "PRESET_HOSTNAME PRESET_CONFIGURATION") }
+{ include "lib.utils.lists.exceptionList" (dict "list" $.Values.environment "exceptions" "PRESET_HOSTNAME PRESET_CONFIGURATION") }
 
 or
 
-{ include "lib.utils.exceptionList" (dict "list" $.Values.environment "exceptions" (list "PRESET_HOSTNAME" "PRESET_CONFIGURATION")) }
+{ include "lib.utils.lists.exceptionList" (dict "list" $.Values.environment "exceptions" (list "PRESET_HOSTNAME" "PRESET_CONFIGURATION")) }
 
 ```
 
@@ -842,7 +796,7 @@ Results in:
   value: important value
 ```
 
-## [Dictionaries](./templates/_dicts.tpl)
+## [Dictionaries](./templates/utils/_dicts.tpl)
 
 ### ParentAppend
 ---
@@ -851,7 +805,7 @@ This function allows to append a given interface-map to a new parent key and ret
 
 #### Arguments
 
-  If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.key` - The new parent key for the given key structure (Optional, Defaults to `Values` key)
   * `.append` - Key structure you want to append (Optional, Defaults to function Root Context)
@@ -863,11 +817,11 @@ YAML Structure, String
 #### Usage:
 
 ```
-{- include "lib.utils.parentAppend" (dict "key" "parent" "append" $.Values) }
+{- include "lib.utils.dicts.parentAppend" (dict "key" "parent" "append" $.Values) }
 
 or
 
-{- include "lib.utils.parentAppend"  $.Values }
+{- include "lib.utils.dicts.parentAppend"  $.Values }
 ```
 
 ### PrintYamlStructure
@@ -877,7 +831,7 @@ This function allows to append a given struct to a new parent key and returns th
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.structure` - Enter the structure seperated by '.' (Required)
       E.g. the input of "Values.sub.key" will result in the output of:
@@ -894,7 +848,7 @@ If an as required marked argument is missing, the template engine will intention
 #### Usage:
 
 ```
-{- include "lib.utils.printYAMLStructure" (dict "structure" $path "data" "my.structure.here") }
+{- include "lib.utils.dicts.printYAMLStructure" (dict "structure" $path "data" "my.structure.here") }
 ```
 
 Will result in
@@ -906,7 +860,7 @@ my:
       {.data}
 ```
 
-## [Extras](./templates/_extras.tpl)
+## [Extras](./templates/utils/_extras.tpl)
 
 ### Environment
 ---
@@ -916,7 +870,7 @@ Meaning proxy will be set directly in environment variables returned by the temp
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - Inherited Root Context (Required)
 
@@ -924,45 +878,7 @@ If an as required marked argument is missing, the template engine will intention
 
 This template supports the following key structure:
 
-```
-proxy:
-
-  ## HTTP Proxy Configuration
-  httpProxy:
-
-    ## HTTP Proxy Host Configuration
-    # proxy.httpProxy.host -- Configure HTTP Proxy Hostname/IP (without protocol://)
-    host: ""
-
-    ## HTTP Proxy Port Configuration
-    # proxy.httpProxy.port -- (int) Configure HTTP Proxy Port
-    port:
-
-    ## HTTP Proxy Protocol Configuration
-    # proxy.httpProxy.protocol -- Configure HTTP Proxy Protocol (http/https)
-    # @default -- http
-    protocol: ""
-
-  ## HTTPS Proxy Configuration
-  httpsProxy:
-
-    ## HTTPS Proxy Host Configuration
-    # proxy.httpsProxy.host -- Configure HTTPS Proxy Hostname/IP (without protocol://)
-    host: ""
-
-    ## HTTP Proxy Port Configuration
-    # proxy.httpsProxy.port -- (int) Configure HTTPS Proxy Port
-    port:
-
-    ## HTTP Proxy Protocol Configuration
-    # proxy.httpsProxy.protocol -- Configure HTTPS Proxy Protocol (http/https)
-    # @default -- http
-    protocol: ""
-
-  ## No Proxy Hosts Configuration
-  # proxy.noProxy -- Configure No Proxy Hosts
-  noProxy: [ "localhost", "127.0.0.1" ]
-```
+  * [Proxy Values](./templates/values/extras/_proxy.yaml)
 
 #### Returns
 
@@ -981,7 +897,7 @@ Allows to have extra resources in the chart. Returns kind List with all given ku
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.` - Inherited Root Context (Required)
 
