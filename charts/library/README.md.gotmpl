@@ -104,11 +104,11 @@ This function enables the following keys on the values scope:
 
 ```
 ## Overwrite Name Template
-# nameOverride -- Overwrite "lib.internal.name" output
+# nameOverride -- Overwrite "lib.internal.common.name" output
 nameOverride: ""
 
 ## Overwrite Fullname Template
-# fullnameOverride -- Overwrite `lib.internal.fullname` output
+# fullnameOverride -- Overwrite `lib.utils.common.fullname` output
 fullnameOverride: ""
 
 ```
@@ -147,7 +147,6 @@ This function enables the following keys on the values scope:
 ```
 ## Selector Labels
 # selectorLabels -- Define default [selectorLabels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
-# @default -- `app.kubernetes.io/name: { include "lib.internal.name" . }<br>app.kubernetes.io/instance: { .Release.Name }`
 selectorLabels: {}
 ```
 

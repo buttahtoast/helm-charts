@@ -106,11 +106,11 @@ This function enables the following keys on the values scope:
 
 ```
 ## Overwrite Name Template
-# nameOverride -- Overwrite "lib.internal.name" output
+# nameOverride -- Overwrite "lib.internal.common.name" output
 nameOverride: ""
 
 ## Overwrite Fullname Template
-# fullnameOverride -- Overwrite `lib.internal.fullname` output
+# fullnameOverride -- Overwrite `lib.utils.common.fullname` output
 fullnameOverride: ""
 
 ```
@@ -149,7 +149,6 @@ This function enables the following keys on the values scope:
 ```
 ## Selector Labels
 # selectorLabels -- Define default [selectorLabels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
-# @default -- `app.kubernetes.io/name: { include "lib.internal.name" . }<br>app.kubernetes.io/instance: { .Release.Name }`
 selectorLabels: {}
 ```
 
@@ -342,7 +341,7 @@ based on registry, repository and tag. The `$.global.defaultTag` value has prece
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.image` - Local Registry definition, see the structure below (Required).
   * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
@@ -593,7 +592,7 @@ This function allows to pass a list and create a single string, with a specific 
 
 #### Arguments
 
-If an as required marked argument is missing, the template engine will intentionally.
+If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.list` - Expects input of type slice. If not given as slice, nothing will be returned (Required).
   * `.context` - Inherited Root Context (Required).
