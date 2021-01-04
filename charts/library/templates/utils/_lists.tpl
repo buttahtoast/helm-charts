@@ -74,16 +74,16 @@
       {{- end }}
       {{- if $cache.keys.overlappingKeyList }}
         {{- range $cache.keys.overlappingKeyList }}
-          {{- $_ := set $cache.lists "overlappingItems" (append $cache.lists.overlappingItems (merge (fromYaml (include "lib.utils.getValueByKey" (dict "list" $cache.input.refList "value" .))) (fromYaml (include "lib.utils.getValueByKey" (dict "list" $cache.input.targetList "value" .))))) }}
+          {{- $_ := set $cache.lists "overlappingItems" (append $cache.lists.overlappingItems (merge (fromYaml (include "lib.utils.lists.getValueByKey" (dict "list" $cache.input.refList "value" .))) (fromYaml (include "lib.utils.lists.getValueByKey" (dict "list" $cache.input.targetList "value" .))))) }}
         {{- end }}
         {{- range $cache.input.refList }}
           {{- if not (has (get . $cache.input.onKey) $cache.keys.overlappingKeyList) }}
-            {{- $_ := set $cache.lists "refListFilter" (append $cache.lists.refListFilter (fromYaml (include "lib.utils.getValueByKey" (dict "list" $cache.input.refList "value" (get . $cache.input.onKey))))) }}
+            {{- $_ := set $cache.lists "refListFilter" (append $cache.lists.refListFilter (fromYaml (include "lib.utils.lists.getValueByKey" (dict "list" $cache.input.refList "value" (get . $cache.input.onKey))))) }}
           {{- end }}
         {{- end }}
         {{- range $cache.input.targetList }}
           {{- if not (has (get . $cache.input.onKey) $cache.keys.overlappingKeyList) }}
-            {{- $_ := set $cache.lists "targetListFilter" (append $cache.lists.targetListFilter (fromYaml (include "lib.utils.getValueByKey" (dict "list" $cache.input.targetList "value" (get . $cache.input.onKey))))) }}
+            {{- $_ := set $cache.lists "targetListFilter" (append $cache.lists.targetListFilter (fromYaml (include "lib.utils.lists.getValueByKey" (dict "list" $cache.input.targetList "value" (get . $cache.input.onKey))))) }}
           {{- end }}
         {{- end }}
         {{- $_ := set $cache "output" (concat $cache.lists.refListFilter $cache.lists.targetListFilter $cache.lists.overlappingItems) }}
