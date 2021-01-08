@@ -1,0 +1,5 @@
+---
+checks:
+  exclude:
+    - "no-readiness-probe"
+    - "no-liveness-probe"

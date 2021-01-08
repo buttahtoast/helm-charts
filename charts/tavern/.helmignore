@@ -23,3 +23,5 @@
 .vscode/
 
 examples/
+.kube-linter.yaml
+README.md.gotmpl
