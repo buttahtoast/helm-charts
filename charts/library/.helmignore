@@ -21,3 +21,6 @@
 .idea/
 *.tmproj
 .vscode/
+
+.kube-linter.yaml
+README.md.gotmpl

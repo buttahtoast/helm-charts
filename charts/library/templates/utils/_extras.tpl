@@ -22,8 +22,12 @@
   valueFrom:
     fieldRef:
       fieldPath: spec.serviceAccountName
-{{- if .Values.proxy }}
-    {{- $proxy := (fromYaml (include "lib.utils.strings.template" (dict "value" .Values.proxy "context" $))) }}
+{{- if $.Values.timezone }}
+- name: "TZ"
+  value: "{{ $.Values.timezone }}"
+{{- end }}
+{{- if $.Values.proxy }}
+    {{- $proxy := (fromYaml (include "lib.utils.strings.template" (dict "value" $.Values.proxy "context" $))) }}
     {{- if $proxy.httpProxy }}
         {{- if and ($proxy.httpProxy.host) ($proxy.httpProxy.port) }}
 - name: "HTTP_PROXY"

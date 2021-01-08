@@ -2,9 +2,9 @@
   All Values - Template
 */}}
 {{- define "lib.values.all" -}}
-{{- include "lib.values.globals" $ }}
+{{ include "lib.values.globals" $ | nindent 0 }}
 
-{{- include "lib.values.common" $ }}
+{{ include "lib.values.common" $ | nindent 0 }}
 
-{{- include "lib.values.extras.proxy" $ }}
+{{ include "lib.values.extras" $ | nindent 0 }}
 {{- end -}}

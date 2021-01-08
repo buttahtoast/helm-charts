@@ -1,8 +1,8 @@
 {{/*
   Extra Values Proxy - Template
 */}}
-{{- define "lib.values.extras.proxy" -}}
-## Proxy Values 
+{{- define "lib.values.extras" -}}
+## Proxy Values
 ##
 proxy:
 
@@ -42,4 +42,8 @@ proxy:
   # proxy.noProxy -- Configure No Proxy Hosts
   # noProxy: [ "localhost", "127.0.0.1" ]
   noProxy: []
+
+## Define Container Timezone
+# timezone -- Define Container Timezone (Sets TZ Environment)
+timezone: "Europe/Zurich"
 {{- end }}
