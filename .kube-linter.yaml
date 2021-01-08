@@ -1,7 +1,7 @@
 ---
 checks:
   addAllBuiltIn: true
-  execlude:
+  exclude:
     - "default-service-account"
     - "no-anti-affinity"
     - "required-annotation-email"
