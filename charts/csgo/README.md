@@ -1,6 +1,6 @@
 # CSGO Server
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 This is a helm chart for all the docker image variants published by [cm2network](https://hub.docker.com/r/cm2network/csgo/). Container configurations can be looked up on the referenced link.
 
@@ -166,6 +166,10 @@ Major Changes to functions are documented with the version affected. **Before up
 | tv.service.portName | string | `"srcds_tv"` | Configure Service Port name |
 | tv.service.selector | object | `bedag-lib.selectorLabels` | Configure Service Selector Labels |
 | tv.service.type | string | `"ClusterIP"` | Configure Service [Type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types). |
+
+## Source Code
+
+* <https://github.com/buttahtoast/helm-charts/tree/master/charts/csgo>
 
 ## Requirements
 
