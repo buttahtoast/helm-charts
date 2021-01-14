@@ -2,6 +2,41 @@ apiVersion: v1
 entries:
   csgo:
   - annotations:
+      artifacthub.io/changes: |
+        - adding chart source
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/images: |
+        - name: latest
+          image: cm2network/csgo:latest
+        - name: sourcemod
+          image: cm2network/csgo:sourcemod
+        - name: metamod
+          image: cm2network/csgo:metamod
+      artifacthub.io/prerelease: "true"
+    apiVersion: v2
+    appVersion: 1.0.0
+    created: "2021-01-14T23:14:36.142974707Z"
+    dependencies:
+    - name: manifests
+      repository: https://bedag.github.io/helm-charts
+      version: '>=0.1.0'
+    description: Source Server
+    digest: d4c03ce15c6fb9300e5825b93fa9a90d54444eab5c6ea51cae367d6e056733ac
+    home: https://github.com/CM2Walki/CSGO
+    icon: https://secure.gravatar.com/avatar/5bc9e6b19f1183776d7ff3a9652bd0a7.jpg?s=80&r=g&d=mm
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: csgo
+    sources:
+    - https://github.com/buttahtoast/helm-charts/tree/master/charts/csgo
+    type: application
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/csgo-0.1.1/csgo-0.1.1.tgz
+    version: 0.1.1
+  - annotations:
       artifacthub.io/containsSecurityUpdates: "false"
       artifacthub.io/images: |
         - name: latest
@@ -33,6 +68,33 @@ entries:
     - https://github.com/buttahtoast/helm-charts/releases/download/csgo-0.1.0/csgo-0.1.0.tgz
     version: 0.1.0
   library:
+  - annotations:
+      artifacthub.io/changes: |
+        - adding chart source
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/prerelease: "true"
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2021-01-14T23:14:36.28967185Z"
+    description: Buttahtoast Helm Library
+    digest: 62c01077ca4fcfe0cf836923dbb8210324a04388ed235c77c5f224dbed5a2380
+    home: https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    icon: https://avatars0.githubusercontent.com/u/67652090?s=400&u=874d1c989b0afc2789865be01051f0bbfc84ae32&v=4
+    keywords:
+    - library
+    - sprig
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: library
+    sources:
+    - https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    type: library
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/library-0.3.2/library-0.3.2.tgz
+    version: 0.3.2
   - annotations:
       artifacthub.io/containsSecurityUpdates: "false"
       artifacthub.io/prerelease: "true"
@@ -160,6 +222,42 @@ entries:
     - https://github.com/buttahtoast/helm-charts/releases/download/library-0.1.0/library-0.1.0.tgz
     version: 0.1.0
   tavern:
+  - annotations:
+      artifacthub.io/changes: |
+        - adding chart source
+      artifacthub.io/containsSecurityUpdates: "true"
+      artifacthub.io/images: |
+        - name: tavern
+          image: buttahtoast/docker-tavern:1.0.4
+      artifacthub.io/prerelease: "true"
+    apiVersion: v2
+    appVersion: 1.0.4
+    created: "2021-01-14T23:14:36.439586138Z"
+    dependencies:
+    - name: manifests
+      repository: https://bedag.github.io/helm-charts
+      version: '>=0.1.0'
+    description: Unofficial Tavern Helm Chart
+    digest: 4b4e29484bc366a92d2b50c7fe8ffebb9f2456bae8890115c591bec2751a8f87
+    home: https://tavern.readthedocs.io/en/latest/
+    icon: https://tavern.readthedocs.io/en/latest/_static/icon.png
+    keywords:
+    - python
+    - tavern
+    - API testing
+    - pytest
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: tavern
+    sources:
+    - https://github.com/buttahtoast/helm-charts/tree/master/charts/tavern
+    type: application
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.2.4/tavern-0.2.4.tgz
+    version: 0.2.4
   - annotations:
       artifacthub.io/containsSecurityUpdates: "true"
       artifacthub.io/images: |
