@@ -20,9 +20,15 @@ maintainers:
     email: oliverbaehler@hotmail.com
   - name: chifu1234
     email: kk@sudo-i.net
+sources:
+  - https://github.com/buttahtoast/helm-charts/tree/master/charts/tavern
 annotations:
   artifacthub.io/containsSecurityUpdates: "false"
+  artifacthub.io/changes: |
+    - Enhancement: Allow Vanilla Tavern Tests
+    - Enhancement: Define `manifests` dependency more loose
+    - Update: Increment Application version to 1.1.0
   artifacthub.io/prerelease: "true"
   artifacthub.io/images: |
     - name: tavern
-      image: buttahtoast/docker-tavern:1.0.4
+      image: buttahtoast/docker-tavern:1.1.0

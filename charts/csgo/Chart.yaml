@@ -15,8 +15,12 @@ maintainers:
     email: oliverbaehler@hotmail.com
   - name: chifu1234
     email: kk@sudo-i.net
+sources:
+  - https://github.com/buttahtoast/helm-charts/tree/master/charts/csgo
 annotations:
   artifacthub.io/containsSecurityUpdates: "false"
+  artifacthub.io/changes: |
+    - adding chart source
   artifacthub.io/prerelease: "true"
   artifacthub.io/images: |
     - name: latest
