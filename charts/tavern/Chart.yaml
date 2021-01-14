@@ -2,7 +2,7 @@ apiVersion: v2
 name: tavern
 description: "Unofficial Tavern Helm Chart"
 type: application
-version: 0.2.3
+version: 0.2.4
 appVersion: 1.0.4
 home: "https://tavern.readthedocs.io/en/latest/"
 icon: "https://tavern.readthedocs.io/en/latest/_static/icon.png"
@@ -20,8 +20,12 @@ maintainers:
     email: oliverbaehler@hotmail.com
   - name: chifu1234
     email: kk@sudo-i.net
+sources:
+  - https://github.com/buttahtoast/helm-charts/tree/master/charts/tavern
 annotations:
   artifacthub.io/containsSecurityUpdates: "true"
+  artifacthub.io/changes: |
+    - adding chart source
   artifacthub.io/prerelease: "true"
   artifacthub.io/images: |
     - name: tavern

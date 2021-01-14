@@ -65,6 +65,17 @@ Any breaking changes to a chart (backwards incompatible) require:
 
 Each release for each chart must be immutable. Any change to a chart (even just documentation) requires a version bump.
 
+### Changelog
+
+Document changes in the chart with Artifachub change [annotations](https://artifacthub.io/docs/topics/annotations/helm/).
+```
+...
+annotations:
+ artifacthub.io/changes: |
+   - some change
+...
+``` 
+
 ## Adding a new chart
 
 Currently these are the only requirements to add a new chart:
