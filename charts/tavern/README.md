@@ -1,6 +1,6 @@
 # Tavern
 
-![Version: 0.2.4](https://img.shields.io/badge/Version-0.2.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 Unofficial Tavern Helm Chart
 
@@ -23,7 +23,7 @@ The chart is under active development and may contain bugs/unfinished documentat
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://bedag.github.io/helm-charts | manifests | >=0.1.0 |
+| https://bedag.github.io/helm-charts | manifests | >= 0.4.0 < 1.0.0 |
 
 # Major Changes
 
@@ -37,9 +37,9 @@ Major Changes to functions are documented with the version affected. **Before up
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| commonLabels | object | `{}` | Common Labels are added to each kubernetes resource manifest. But will not be added to resources rendered by the common chart (eg. JMX Exporter) |
+| commonLabels | object | `{}` | Common Labels are added to each kubernetes resource manifest. |
 | extraResources | list | `[]` | Enter Extra Resources managed by the release |
-| fullnameOverride | string | `""` | Overwrite "bedag-lib.fullname" output |
+| fullnameOverride | string | `""` | Overwrite `lib.utils.common.fullname` output |
 | global.imagePullPolicy | string | `""` | Global Docker Image Pull Policy declaration. Will overwrite all child .pullPolicy fields. |
 | global.imagePullSecrets | list | `[]` | Global Docker Image Pull Secrets declaration. Added to local Docker Image Pull Secrets. |
 | global.imageRegistry | string | `""` | Global Docker Image Registry declaration. Will overwrite all child .registry fields. |
@@ -74,7 +74,7 @@ Major Changes to functions are documented with the version affected. **Before up
 | job.podFields | object | `{}` | Add extra field to the [Pod Template](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#podtemplate-v1-core) if not available as value. |
 | job.podLabels | object | `{}` | Pod [labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) are only added for the pod |
 | job.podSecurityContext | object | `{"fsGroup":1500,"runAsGroup":1500,"runAsUser":1500}` | Pod [SecurityContext](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) |
-| job.ports | object | `{}` | Configure Container Ports |
+| job.ports | list | `[]` | Configure Container Ports |
 | job.priorityClassName | string | `""` | Pod [priorityClassName](https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass) |
 | job.readinessProbe | object | `{}` | Container [ReadinessProbe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-readiness-probes) |
 | job.resources | object | `{}` | Configure Container [Resource](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) |
@@ -99,9 +99,10 @@ Major Changes to functions are documented with the version affected. **Before up
 | job.suspend | string | false | The number of successful finished jobs to retain. This is a pointer to distinguish between explicit zero and not specified. |
 | job.tolerations | object | `{}` | Pod [Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 | job.ttlSecondsAfterFinished | string | `nil` | ttlSecondsAfterFinished limits the lifetime of a Job that has finished execution (either Complete or Failed). |
-| job.volumeMounts | object | `{}` | Configure Container [volumeMounts](https://kubernetes.io/docs/tasks/configure-pod-container/configure-volume-storage/) |
+| job.volumeMounts | list | `[]` | Configure Container [volumeMounts](https://kubernetes.io/docs/tasks/configure-pod-container/configure-volume-storage/) |
 | job.volumes | list | `[]` | Additional [Volumes](https://kubernetes.io/docs/concepts/storage/volumes/) |
-| nameOverride | string | `""` | Overwrite "bedag-lib.name" output |
+| kubeCapabilities | string | `$.Capabilities.KubeVersion.GitVersion` | Overwrite the Kube GitVersion |
+| nameOverride | string | `""` | Overwrite "lib.internal.common.name" output |
 | overwriteLabels | object | `{}` | Overwrites default labels, but not resource specific labels and common labels |
 | proxy.httpProxy.host | string | `""` | Configure HTTP Proxy Hostname/IP (without protocol://) |
 | proxy.httpProxy.port | int | `nil` | Configure HTTP Proxy Port |
@@ -109,8 +110,8 @@ Major Changes to functions are documented with the version affected. **Before up
 | proxy.httpsProxy.host | string | `""` | Configure HTTPS Proxy Hostname/IP (without protocol://) |
 | proxy.httpsProxy.port | int | `nil` | Configure HTTPS Proxy Port |
 | proxy.httpsProxy.protocol | string | http | Configure HTTPS Proxy Protocol (http/https) |
-| proxy.noProxy | list | `[ "localhost", "127.0.0.1" ]` | Configure No Proxy Hosts |
-| selectorLabels | object | `app.kubernetes.io/name: crowd-software<br>app.kubernetes.io/instance: test` | Define default [selectorLabels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) |
+| proxy.noProxy | list | `[]` | Configure No Proxy Hosts noProxy: [ "localhost", "127.0.0.1" ] |
+| selectorLabels | object | `{}` | Define default [selectorLabels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) |
 | stageTemplates | list | `[]` | Tavern Test Stage Templates (See the examples) |
 | tavern.asCronjob | bool | `false` | Runs Tavern as Cronjob, instead of Job |
 | tavern.debug | bool | `false` | Enables logging on DEBUG level |
@@ -118,6 +119,7 @@ Major Changes to functions are documented with the version affected. **Before up
 | tavern.test_directory | string | `"/tavern"` | Directory where all your tests are mounted |
 | testTemplates | list | `[]` | Tavern Test Suite Templates (See the examples) |
 | tests | list | `[]` | Tavern Test Suites which will be executed |
+| timezone | string | `"Europe/Zurich"` | Define Container Timezone (Sets TZ Environment) |
 
 # Implementing Tests
 
