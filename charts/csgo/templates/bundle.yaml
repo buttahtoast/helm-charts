@@ -34,7 +34,7 @@ resources:
       */}}
       environment:
       {{- if $.Values.statefulset.environment }}
-        {{- include "lib.utils.exceptionList" (dict "list" $.Values.statefulset.environment "exceptions" (list "CROWD_HOME" "CLUSTERED" "JVM_MINIMUM_MEMORY" "JVM_MAXIMUM_MEMORY" "JVM_SUPPORT_RECOMMENDED_ARGS") "context" $) | nindent 8 }}
+        {{- include "lib.utils.lists.exceptionList" (dict "list" $.Values.statefulset.environment "exceptions" (list "CROWD_HOME" "CLUSTERED" "JVM_MINIMUM_MEMORY" "JVM_MAXIMUM_MEMORY" "JVM_SUPPORT_RECOMMENDED_ARGS") "context" $) | nindent 8 }}
       {{- end }}
       {{- include "csgo.environment" $ | nindent 8 }}
       {{- if $.Values.config.timezone }}

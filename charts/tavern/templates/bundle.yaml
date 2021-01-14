@@ -18,6 +18,7 @@ limitations under the License.
 
 {{- include "bedag-lib.manifest.bundle" (dict "bundle" (fromYaml (include "tavern.bundle" $)) "context" $) | nindent 0 }}
 
+
 {{/*
   Tavern Chart Bundle
 */}}
@@ -34,6 +35,10 @@ resources:
   {{- end }}
     values: {{ toYaml $.Values.job | nindent 6 }}
     overwrites:
+
+      {{/* PodLabels (Checksum) */}}
+      podLabels:
+        test_config: {{ (toYaml $tavern_tests) | sha256sum | trunc 63 }}
 
       {{/* VolumeMounts */}}
       volumeMounts:
@@ -58,7 +63,7 @@ resources:
       {{- end }}
       {{- if $tavern_tests.tests }}
         {{- range $tavern_tests.tests }}
-          {{- $ref := include "lib.utils.fullname" (dict "name" .name "context" $) }}
+          {{- $ref := include "lib.utils.common.fullname" (dict "name" .name "context" $) }}
           {{- if .secret }}
         - name: {{ .name }}
           secret:

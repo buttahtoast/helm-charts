@@ -31,13 +31,13 @@
     {{- if $proxy.httpProxy }}
         {{- if and ($proxy.httpProxy.host) ($proxy.httpProxy.port) }}
 - name: "HTTP_PROXY"
-  value: {{ printf "\"%s://%s:%s\"" (default "http" $proxy.httpProxy.protocol) $proxy.httpProxy.host $proxy.httpProxy.port }}
+  value: {{ printf "\"%s://%s:%s\"" (default "http" $proxy.httpProxy.protocol | toString) ($proxy.httpProxy.host | toString) ($proxy.httpProxy.port | toString) }}
         {{- end }}
     {{- end }}
     {{- if $proxy.httpsProxy }}
         {{- if and ($proxy.httpsProxy.host) ($proxy.httpsProxy.port) }}
 - name: "HTTPS_PROXY"
-  value: {{ printf "\"%s://%s:%s\"" (default "http" $proxy.httpsProxy.protocol) $proxy.httpsProxy.host $proxy.httpsProxy.port }}
+  value: {{ printf "\"%s://%s:%s\"" (default "http" $proxy.httpsProxy.protocol | toString) ($proxy.httpsProxy.host | toString)  ($proxy.httpsProxy.port | toString) }}
         {{- end }}
     {{- end }}
     {{- if $proxy.noProxy }}

@@ -21,3 +21,8 @@
 .idea/
 *.tmproj
 .vscode/
+
+# Default Chart Repository Execludes
+.chart-config
+.kube-linter.yaml
+README.md.gotmpl

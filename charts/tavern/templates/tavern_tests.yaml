@@ -6,8 +6,8 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ include "lib.utils.fullname" (dict "name" .name "context" $) }}
-  labels: {{- include "lib.utils.labels" $ | nindent 4 }}
+  name: {{ include "lib.utils.common.fullname" (dict "name" .name "context" $) }}
+  labels: {{- include "lib.utils.common.labels" $ | nindent 4 }}
 type: Opaque
 data:
   {{ .name }}: {{- toYaml .test | b64enc | nindent 4 }}
@@ -16,10 +16,15 @@ data:
 kind: "ConfigMap"
 apiVersion: "v1"
 metadata:
-  name: {{ include "lib.utils.fullname" (dict "name" .name "context" $) }}
-  labels: {{- include "lib.utils.labels" $ | nindent 4 }}
+  name: {{ include "lib.utils.common.fullname" (dict "name" .name "context" $) }}
+  labels: {{- include "lib.utils.common.labels" $ | nindent 4 }}
 data:
-  {{ .name }}: |- {{- toYaml .test | nindent 4 }}
+  {{ .name }}: |
+      {{- if (kindIs "map" .test) }}
+        {{- toYaml .test | nindent 8 }}
+      {{- else }}
+        {{- .test | nindent 8 }}
+      {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}

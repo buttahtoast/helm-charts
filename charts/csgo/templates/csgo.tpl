@@ -29,14 +29,14 @@
 - name: SRCDS_RCONPW
   valueFrom:
     secretKeyRef:
-      name: {{ include "lib.utils.fullname" $ }}-config
+      name: {{ include "lib.utils.common.fullname" $ }}-config
       key: SRCDS_RCONPW
   {{- end }}
   {{- if and $config.password (kindIs "string" $config.password)  }}
 - name: SRCDS_PW
   valueFrom:
     secretKeyRef:
-      name: {{ include "lib.utils.fullname" $ }}-config
+      name: {{ include "lib.utils.common.fullname" $ }}-config
       key: SRCDS_PW
   {{- end }}
 - name: "SRCDS_PORT"
@@ -75,7 +75,7 @@
 - name: SRCDS_WORKSHOP_AUTHKEY
   valueFrom:
     secretKeyRef:
-      name: {{ include "lib.utils.fullname" $ }}
+      name: {{ include "lib.utils.common.fullname" $ }}
       key: SRCDS_WORKSHOP_AUTHKEY
   {{- end }}
   {{- if and $config.workshop.additional_args (kindIs "slice" $config.workshop.additional_args) }}
