@@ -67,7 +67,7 @@ Each release for each chart must be immutable. Any change to a chart (even just 
 
 ### Changelog
 
-Document changes in the chart with Artifachub change [annotations](https://artifacthub.io/docs/topics/annotations/helm/).
+Document changes in the chart with Artifachub change [annotations](https://artifacthub.io/docs/topics/annotations/helm/). For every new release the entire ```artifacthub.io/changes``` needs to be rewritten.
 ```
 ...
 annotations:
