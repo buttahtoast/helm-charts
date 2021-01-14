@@ -25,9 +25,20 @@ sources:
 annotations:
   artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/changes: |
-    - Enhancement: Allow Vanilla Tavern Tests
-    - Enhancement: Define `manifests` dependency more loose
-    - Update: Increment Application version to 1.1.0
+    **Added:**
+      * Allow Vanilla Tavern Tests
+      * Return empty when no tests are defined
+      * Simple exmample for documentation
+    **Changed:**
+      * Define `manifests` dependency more loose
+    **Deprecated:**
+      * None
+    **Removed:**
+      * None
+    **Fixed:**
+      * Moved to new `library` naming
+    **Security:**
+      * None
   artifacthub.io/prerelease: "true"
   artifacthub.io/images: |
     - name: tavern

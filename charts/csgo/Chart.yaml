@@ -20,7 +20,18 @@ sources:
 annotations:
   artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/changes: |
-    - adding chart source
+    **Added:**
+      * Default `.helmignore` values
+    **Changed:**
+      * Define `manifests` dependency more loose
+    **Deprecated:**
+      * None
+    **Removed:**
+      * None
+    **Fixed:**
+      * Moved to new `library` naming
+    **Security:**
+      * None
   artifacthub.io/prerelease: "true"
   artifacthub.io/images: |
     - name: latest

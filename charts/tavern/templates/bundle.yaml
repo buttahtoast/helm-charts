@@ -24,6 +24,7 @@ limitations under the License.
 */}}
 {{- define "tavern.bundle" -}}
   {{- $tavern_tests := (fromYaml (include "tavern.tests" $)) -}}
+    {{- if $tavern_tests.tests }}
 resources:
   {{- if and $.Values.extraResources (kindIs "slice" $.Values.extraResources) }}
     {{- toYaml $.Values.extraResources | nindent 2 }}
@@ -77,4 +78,5 @@ resources:
           {{- end }}
         {{- end }}
       {{- end }}
+  {{- end }}
 {{- end }}
