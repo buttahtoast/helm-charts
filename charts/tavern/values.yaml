@@ -114,7 +114,6 @@ proxy:
 # timezone -- Define Container Timezone (Sets TZ Environment)
 timezone: "Europe/Zurich"
 
-
 ## Tavern Test Configuration
 ##
 

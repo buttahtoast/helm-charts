@@ -253,8 +253,9 @@ proxy:
   # @default -- `[ "localhost", "127.0.0.1" ]`
   noProxy: []
 
-
-
+## Define Container Timezone
+# timezone -- Define Container Timezone (Sets TZ Environment)
+timezone: "Europe/Zurich"
 
 #
 ## - Statefulset

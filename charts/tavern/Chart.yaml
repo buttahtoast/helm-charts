@@ -29,6 +29,7 @@ annotations:
       * Allow Vanilla Tavern Tests
       * Return empty when no tests are defined
       * Simple exmample for documentation
+      * `timezone` value
     **Changed:**
       * Define `manifests` dependency more loose
     **Deprecated:**
