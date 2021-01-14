@@ -152,6 +152,7 @@ Major Changes to functions are documented with the version affected. **Before up
 | statefulset.volumeClaimTemplates | list | `[]` | Statefulset [volumeClaimTemplates](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#components). **Statefulset only** |
 | statefulset.volumeMounts | object | `{}` | Configure Container [volumeMounts](https://kubernetes.io/docs/tasks/configure-pod-container/configure-volume-storage/) |
 | statefulset.volumes | list | `[]` | Additional [Volumes](https://kubernetes.io/docs/concepts/storage/volumes/) |
+| timezone | string | `"Europe/Zurich"` | Define Container Timezone (Sets TZ Environment) |
 | tv.enabled | bool | `true` | Enable GO broadcasting (Enables Service and Port) |
 | tv.port | int | `27020` | `SRCDS_TV_PORT` Configuration - Pod port for broadcasting |
 | tv.service.annotations | object | `{}` | Configure Service additional Annotations ([Monitor Labels](https://www.weave.works/docs/cloud/latest/tasks/monitor/configuration-k8s/)) |
