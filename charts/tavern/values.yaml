@@ -39,16 +39,20 @@ tavern:
 # extraResources -- Enter Extra Resources managed by the release
 extraResources: []
 
+
+## Common Values
+##
+
 ## Overwrite Name Template
-# nameOverride -- Overwrite "bedag-lib.name" output
+# nameOverride -- Overwrite "lib.internal.common.name" output
 nameOverride: ""
 
 ## Overwrite Fullname Template
-# fullnameOverride -- Overwrite "bedag-lib.fullname" output
+# fullnameOverride -- Overwrite `lib.utils.common.fullname` output
 fullnameOverride: ""
 
 ## Common Labels
-# commonLabels -- Common Labels are added to each kubernetes resource manifest. But will not be added to resources rendered by the common chart (eg. JMX Exporter)
+# commonLabels -- Common Labels are added to each kubernetes resource manifest.
 commonLabels: {}
 
 ## Overwrite Labels
@@ -57,17 +61,19 @@ overwriteLabels: {}
 
 ## Selector Labels
 # selectorLabels -- Define default [selectorLabels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
-# @default -- `app.kubernetes.io/name: crowd-software<br>app.kubernetes.io/instance: test`
 selectorLabels: {}
 
-## Proxy Configuration
-## By Configuring the following proxy settings, the proxy is added automaticaly as environment variables
-## The Structure is compatible with other proxy related functions, like "bedag-lib.util.javaProxies"
+## Version Capabilities
+# kubeCapabilities -- Overwrite the Kube GitVersion
+# @default -- `$.Capabilities.KubeVersion.GitVersion`
+kubeCapabilities: ""
+
+
+## Proxy Values
 ##
 proxy:
 
   ## HTTP Proxy Configuration
-  ##
   httpProxy:
 
     ## HTTP Proxy Host Configuration
@@ -84,7 +90,6 @@ proxy:
     protocol: ""
 
   ## HTTPS Proxy Configuration
-  ##
   httpsProxy:
 
     ## HTTPS Proxy Host Configuration
@@ -102,9 +107,12 @@ proxy:
 
   ## No Proxy Hosts Configuration
   # proxy.noProxy -- Configure No Proxy Hosts
-  # @default -- `[ "localhost", "127.0.0.1" ]`
+  # noProxy: [ "localhost", "127.0.0.1" ]
   noProxy: []
 
+## Define Container Timezone
+# timezone -- Define Container Timezone (Sets TZ Environment)
+timezone: "Europe/Zurich"
 
 ## Tavern Test Configuration
 ##
@@ -195,7 +203,7 @@ testTemplates: []
 
 ## Test Suites
 # tests -- Tavern Test Suites which will be executed
-tests: []
+tests: 
 #
 # Simple Test Suite
 # Does not use Test Suite Template, but Stage Template
@@ -275,6 +283,81 @@ tests: []
 #            request:
 #              verify: true
 #
+
+#
+# Simple Test Suite
+# Does not use Test Suite Template, but Stage Template
+#
+#  Test Suite Name
+#  tests[2].name -- Test Suite Name
+#  - name: "Sample Suite"
+#
+#  Stores Test Suite in Secret instead of configmap
+#  tests[2].secret -- Test Suite Secret
+#    secret: true
+#
+#  Test Suite Values
+#  tests[2].values -- Go Sprig Values accessible under `$.tavern` for the entire Suite
+#    values:
+#      enable_products: true
+#
+#  Tavern Test Suite Definition
+#
+#
+#    test:
+#      stages:
+#
+#        ## Straight Test
+#        - name: "Try to get user"
+#          stage:
+#            request:
+#              url: "{host}/users/joebloggs"
+#              method: GET
+#              json:
+#                clusterName: "test"
+#            response:
+#              status_code:
+#                - 200
+#                - 404
+#
+#
+## Vanilla Test
+# Don't allow templating but support special statements like `!include` which won't be templated.
+#
+# Test Suite Name
+# tests[0].name -- Test Suite Name
+  - name: "vanilla_test"
+#
+# Test Vanilla
+# tests[0].name -- Test Suite Name
+    vanilla: true
+#
+# Stores Test Suite in Secret instead of configmap
+# tests[0].secret -- Test Suite Secret
+    secret: true
+#
+# Tavern test definition
+# tests[0].test -- Tavern Test Definition
+# @default -- see `values.yaml`
+    test: |
+      test_name: Make sure cookie is required to log in
+
+      includes:
+        - !include common.yaml
+
+      stages:
+        - name: Try to check user info without login information
+          request:
+            url: "{host}/userinfo"
+            method: GET
+          response:
+            status_code: 401
+            json:
+              error: "no login information"
+            headers:
+              content-type: application/json
+
+
 
 
 ## CronJob/Job Configuration
@@ -551,7 +634,7 @@ job:
   ## Container Ports
   # job.ports -- Configure Container Ports
   ports:
-    {}
+    []
   # - name: "health"
   #   containerPort: 9090
   #   protocol: TCP
@@ -559,7 +642,7 @@ job:
   ## Additional Volume Mounts
   # job.volumeMounts -- Configure Container [volumeMounts](https://kubernetes.io/docs/tasks/configure-pod-container/configure-volume-storage/)
   volumeMounts:
-    {}
+    []
   #  - name: "cache"
   #    mountPath: /cache
   #  - name: "share"

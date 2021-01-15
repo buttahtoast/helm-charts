@@ -2,8 +2,8 @@ apiVersion: v2
 name: tavern
 description: "Unofficial Tavern Helm Chart"
 type: application
-version: 0.2.4
-appVersion: 1.0.4
+version: 0.3.0
+appVersion: 1.1.0
 home: "https://tavern.readthedocs.io/en/latest/"
 icon: "https://tavern.readthedocs.io/en/latest/_static/icon.png"
 keywords:
@@ -13,7 +13,7 @@ keywords:
   - pytest
 dependencies:
  - name: manifests
-   version: ">=0.1.0"
+   version: ">= 0.4.0 < 1.0.0"
    repository: https://bedag.github.io/helm-charts
 maintainers:
   - name: oliverbaehler
@@ -23,10 +23,25 @@ maintainers:
 sources:
   - https://github.com/buttahtoast/helm-charts/tree/master/charts/tavern
 annotations:
-  artifacthub.io/containsSecurityUpdates: "true"
+  artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/changes: |
-    - adding chart source
+    **Added:**
+      * Allow Vanilla Tavern Tests
+      * Return empty when no tests are defined
+      * Simple exmample for documentation
+      * `timezone` value
+      * Dumy Test as default (Allows linting)
+    **Changed:**
+      * Define `manifests` dependency more loose
+    **Deprecated:**
+      * None
+    **Removed:**
+      * None
+    **Fixed:**
+      * Moved to new `library` naming
+    **Security:**
+      * None
   artifacthub.io/prerelease: "true"
   artifacthub.io/images: |
     - name: tavern
-      image: buttahtoast/docker-tavern:1.0.4
+      image: buttahtoast/docker-tavern:1.1.0

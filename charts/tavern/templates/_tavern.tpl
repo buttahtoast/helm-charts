@@ -1,4 +1,20 @@
+{{/*
 
+Copyright © 2021 Buttahtoast
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+*/}}
 {{/*
   Tavern - Test Directory
 */}}
@@ -38,57 +54,61 @@
 */}}
 {{- define "tavern.tests" -}}
   {{- if and $.Values.tests (kindIs "slice" $.Values.tests) }}
-    {{- $tests := list -}}
+    {{- $tests := list }}
     {{- range $.Values.tests }}
       {{- if .name }}
         {{- $tavern_test := . }}
-        {{ $_ := set $tavern_test "name" (include "lib.utils.toDns1123" .name) }}
-        {{- $t_values := dict }}
-        {{- $g_stages := list }}
-        {{- if .test }}
-          {{- $_ := set $tavern_test "test" (fromYaml (include "lib.utils.template" (dict "value" .test "extraValues" .values "extraValuesKey" "tavern" "context" $))) }}
+        {{ $_ := set $tavern_test "name" (include "lib.utils.strings.toDns1123" .name) }}
+        {{- if and .vanilla .test }}
+          {{- $_ := set $tavern_test "test" .test }}
         {{- else }}
-          {{- $_ := set $tavern_test "test" dict -}}
-        {{- end }}
-        {{- if .template }}
-          {{- if not (include "lib.utils.hasValueByKey" (dict "list" $.Values.testTemplates "value" .template)) }}
-            {{- fail (cat "Test Suite Template" (.template | squote) "not found") }}
+          {{- $t_values := dict }}
+          {{- $g_stages := list }}
+          {{- if .test }}
+            {{- $_ := set $tavern_test "test" (fromYaml (include "lib.utils.strings.template" (dict "value" .test "extraValues" .values "extraValuesKey" "tavern" "context" $))) }}
           {{- else }}
-            {{- $l_test_template := (fromYaml (include "lib.utils.getValueByKey" (dict "list" $.Values.testTemplates "value" .template))) }}
-            {{- $t_values = merge (default dict $l_test_template.values) (default dict .values) }}
-            {{- $test_template := (fromYaml (include "lib.utils.template" (dict "value" (default dict $l_test_template.template) "extraValues" $t_values "extraValuesKey" "tavern" "context" $))) }}
-            {{- $g_stages = (fromYaml (include "lib.utils.mergeListOnKey" (dict "source" $test_template.stages "target" (default dict $tavern_test.test.stages) "parentKey" "stages"))) }}
-            {{- $_ := set $tavern_test "test" (mergeOverwrite $test_template (fromYaml (include "lib.utils.template" (dict "value" .test "extraValues" $t_values "extraValuesKey" "tavern"  "context" $)))) }}
+            {{- $_ := set $tavern_test "test" dict -}}
           {{- end }}
-        {{- end }}
-        {{- $_ := set $tavern_test.test "test_name" .name }}
-        {{- $_S := (default . $g_stages) }}
-        {{- if and $_S.stages (kindIs "slice" $_S.stages) }}
-          {{- $stages := list }}
-          {{- range $_S.stages }}
-            {{- if .name }}
-              {{- if .template }}
-                {{- if not (include "lib.utils.hasValueByKey" (dict "list" $.Values.stageTemplates "value" .template)) }}
-                  {{- fail (cat "Test Stage Template" (.template | squote) "not found") }}
-                {{- else }}
-                  {{- $l_stage_template := (fromYaml (include "lib.utils.getValueByKey" (dict "list" $.Values.stageTemplates "value" .template))) }}
-                  {{- $l_values := merge $t_values (default dict $l_stage_template.values) (default dict .values) }}
-                  {{- if (kindIs "string" $l_stage_template.template) }}
-                    {{- $stage_template := (fromYaml (include "lib.utils.template" (dict "value" $l_stage_template.template "extraValues" $l_values "extraValuesKey" "tavern" "context" $))) }}
-                    {{- $stage := mergeOverwrite $stage_template (fromYaml (include "lib.utils.template" (dict "value" (default dict .stage) "extraValues" $l_values "extraValuesKey" "tavern" "context" $))) }}
-                    {{- $_ := set $stage "name" .name }}
-                    {{- $stages = append $stages $stage }}
+          {{- if .template }}
+            {{- if not (include "lib.utils.lists.hasValueByKey" (dict "list" $.Values.testTemplates "value" .template)) }}
+              {{- fail (cat "Test Suite Template" (.template | squote) "not found") }}
+            {{- else }}
+              {{- $l_test_template := (fromYaml (include "lib.utils.lists.getValueByKey" (dict "list" $.Values.testTemplates "value" .template))) }}
+              {{- $t_values = merge (default dict $l_test_template.values) (default dict .values) }}
+              {{- $test_template := (fromYaml (include "lib.utils.strings.template" (dict "value" (default dict $l_test_template.template) "extraValues" $t_values "extraValuesKey" "tavern" "context" $))) }}
+              {{- $g_stages = (fromYaml (include "lib.utils.lists.mergeListOnKey" (dict "source" $test_template.stages "target" (default dict $tavern_test.test.stages) "parentKey" "stages"))) }}
+              {{- $_ := set $tavern_test "test" (mergeOverwrite $test_template (fromYaml (include "lib.utils.strings.template" (dict "value" .test "extraValues" $t_values "extraValuesKey" "tavern"  "context" $)))) }}
+            {{- end }}
+          {{- end }}
+          {{- $_ := set $tavern_test.test "test_name" .name }}
+          {{- $_S := (default . $g_stages) }}
+          {{- if and $_S.stages (kindIs "slice" $_S.stages) }}
+            {{- $stages := list }}
+            {{- range $_S.stages }}
+              {{- if .name }}
+                {{- if .template }}
+                  {{- if not (include "lib.utils.lists.hasValueByKey" (dict "list" $.Values.stageTemplates "value" .template)) }}
+                    {{- fail (cat "Test Stage Template" (.template | squote) "not found") }}
+                  {{- else }}
+                    {{- $l_stage_template := (fromYaml (include "lib.utils.lists.getValueByKey" (dict "list" $.Values.stageTemplates "value" .template))) }}
+                    {{- $l_values := merge $t_values (default dict $l_stage_template.values) (default dict .values) }}
+                    {{- if (kindIs "string" $l_stage_template.template) }}
+                      {{- $stage_template := (fromYaml (include "lib.utils.strings.template" (dict "value" $l_stage_template.template "extraValues" $l_values "extraValuesKey" "tavern" "context" $))) }}
+                      {{- $stage := mergeOverwrite $stage_template (fromYaml (include "lib.utils.strings.template" (dict "value" (default dict .stage) "extraValues" $l_values "extraValuesKey" "tavern" "context" $))) }}
+                      {{- $_ := set $stage "name" .name }}
+                      {{- $stages = append $stages $stage }}
+                    {{- end }}
                   {{- end }}
-                {{- end }}
-              {{- else }}
-                {{- if .stage }}
-                  {{- $_ := set .stage "name" .name }}
-                  {{- $stages = append $stages .stage }}
+                {{- else }}
+                  {{- if .stage }}
+                    {{- $_ := set .stage "name" .name }}
+                    {{- $stages = append $stages .stage }}
+                  {{- end }}
                 {{- end }}
               {{- end }}
             {{- end }}
+            {{- $_ := set $tavern_test.test "stages" $stages }}
           {{- end }}
-          {{- $_ := set $tavern_test.test "stages" $stages }}
         {{- end }}
         {{- $tests = append $tests $tavern_test }}
       {{- end }}

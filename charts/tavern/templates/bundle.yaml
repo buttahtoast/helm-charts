@@ -1,6 +1,6 @@
 {{/*
 
-Copyright © 2020 Oliver Baehler
+Copyright © 2021 Buttahtoast
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,16 +13,17 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-{{ $t := fromYaml (include "tavern.bundle" $) }}
-*/}}
 
+*/}}
 {{- include "bedag-lib.manifest.bundle" (dict "bundle" (fromYaml (include "tavern.bundle" $)) "context" $) | nindent 0 }}
+
 
 {{/*
   Tavern Chart Bundle
 */}}
 {{- define "tavern.bundle" -}}
   {{- $tavern_tests := (fromYaml (include "tavern.tests" $)) -}}
+    {{- if $tavern_tests.tests }}
 resources:
   {{- if and $.Values.extraResources (kindIs "slice" $.Values.extraResources) }}
     {{- toYaml $.Values.extraResources | nindent 2 }}
@@ -34,6 +35,10 @@ resources:
   {{- end }}
     values: {{ toYaml $.Values.job | nindent 6 }}
     overwrites:
+
+      {{/* PodLabels (Checksum) */}}
+      podLabels:
+        test_config: {{ (toYaml $tavern_tests) | sha256sum | trunc 63 }}
 
       {{/* VolumeMounts */}}
       volumeMounts:
@@ -58,7 +63,7 @@ resources:
       {{- end }}
       {{- if $tavern_tests.tests }}
         {{- range $tavern_tests.tests }}
-          {{- $ref := include "lib.utils.fullname" (dict "name" .name "context" $) }}
+          {{- $ref := include "lib.utils.common.fullname" (dict "name" .name "context" $) }}
           {{- if .secret }}
         - name: {{ .name }}
           secret:
@@ -72,4 +77,5 @@ resources:
           {{- end }}
         {{- end }}
       {{- end }}
+  {{- end }}
 {{- end }}

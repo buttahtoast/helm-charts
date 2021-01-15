@@ -1,0 +1,49 @@
+## Vanilla Test
+tests:
+  - name: "me"
+    vanilla: true
+    secret: true
+    test: |
+      test_name: Make sure cookie is required to log in
+
+      includes:
+        - !include common.yaml
+
+      stages:
+        - name: Try to check user info without login information
+          request:
+            url: "{host}/userinfo"
+            method: GET
+          response:
+            status_code: 401
+            json:
+              error: "no login information"
+            headers:
+              content-type: application/json
+
+        - name: login
+          request:
+            url: "{host}/login"
+            json:
+              user: test-user
+              password: correct-password
+            method: POST
+            headers:
+              content-type: application/json
+          response:
+            status_code: 200
+            cookies:
+              - session-cookie
+            headers:
+              content-type: application/json
+
+        - name: Check user info
+          request:
+            url: "{host}/userinfo"
+            method: GET
+          response:
+            status_code: 200
+            json:
+              name: test-user
+            headers:
+              content-type: application/json

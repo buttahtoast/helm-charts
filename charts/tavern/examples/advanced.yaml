@@ -11,7 +11,7 @@ job:
   volumes:
     - name: scripts
       configMap:
-        name: "{{ cat (include \"lib.utils.fullname\" $) \"-scripts\" | nospace }}"
+        name: "{{ cat (include \"lib.utils.common.fullname\" $) \"-scripts\" | nospace }}"
 
   ## Mount custom volume into pod
   volumeMounts:
@@ -38,7 +38,7 @@ extraResources:
       apiVersion: v1
       kind: ConfigMap
       metadata:
-        name: "{{ cat (include "lib.utils.fullname" $) "-scripts" | nospace }}"
+        name: "{{ cat (include "lib.utils.common.fullname" $) "-scripts" | nospace }}"
       data:
         testing_utils.py: |
           def message_says_hello(response):

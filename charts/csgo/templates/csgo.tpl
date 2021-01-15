@@ -1,4 +1,21 @@
 {{/*
+
+Copyright © 2021 Buttahtoast
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+*/}}
+{{/*
   CSGO - Ports
 */}}
 {{- define "csgo.ports" -}}
@@ -29,14 +46,14 @@
 - name: SRCDS_RCONPW
   valueFrom:
     secretKeyRef:
-      name: {{ include "lib.utils.fullname" $ }}-config
+      name: {{ include "lib.utils.common.fullname" $ }}-config
       key: SRCDS_RCONPW
   {{- end }}
   {{- if and $config.password (kindIs "string" $config.password)  }}
 - name: SRCDS_PW
   valueFrom:
     secretKeyRef:
-      name: {{ include "lib.utils.fullname" $ }}-config
+      name: {{ include "lib.utils.common.fullname" $ }}-config
       key: SRCDS_PW
   {{- end }}
 - name: "SRCDS_PORT"
@@ -75,7 +92,7 @@
 - name: SRCDS_WORKSHOP_AUTHKEY
   valueFrom:
     secretKeyRef:
-      name: {{ include "lib.utils.fullname" $ }}
+      name: {{ include "lib.utils.common.fullname" $ }}
       key: SRCDS_WORKSHOP_AUTHKEY
   {{- end }}
   {{- if and $config.workshop.additional_args (kindIs "slice" $config.workshop.additional_args) }}
