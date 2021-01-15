@@ -109,7 +109,7 @@ annotations:
 
 ### Changelog
 
-Document changes in the chart with Artifachub change [annotations](https://artifacthub.io/docs/topics/annotations/helm/). For every new release the entire ```artifacthub.io/changes``` needs to be rewritten. Please use the following template:
+Changes on a chart must be documented in a chart specific changelog. For every new release the entire ```artifacthub.io/changes``` needs to be rewritten. Please use the following template:
 
 
 ```
