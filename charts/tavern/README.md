@@ -118,7 +118,10 @@ Major Changes to functions are documented with the version affected. **Before up
 | tavern.defaultMode | string | `"0550"` | Default File mode for Test Suite mounts |
 | tavern.test_directory | string | `"/tavern"` | Directory where all your tests are mounted |
 | testTemplates | list | `[]` | Tavern Test Suite Templates (See the examples) |
-| tests | list | `[]` | Tavern Test Suites which will be executed |
+| tests | list | `[{"name":"vanilla_test","secret":true,"test":"test_name: Make sure cookie is required to log in\n\nincludes:\n  - !include common.yaml\n\nstages:\n  - name: Try to check user info without login information\n    request:\n      url: \"{host}/userinfo\"\n      method: GET\n    response:\n      status_code: 401\n      json:\n        error: \"no login information\"\n      headers:\n        content-type: application/json\n","vanilla":true}]` | Tavern Test Suites which will be executed |
+| tests[0].name | string | `"vanilla_test"` | Test Suite Name |
+| tests[0].secret | bool | `true` | Test Suite Secret |
+| tests[0].test | string | see `values.yaml` | Tavern Test Definition |
 | timezone | string | `"Europe/Zurich"` | Define Container Timezone (Sets TZ Environment) |
 
 # Implementing Tests
