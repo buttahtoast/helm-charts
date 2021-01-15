@@ -30,6 +30,7 @@ annotations:
       * Return empty when no tests are defined
       * Simple exmample for documentation
       * `timezone` value
+      * Dumy Test as default (Allows linting)
     **Changed:**
       * Define `manifests` dependency more loose
     **Deprecated:**

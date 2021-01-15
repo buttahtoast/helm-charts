@@ -203,7 +203,7 @@ testTemplates: []
 
 ## Test Suites
 # tests -- Tavern Test Suites which will be executed
-tests: []
+tests: 
 #
 # Simple Test Suite
 # Does not use Test Suite Template, but Stage Template
@@ -324,36 +324,38 @@ tests: []
 ## Vanilla Test
 # Don't allow templating but support special statements like `!include` which won't be templated.
 #
-#  Test Suite Name
-#  tests[3].name -- Test Suite Name
-#  - name: "vanilla_test"
+# Test Suite Name
+# tests[0].name -- Test Suite Name
+  - name: "vanilla_test"
 #
-#  Test Vanilla
-#  tests[3].name -- Test Suite Name
-#    vanilla: true
+# Test Vanilla
+# tests[0].name -- Test Suite Name
+    vanilla: true
 #
-#  Stores Test Suite in Secret instead of configmap
-#  tests[3].secret -- Test Suite Secret
-#    secret: true
+# Stores Test Suite in Secret instead of configmap
+# tests[0].secret -- Test Suite Secret
+    secret: true
 #
 # Tavern test definition
-#    test: |
-#      test_name: Make sure cookie is required to log in
-#
-#      includes:
-#        - !include common.yaml
-#
-#      stages:
-#        - name: Try to check user info without login information
-#          request:
-#            url: "{host}/userinfo"
-#            method: GET
-#          response:
-#            status_code: 401
-#            json:
-#              error: "no login information"
-#            headers:
-#              content-type: application/json
+# tests[0].test -- Tavern Test Definition
+# @default -- see `values.yaml`
+    test: |
+      test_name: Make sure cookie is required to log in
+
+      includes:
+        - !include common.yaml
+
+      stages:
+        - name: Try to check user info without login information
+          request:
+            url: "{host}/userinfo"
+            method: GET
+          response:
+            status_code: 401
+            json:
+              error: "no login information"
+            headers:
+              content-type: application/json
 
 
 
