@@ -1,6 +1,0 @@
-dependencies:
-- name: manifests
-  repository: https://bedag.github.io/helm-charts
-  version: 0.4.3
-digest: sha256:139375d099a50188a6e8c2f38aaa75c4ce45509b9e2dea59e81e1cf547bdaec1
-generated: "2021-01-16T01:39:02.466842847+01:00"
