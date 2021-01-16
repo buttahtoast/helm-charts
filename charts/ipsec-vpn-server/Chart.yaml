@@ -1,0 +1,32 @@
+apiVersion: v2
+name: ipsec-vpn-server
+description: "ipsec-vpn-server Chart"
+type: application
+version: 0.0.1
+appVersion: latest
+home: "https://github.com/hwdsl2/docker-ipsec-vpn-server"
+keywords:
+  - ipsec
+  - vpn
+  - security
+  - network
+  - overlay
+dependencies:
+ - name: manifests
+   version: ">=0.1.0"
+   repository: https://bedag.github.io/helm-charts
+maintainers:
+  - name: oliverbaehler
+    email: oliverbaehler@hotmail.com
+  - name: chifu1234
+    email: kk@sudo-i.net
+sources:
+  - https://github.com/buttahtoast/helm-charts/tree/master/charts/ipsec-vpn-server
+annotations:
+  artifacthub.io/containsSecurityUpdates: "true"
+  artifacthub.io/changes: |
+    - inital release
+  artifacthub.io/prerelease: "true"
+  artifacthub.io/images: |
+    - name: ipsec-vpn-server
+      image: hwdsl2/ipsec-vpn-server:422aca8901ae3d869a815051cea7f1e4c0204fad16884e7cd01da57d142f2e3a
