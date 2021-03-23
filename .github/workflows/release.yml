@@ -18,6 +18,7 @@ jobs:
       - name: Add dependency chart repos
         run: |
           helm repo add buttahtoast https://buttahtoast.github.io/helm-charts/
+          helm repo add bedag https://bedag.github.io/helm-charts/
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo add elastic https://helm.elastic.co
           helm repo add grafana https://grafana.github.io/helm-charts

@@ -67,7 +67,7 @@ resources:
         {{- toYaml $.Values.statefulset.volumeClaimTemplates | nindent 8 }}
       {{- end }}
       {{- if $.Values.persistence.enabled }}
-        - {{- include "bedag-lib.template.persistentVolumeClaim" (dict "pvc" $.Values.persistence "fullname" "home" "context" $) | nindent 10 }}
+        - {{- include "bedag-lib.template.persistentvolumeclaim" (dict "pvc" $.Values.persistence "fullname" "home" "context" $) | nindent 10 }}
       {{- end }}
   - type: "service"
     values: {{ toYaml $.Values.service | nindent 6 }}
