@@ -27,7 +27,7 @@ limitations under the License.
   Sprig Template - Name
 */}}
 {{- define "lib.internal.common.name" -}}
-{{- default .Chart.Name "empty" | trunc 63 | trimSuffix "-" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 
@@ -40,12 +40,11 @@ limitations under the License.
   {{- $fullname_p := default $context.fullname .fullname  -}}
   {{- $prefix := default $context.Release.Name .prefix }}
   {{- $name := "" -}}
-  {{- $Values := $context.Values }}
-  {{- if $Values.fullnameOverride -}}
+  {{- if $context.Values.fullnameOverride -}}
     {{- if $name_p }}
-      {{- $name = (printf "%s-%s" $Values.fullnameOverride $name_p) -}}
+      {{- $name = (printf "%s-%s" $context.Values.fullnameOverride $name_p) -}}
     {{- else }}
-      {{- $name = $Values.fullnameOverride -}}
+      {{- $name = $context.Values.fullnameOverride -}}
     {{- end }}
   {{- else if $fullname_p }}
     {{- $name = $fullname_p -}}

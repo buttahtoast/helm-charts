@@ -26,13 +26,13 @@ sources:
 annotations:
   artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/changes: |
-    * **[Added]**: Allow Vanilla Tavern Tests
-    * **[Added]**: Return empty when no tests are defined
-    * **[Added]**: Simple exmample for documentation
-    * **[Added]**: `timezone` value
-    * **[Added]**: Dumy Test as default (Allows linting)
-    * **[Changed]**: Define `manifests` dependency more loose
-    * **[Fixed]**: `Moved to new `library` naming
+    - "[Added]: Allow Vanilla Tavern Tests"
+    - "[Added]: Return empty when no tests are defined"
+    - "[Added]: Simple exmample for documentation"
+    - "[Added]: `timezone` value"
+    - "[Added]: Dumy Test as default (Allows linting)"
+    - "[Changed]: Define `manifests` dependency more loose"
+    - "[Fixed]: `Moved to new `library` naming"
   artifacthub.io/prerelease: "true"
   artifacthub.io/images: |
     - name: tavern

@@ -19,7 +19,7 @@ sources:
 annotations:
   artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/changes: |
-    * **[Added]**: Default `.helmignore` values
-    * **[Changed]**: Convert Proxy values into strings before executing `printf`
-    * **[Fixed]**: Moved to new `library` naming
+    - "[Added]: Default `.helmignore` values"
+    - "[Changed]: Convert Proxy values into strings before executing `printf`"
+    - "[Fixed]: Moved to new `library` naming"
   artifacthub.io/prerelease: "true"

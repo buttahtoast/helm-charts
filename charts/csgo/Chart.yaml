@@ -20,10 +20,10 @@ sources:
 annotations:
   artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/changes: |
-    * **[Added]**: Default `.helmignore` values
-    * **[Added]**: `timezone` value
-    * **[Changed]**: Define `manifests` dependency more loose
-    * **[Fixed]**: Moved to new `library` naming
+    - "[Added]: Default `.helmignore` values"
+    - "[Added]: `timezone` value"
+    - "[Changed]: Define `manifests` dependency more loose"
+    - "[Fixed]: Moved to new `library` naming"
   artifacthub.io/prerelease: "true"
   artifacthub.io/images: |
     - name: latest

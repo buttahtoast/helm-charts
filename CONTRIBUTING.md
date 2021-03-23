@@ -109,7 +109,7 @@ annotations:
 
 ### Changelog
 
-Changes on a chart must be documented in a chart specific changelog. For every new release the entire ```artifacthub.io/changes``` needs to be rewritten. Each change requires a new bullet point following the pattern `**[{type}]**: {description}`. Please use the following template:
+Changes on a chart must be documented in a chart specific changelog. For every new release the entire ```artifacthub.io/changes``` needs to be rewritten. Each change requires a new bullet point following the pattern `- "[{type}]: {description}"`. Please use the following template:
 
 
 ```
