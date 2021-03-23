@@ -148,10 +148,6 @@ tv:
     # tv.service.portName -- Configure Service Port name
     portName: "srcds_tv"
 
-    ## Service Port
-    # tv.ervice.port -- Configure Service Port (Required)
-    port: "{{ $.Values.tv.port }}"
-
     ## Service Extra Ports
     # tv.service.extraPorts -- Add additional ports to the service
     extraPorts: []
@@ -588,10 +584,6 @@ service:
   ## Service Type
   # service.type -- Configure Service [Type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types).
   type: ClusterIP
-
-  ## Service Port
-  # service.port -- Configure Service Port (Required)
-  port: "{{ $.Values.config.port }}"
 
   ## Service Extra Ports
   # service.extraPorts -- Add additional ports to the service
