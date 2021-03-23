@@ -67,17 +67,19 @@ resources:
         {{- toYaml $.Values.statefulset.volumeClaimTemplates | nindent 8 }}
       {{- end }}
       {{- if $.Values.persistence.enabled }}
-        - {{- include "bedag-lib.template.persistentVolumeClaim" (dict "pvc" $.Values.persistence "fullname" "home" "context" $) | nindent 10 }}
+        - {{- include "bedag-lib.template.persistentvolumeclaim" (dict "pvc" $.Values.persistence "fullname" "home" "context" $) | nindent 10 }}
       {{- end }}
   - type: "service"
     values: {{ toYaml $.Values.service | nindent 6 }}
     overwrites:
+      port: "{{ $.Values.config.port }}"
       targetPort: "srcds"
   {{- if $.Values.tv.enabled }}
   - type: "service"
     values: {{ toYaml $.Values.tv.service | nindent 6 }}
     name: "tv"
     overwrites:
+      port: "{{ $.Values.tv.port }}"
       targetPort: "srcds_tv"
   {{- end }}
   - type: "ingress"

@@ -2,57 +2,37 @@ name: Helm Chart Release
 on:
   push:
     branches:
-      - master
+      - master 
 jobs:
-  documentation:
-    runs-on: ubuntu-latest
-    container:
-      image: alpine
-    steps:
-      - name: Install Dependencies
-        run: |
-          apk add jq git curl
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Fetch history
-        run: git fetch --prune --unshallow
-
-      - name: Install Helm Docs
-        run: |
-          curl -s -L -o /usr/local/bin/helm-docs.tar.gz "https://github.com/norwoodj/helm-docs/releases/download/$(curl --silent "https://api.github.com/repos/norwoodj/helm-docs/releases/latest" | jq -r .tag_name)/helm-docs_$(curl --silent "https://api.github.com/repos/norwoodj/helm-docs/releases/latest" | jq -r .tag_name | cut -d "v" -f2-)_Linux_x86_64.tar.gz"
-          cd /usr/local/bin/ && tar xfv helm-docs.tar.gz
-          chmod +x ./helm-docs
-
-      - name: Update Documentation
-        run: |
-          git status
-          CHARTS_ROOT="./charts"
-          if [ -d "${CHARTS_ROOT}" ]; then
-            ## Generate Documentation
-            helm-docs
-            ## Push Changes
-            git config user.name "$GITHUB_ACTOR"
-            git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-            git add -A
-            git commit -sam "Update Documentation" || true
-            git push || true
-          else
-            echo -e "\n\e[33m-- Root Direcoty not found: $CHART_ROOT\e[0m" && exit 0;
-          fi
-
   release:
     runs-on: ubuntu-latest
-    needs:
-      - documentation
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Fetch history
-        run: git fetch --prune --unshallow
-
-      - name: Helm Chart Publish
-        uses: buttahtoast/helm-release-action@v1.1.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v1
+
+      - name: Add dependency chart repos
+        run: |
+          helm repo add buttahtoast https://buttahtoast.github.io/helm-charts/
+          helm repo add bedag https://bedag.github.io/helm-charts/
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo add elastic https://helm.elastic.co
+          helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo add prometheus https://prometheus-community.github.io/helm-charts
+          helm repo add deprecated-helm-stable https://charts.helm.sh/stable
+          helm repo add hashicorp https://helm.releases.hashicorp.com
+          helm repo add minio https://helm.min.io
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.2.0
+        with:
+          charts_dir: charts
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
