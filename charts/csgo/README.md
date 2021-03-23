@@ -99,7 +99,6 @@ Major Changes to functions are documented with the version affected. **Before up
 | service.loadBalancerIP | string | `""` | Configure Service [loadBalancerIP](https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer). Set the LoadBalancer service type to internal only. |
 | service.loadBalancerSourceRanges | list | `[]` | Configure Service [loadBalancerSourceRanges](https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service) |
 | service.nodePort | string | `""` | Specify the nodePort value for the LoadBalancer and NodePort service types |
-| service.port | string | `"{{ $.Values.config.port }}"` | Configure Service Port (Required) |
 | service.selector | object | `bedag-lib.selectorLabels` | Configure Service Selector Labels |
 | service.type | string | `"ClusterIP"` | Configure Service [Type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types). |
 | statefulset.affinity | object | `{}` | Pod [Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) |
@@ -163,7 +162,6 @@ Major Changes to functions are documented with the version affected. **Before up
 | tv.service.loadBalancerIP | string | `""` | Configure Service [loadBalancerIP](https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer). Set the LoadBalancer service type to internal only. |
 | tv.service.loadBalancerSourceRanges | list | `[]` | Configure Service [loadBalancerSourceRanges](https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service) |
 | tv.service.nodePort | string | `""` | Specify the nodePort value for the LoadBalancer and NodePort service types |
-| tv.service.port | string | `"{{ $.Values.tv.port }}"` |  |
 | tv.service.portName | string | `"srcds_tv"` | Configure Service Port name |
 | tv.service.selector | object | `bedag-lib.selectorLabels` | Configure Service Selector Labels |
 | tv.service.type | string | `"ClusterIP"` | Configure Service [Type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types). |
