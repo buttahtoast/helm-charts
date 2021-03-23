@@ -3,6 +3,44 @@ entries:
   csgo:
   - annotations:
       artifacthub.io/changes: |
+        - "[Added]: Default `.helmignore` values"
+        - "[Added]: `timezone` value"
+        - "[Changed]: Define `manifests` dependency more loose"
+        - "[Fixed]: Moved to new `library` naming"
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/images: |
+        - name: latest
+          image: cm2network/csgo:latest
+        - name: sourcemod
+          image: cm2network/csgo:sourcemod
+        - name: metamod
+          image: cm2network/csgo:metamod
+      artifacthub.io/prerelease: "true"
+    apiVersion: v2
+    appVersion: 1.0.0
+    created: "2021-03-23T20:24:45.381801012Z"
+    dependencies:
+    - name: manifests
+      repository: https://bedag.github.io/helm-charts
+      version: '>= 0.4.0 < 1.0.0'
+    description: Source Server
+    digest: 64f3440ad53623e92f3ae84730ea9d3672b4eb0e375484dec4366e3f91da369a
+    home: https://github.com/CM2Walki/CSGO
+    icon: https://secure.gravatar.com/avatar/5bc9e6b19f1183776d7ff3a9652bd0a7.jpg?s=80&r=g&d=mm
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: csgo
+    sources:
+    - https://github.com/buttahtoast/helm-charts/tree/master/charts/csgo
+    type: application
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/csgo-0.2.1/csgo-0.2.1.tgz
+    version: 0.2.1
+  - annotations:
+      artifacthub.io/changes: |
         **Added:**
           * Default `.helmignore` values
           * `timezone` value
@@ -115,6 +153,35 @@ entries:
     - https://github.com/buttahtoast/helm-charts/releases/download/csgo-0.1.0/csgo-0.1.0.tgz
     version: 0.1.0
   library:
+  - annotations:
+      artifacthub.io/changes: |
+        - "[Added]: Default `.helmignore` values"
+        - "[Changed]: Convert Proxy values into strings before executing `printf`"
+        - "[Fixed]: Moved to new `library` naming"
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/prerelease: "true"
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2021-03-23T20:24:45.552011062Z"
+    description: Buttahtoast Helm Library
+    digest: 1baaa7a16904b82e99084b04373e18a3ea53127c11483b770573a1fc028fbd14
+    home: https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    icon: https://avatars0.githubusercontent.com/u/67652090?s=400&u=874d1c989b0afc2789865be01051f0bbfc84ae32&v=4
+    keywords:
+    - library
+    - sprig
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: library
+    sources:
+    - https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    type: library
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/library-0.3.4/library-0.3.4.tgz
+    version: 0.3.4
   - annotations:
       artifacthub.io/changes: |
         **Added:**
@@ -307,6 +374,48 @@ entries:
     - https://github.com/buttahtoast/helm-charts/releases/download/library-0.1.0/library-0.1.0.tgz
     version: 0.1.0
   tavern:
+  - annotations:
+      artifacthub.io/changes: |
+        - "[Added]: Allow Vanilla Tavern Tests"
+        - "[Added]: Return empty when no tests are defined"
+        - "[Added]: Simple exmample for documentation"
+        - "[Added]: `timezone` value"
+        - "[Added]: Dumy Test as default (Allows linting)"
+        - "[Changed]: Define `manifests` dependency more loose"
+        - "[Fixed]: `Moved to new `library` naming"
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/images: |
+        - name: tavern
+          image: buttahtoast/docker-tavern:1.1.0
+      artifacthub.io/prerelease: "true"
+    apiVersion: v2
+    appVersion: 1.1.0
+    created: "2021-03-23T20:24:45.734448895Z"
+    dependencies:
+    - name: manifests
+      repository: https://bedag.github.io/helm-charts
+      version: '>= 0.4.0 < 1.0.0'
+    description: Unofficial Tavern Helm Chart
+    digest: 2430832c71d49a60a57c17d2e607efe8462ccde2f67064141a2d9b31270aedc2
+    home: https://tavern.readthedocs.io/en/latest/
+    icon: https://tavern.readthedocs.io/en/latest/_static/icon.png
+    keywords:
+    - python
+    - tavern
+    - API testing
+    - pytest
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: tavern
+    sources:
+    - https://github.com/buttahtoast/helm-charts/tree/master/charts/tavern
+    type: application
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.3.1/tavern-0.3.1.tgz
+    version: 0.3.1
   - annotations:
       artifacthub.io/changes: |
         **Added:**
@@ -644,4 +753,4 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.1.0/tavern-0.1.0.tgz
     version: 0.1.0
-generated: "2020-07-10T12:00:39.462979193Z"
+generated: "2021-03-23T20:24:45.734552996Z"
