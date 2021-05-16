@@ -201,16 +201,7 @@ This function enables the following keys on the values scope:
 ## Overwrite Labels
 # overwriteLabels -- Overwrites default labels, but not resource specific labels and common labels
 overwriteLabels: {}
-```
-
-#### Returns
-
-YAML Structure, String
-
-#### Usage
-
-```
-{- include "lib.utils.common.overwriteLabels" $) }
+```Hey, I want to start a dedicated csgo danger zone server, i am trying to do so by running docker cmd : "sudo docker run -d --net=host -v $(pwd)/csgo-data:/home/steam/csgo-dedicated/ --name=csgo-dedicated -e SRCDS_TOKEN= -e SRCDS_RCONPW="" -e SRCDS_PW="" -e SRCDS_WORKSHOP_AUTHKEY= -e SRCDS_STARTMAP="dz_blacksite" -e SRCDS_GAMETYPE=6 -e SRCDS_GAMEMODE=0 cm2network/csgo"mmon.overwriteLabels" $) }
 ```
 
 ### CommonLabels
@@ -268,17 +259,7 @@ If an as required marked argument is missing, the template engine will fail inte
 This function enables the following keys on the values scope:
 
 ```
-## Common Labels
-# commonLabels -- Common Labels are added to each kubernetes resource manifest. But will not be added to resources rendered by the common chart (eg. JMX Exporter)
-commonLabels: {}
-
-## Overwrite Labels
-# overwriteLabels -- Overwrites default labels, but not resource specific labels and common labels
-overwriteLabels: {}
-
-```
-
-#### Returns
+## Common LabelsHey, I want to start a dedicated csgo danger zone server, i am trying to do so by running docker cmd : "sudo docker run -d --net=host -v $(pwd)/csgo-data:/home/steam/csgo-dedicated/ --name=csgo-dedicated -e SRCDS_TOKEN= -e SRCDS_RCONPW="" -e SRCDS_PW="" -e SRCDS_WORKSHOP_AUTHKEY= -e SRCDS_STARTMAP="dz_blacksite" -e SRCDS_GAMETYPE=6 -e SRCDS_GAMEMODE=0 cm2network/csgo"
 
 YAML Structure, String
 
@@ -335,10 +316,7 @@ Making use of all the global functions enable the following [global keys](https:
 ### DockerImage
 ---
 
-This function overwrites local docker registries with global defined registries, if available. Returns the assembled output
-based on registry, repository and tag. The `$.global.defaultTag` value has precedence over the `.default` value.
-
-#### Arguments
+This function overHey, I want to start a dedicated csgo danger zone server, i am trying to do so by running docker cmd : "sudo docker run -d --net=host -v $(pwd)/csgo-data:/home/steam/csgo-dedicated/ --name=csgo-dedicated -e SRCDS_TOKEN= -e SRCDS_RCONPW="" -e SRCDS_PW="" -e SRCDS_WORKSHOP_AUTHKEY= -e SRCDS_STARTMAP="dz_blacksite" -e SRCDS_GAMETYPE=6 -e SRCDS_GAMEMODE=0 cm2network/csgo"
 
 If an as required marked argument is missing, the template engine will fail intentionally.
 
@@ -355,12 +333,14 @@ add the structure with the parent key or just the structure within the parent ke
 image*:
   registry: docker.io
   repository: bitnami/apache
+  digest*: "sha256:9de1e344a34292154ca0693c13aa629c5ad1f1764fafd895ab53032dde2ad8e4" 
   tag*: latest
 
 or
 
 registry: docker.io
 repository: bitnami/apache
+digest*: "sha256:9de1e344a34292154ca0693c13aa629c5ad1f1764fafd895ab53032dde2ad8e4" 
 tag*: latest
 ```
 
@@ -386,6 +366,7 @@ Each image referenced automatically is expected to have the above structure in t
 apache:
   registry*: docker.io
   repository: bitnami/apache
+  digest*: "sha256:9de1e344a34292154ca0693c13aa629c5ad1f1764fafd895ab53032dde2ad8e4" 
   tag*: latest
 
 or
@@ -569,7 +550,8 @@ to render it as part of the YAML Structure, use +|. This YAML multiline indicato
 If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.value` - Content you want to template. If a Go Struct, it will be dumped to YAML, since the tpl function only allows strings (Required).
-  * `.extraValues` - Extra values you want to make available for the template function. Can be accessed through $.extraVars
+  * `.extraValues` - Extra values you want to make available for the template function. Can be accessed through $.extraVars (Optional)
+  * `.extraValuesKey` - Key which is used to publish `.extraValues`. Extra Value can be accessed through  `$.(.extraValuesKey)` if set (Optional)
   * `.context` - Inherited Root Context (Required).
 
 #### Returns

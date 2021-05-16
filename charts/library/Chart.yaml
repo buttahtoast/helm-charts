@@ -19,7 +19,6 @@ sources:
 annotations:
   artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/changes: |
-    - "[Added]: Default `.helmignore` values"
-    - "[Changed]: Convert Proxy values into strings before executing `printf`"
-    - "[Fixed]: Moved to new `library` naming"
+    - "[Changed]: kubeCapabilities moved to global"
+    - "[Changed]: StorageClass renders empty if value is -"
   artifacthub.io/prerelease: "true"
