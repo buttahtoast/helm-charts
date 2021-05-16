@@ -25,4 +25,9 @@ global:
   ## Global Image Pull Secrets
   # global.imagePullSecrets -- Global Docker Image Pull Secrets declaration. Added to local Docker Image Pull Secrets.
   imagePullSecrets: []
+
+  ## Version Capabilities
+  # global.kubeCapabilities -- Overwrite the Kube GitVersion
+  # @default -- `$.Capabilities.KubeVersion.GitVersion`
+  kubeCapabilities: ""
 {{- end }}

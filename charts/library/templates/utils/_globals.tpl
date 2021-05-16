@@ -28,15 +28,16 @@ limitations under the License.
     {{- $registry := $image.registry -}}
     {{- $repository := (required "Missing key '.repository' in image structure" $image.repository) -}}
     {{- $tag := (default "" $image.tag) -}}
+    {{- $digest := (default "" $image.digest) }}
     {{- if $values.global }}
       {{- if  $values.global.imageRegistry }}
         {{- $registry =  $values.global.imageRegistry -}}
       {{- end -}}
-      {{- if  $values.global.defaultTag }}
-        {{- if not $tag }}
-          {{- $tag =  $values.global.defaultTag }}
+      {{- if and (not $digest) (not $tag) }}
+        {{- if $values.global.defaultTag }}
+          {{- $tag = $values.global.defaultTag }}
         {{- end }}
-      {{- end }}
+      {{- end }}  
     {{- end -}}
     {{- $imagePath := "" }}
     {{- if and $registry $repository }}
@@ -44,10 +45,14 @@ limitations under the License.
     {{- else }}
       {{- $imagePath = $repository }}
     {{- end }}
-    {{- if and (not $tag) .default }}
-      {{- $tag = .default }}
-    {{- end }}
-    {{- if $tag }}
+    {{- if not $digest }}
+      {{- if and (not $tag) .default }}
+        {{- $tag = .default }}
+      {{- end }}
+    {{- end }}  
+    {{- if $digest }}
+      {{- printf "%s@%s" $imagePath (toString $digest) -}}
+    {{- else if $tag }}
       {{- printf "%s:%s" $imagePath (toString $tag) -}}
     {{- else }}
       {{- printf "%s" $imagePath -}}
@@ -121,7 +126,7 @@ limitations under the License.
             {{- $storageClass = $values.global.storageClass -}}
         {{- end -}}
     {{- end -}}
-    {{- if $storageClass }}
+    {{- if and $storageClass (not (eq "-" $storageClass)) }}
       {{- printf "\"%s\"" $storageClass -}}
     {{- end }}
   {{- else }}

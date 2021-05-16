@@ -121,5 +121,11 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
   Sprig Template - KubernetesCapabilities
 */}}
 {{- define "lib.utils.common.capabilities" -}}
-  {{- default $.Capabilities.KubeVersion.GitVersion $.Values.kubeCapabilities }}
+  {{- $capability := $.Capabilities.KubeVersion.Version -}}
+  {{- if .Values.global -}}
+    {{- if $.Values.global.kubeCapabilities -}}
+      {{- $capability = $.Values.global.kubeCapabilities -}}
+    {{- end -}}
+  {{- end -}}
+  {{- printf "%s" $capability -}}
 {{- end -}}
