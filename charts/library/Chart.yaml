@@ -21,4 +21,5 @@ annotations:
   artifacthub.io/changes: |
     - "[Changed]: kubeCapabilities moved to global"
     - "[Changed]: StorageClass renders empty if value is -"
+    - "[Changed]: Changed Capabilities source from `$.Capabilities.KubeVersion.GitVersion` to `$.Capabilities.KubeVersion.Version` since it's marked as deprecated"    
   artifacthub.io/prerelease: "true"
