@@ -35,6 +35,7 @@ Major Changes to functions are documented with the version affected. **Before up
 
 | **Template** | **Chart Version** | **Change/Description** | **Commits/PRs** |
 | :----------- | :---------------- | :--------------------- | :-------------- |
+| `$.Values.kubecapabilities` | `1.0.0` | `$.Values.kubecapabilities` moved to `$.Values.global.kubecapabilities`. Without mapping these values the kubeCapabilities no longer works. | [Pull Request](https://github.com/buttahtoast/helm-charts/pull/22) |
 | All **string**, **list**, **globals** and **dict** templates | `0.3.0` | Added for each template category the category as template name path. (eg. all string templates = `lib.utils.strings.*`).| [Pull Request](https://github.com/buttahtoast/helm-charts/pull/15) |
 
 
@@ -201,7 +202,16 @@ This function enables the following keys on the values scope:
 ## Overwrite Labels
 # overwriteLabels -- Overwrites default labels, but not resource specific labels and common labels
 overwriteLabels: {}
-```Hey, I want to start a dedicated csgo danger zone server, i am trying to do so by running docker cmd : "sudo docker run -d --net=host -v $(pwd)/csgo-data:/home/steam/csgo-dedicated/ --name=csgo-dedicated -e SRCDS_TOKEN= -e SRCDS_RCONPW="" -e SRCDS_PW="" -e SRCDS_WORKSHOP_AUTHKEY= -e SRCDS_STARTMAP="dz_blacksite" -e SRCDS_GAMETYPE=6 -e SRCDS_GAMEMODE=0 cm2network/csgo"mmon.overwriteLabels" $) }
+```
+
+#### Returns
+
+YAML Structure, String
+
+#### Usage
+
+```
+{- include "lib.utils.common.overwriteLabels" $) }
 ```
 
 ### CommonLabels
@@ -259,7 +269,17 @@ If an as required marked argument is missing, the template engine will fail inte
 This function enables the following keys on the values scope:
 
 ```
-## Common LabelsHey, I want to start a dedicated csgo danger zone server, i am trying to do so by running docker cmd : "sudo docker run -d --net=host -v $(pwd)/csgo-data:/home/steam/csgo-dedicated/ --name=csgo-dedicated -e SRCDS_TOKEN= -e SRCDS_RCONPW="" -e SRCDS_PW="" -e SRCDS_WORKSHOP_AUTHKEY= -e SRCDS_STARTMAP="dz_blacksite" -e SRCDS_GAMETYPE=6 -e SRCDS_GAMEMODE=0 cm2network/csgo"
+## Common Labels
+# commonLabels -- Common Labels are added to each kubernetes resource manifest. But will not be added to resources rendered by the common chart (eg. JMX Exporter)
+commonLabels: {}
+
+## Overwrite Labels
+# overwriteLabels -- Overwrites default labels, but not resource specific labels and common labels
+overwriteLabels: {}
+
+```
+
+#### Returns
 
 YAML Structure, String
 
@@ -316,7 +336,10 @@ Making use of all the global functions enable the following [global keys](https:
 ### DockerImage
 ---
 
-This function overHey, I want to start a dedicated csgo danger zone server, i am trying to do so by running docker cmd : "sudo docker run -d --net=host -v $(pwd)/csgo-data:/home/steam/csgo-dedicated/ --name=csgo-dedicated -e SRCDS_TOKEN= -e SRCDS_RCONPW="" -e SRCDS_PW="" -e SRCDS_WORKSHOP_AUTHKEY= -e SRCDS_STARTMAP="dz_blacksite" -e SRCDS_GAMETYPE=6 -e SRCDS_GAMEMODE=0 cm2network/csgo"
+This function overwrites local docker registries with global defined registries, if available. Returns the assembled output
+based on registry, repository and tag. The `$.global.defaultTag` value has precedence over the `.default` value.
+
+#### Arguments
 
 If an as required marked argument is missing, the template engine will fail intentionally.
 
