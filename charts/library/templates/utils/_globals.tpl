@@ -34,7 +34,7 @@ limitations under the License.
         {{- $registry =  $values.global.imageRegistry -}}
       {{- end -}}
       {{- if and (not $digest) (not $tag) }}
-        {{- if  $values.global.defaultTag }}
+        {{- if $values.global.defaultTag }}
           {{- $tag = $values.global.defaultTag }}
         {{- end }}
       {{- end }}  
