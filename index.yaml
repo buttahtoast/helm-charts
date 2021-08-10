@@ -41,19 +41,10 @@ entries:
     version: 0.2.1
   - annotations:
       artifacthub.io/changes: |
-        **Added:**
-          * Default `.helmignore` values
-          * `timezone` value
-        **Changed:**
-          * Define `manifests` dependency more loose
-        **Deprecated:**
-          * None
-        **Removed:**
-          * None
-        **Fixed:**
-          * Moved to new `library` naming
-        **Security:**
-          * None
+        - "[Added]: Default `.helmignore` values"
+        - "[Added]: `timezone` value"
+        - "[Changed]: Define `manifests` dependency more loose"
+        - "[Fixed]: Moved to new `library` naming"
       artifacthub.io/containsSecurityUpdates: "false"
       artifacthub.io/images: |
         - name: latest
@@ -88,7 +79,7 @@ entries:
     version: 0.2.0
   - annotations:
       artifacthub.io/changes: |
-        - adding chart source
+        - "[Added]: chart source"
       artifacthub.io/containsSecurityUpdates: "false"
       artifacthub.io/images: |
         - name: latest
@@ -154,10 +145,10 @@ entries:
     version: 0.1.0
   library:
   - annotations:
-      artifacthub.io/changes: "- \"[Changed]: kubeCapabilities moved to global\"\n-
-        \"[Changed]: StorageClass renders empty if value is -\"\n- \"[Changed]: Changed
-        Capabilities source from `$.Capabilities.KubeVersion.GitVersion` to `$.Capabilities.KubeVersion.Version`
-        since it's marked as deprecated\"    \n"
+      artifacthub.io/changes: | 
+        - "[Added]: kubeCapabilities moved to global"
+        - "[Changed]: StorageClass renders empty if value is"
+        - "[Changed]: Capabilities source from `$.Capabilities.KubeVersion.GitVersion` to `$.Capabilities.KubeVersion.Version` since it's marked as deprecated"
       artifacthub.io/containsSecurityUpdates: "false"
       artifacthub.io/prerelease: "true"
     apiVersion: v2
@@ -213,18 +204,8 @@ entries:
     version: 0.3.4
   - annotations:
       artifacthub.io/changes: |
-        **Added:**
-          * Default `.helmignore` values
-        **Changed:**
-          * Convert Proxy values into strings before executing `printf`
-        **Deprecated:**
-          * None
-        **Removed:**
-          * None
-        **Fixed:**
-          * Moved to new `library` naming
-        **Security:**
-          * None
+        - "[Changed]: Convert Proxy values into strings before executing `printf`"
+        - "[Fixed]: Moved to new `library` naming"
       artifacthub.io/containsSecurityUpdates: "false"
       artifacthub.io/prerelease: "true"
     apiVersion: v2
@@ -447,22 +428,12 @@ entries:
     version: 0.3.1
   - annotations:
       artifacthub.io/changes: |
-        **Added:**
-          * Allow Vanilla Tavern Tests
-          * Return empty when no tests are defined
-          * Simple exmample for documentation
-          * `timezone` value
-          * Dumy Test as default (Allows linting)
-        **Changed:**
-          * Define `manifests` dependency more loose
-        **Deprecated:**
-          * None
-        **Removed:**
-          * None
-        **Fixed:**
-          * Moved to new `library` naming
-        **Security:**
-          * None
+        - "[Added]: Allow Vanilla Tavern Tests"
+        - "[Added]: Return empty when no tests are defined"
+        - "[Fixed]: Simple exmample for documentation"
+        - "[Fixed]: `timezone` value"
+        - "[Fixed]: Dumy Test as default (Allows linting)"
+        - "[Fixed]: Moved to new `library` naming"     
       artifacthub.io/containsSecurityUpdates: "false"
       artifacthub.io/images: |
         - name: tavern
