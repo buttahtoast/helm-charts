@@ -24,9 +24,4 @@ overwriteLabels: {}
 ## Selector Labels
 # selectorLabels -- Define default [selectorLabels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
 selectorLabels: {}
-
-## Version Capabilities
-# kubeCapabilities -- Overwrite the Kube GitVersion
-# @default -- `$.Capabilities.KubeVersion.GitVersion`
-kubeCapabilities: ""
 {{- end }}

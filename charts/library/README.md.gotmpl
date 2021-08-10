@@ -35,6 +35,7 @@ Major Changes to functions are documented with the version affected. **Before up
 
 | **Template** | **Chart Version** | **Change/Description** | **Commits/PRs** |
 | :----------- | :---------------- | :--------------------- | :-------------- |
+| `$.Values.kubecapabilities` | `1.0.0` | `$.Values.kubecapabilities` moved to `$.Values.global.kubecapabilities`. Without mapping these values the kubeCapabilities no longer works. | [Pull Request](https://github.com/buttahtoast/helm-charts/pull/22) |
 | All **string**, **list**, **globals** and **dict** templates | `0.3.0` | Added for each template category the category as template name path. (eg. all string templates = `lib.utils.strings.*`).| [Pull Request](https://github.com/buttahtoast/helm-charts/pull/15) |
 
 
@@ -355,12 +356,14 @@ add the structure with the parent key or just the structure within the parent ke
 image*:
   registry: docker.io
   repository: bitnami/apache
+  digest*: "sha256:9de1e344a34292154ca0693c13aa629c5ad1f1764fafd895ab53032dde2ad8e4" 
   tag*: latest
 
 or
 
 registry: docker.io
 repository: bitnami/apache
+digest*: "sha256:9de1e344a34292154ca0693c13aa629c5ad1f1764fafd895ab53032dde2ad8e4" 
 tag*: latest
 ```
 
@@ -386,6 +389,7 @@ Each image referenced automatically is expected to have the above structure in t
 apache:
   registry*: docker.io
   repository: bitnami/apache
+  digest*: "sha256:9de1e344a34292154ca0693c13aa629c5ad1f1764fafd895ab53032dde2ad8e4" 
   tag*: latest
 
 or
@@ -569,7 +573,8 @@ to render it as part of the YAML Structure, use +|. This YAML multiline indicato
 If an as required marked argument is missing, the template engine will fail intentionally.
 
   * `.value` - Content you want to template. If a Go Struct, it will be dumped to YAML, since the tpl function only allows strings (Required).
-  * `.extraValues` - Extra values you want to make available for the template function. Can be accessed through $.extraVars
+  * `.extraValues` - Extra values you want to make available for the template function. Can be accessed through $.extraVars (Optional)
+  * `.extraValuesKey` - Key which is used to publish `.extraValues`. Extra Value can be accessed through  `$.(.extraValuesKey)` if set (Optional)
   * `.context` - Inherited Root Context (Required).
 
 #### Returns
