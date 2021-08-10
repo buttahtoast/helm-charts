@@ -63,53 +63,49 @@ limitations under the License.
   {{- end }}
 {{- end -}}
 
+{{/*
+  Sprig Template - BaseLabels
+*/}}
+{{- define "lib.utils.common.defaultSelectorLabels" -}}
+app.kubernetes.io/name: {{ include "lib.utils.common.fullname" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
 
 {{/*
   Sprig Template - SelectorLabels
 */}}
 {{- define "lib.utils.common.selectorLabels" -}}
-{{- if and $.Values.selectorLabels (kindIs "map" $.Values.selectorLabels) }}
+  {{- if $.Values.selectorLabels }}
   {{- include "lib.utils.strings.template" (dict "value" $.Values.selectorLabels "context" $) | indent 0 }}
-{{- else }}
-app.kubernetes.io/name: {{ include "lib.internal.common.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
+  {{- else }}
+{{- include "lib.utils.common.defaultSelectorLabels" $ | nindent 0 }}
+  {{- end }}
 {{- end -}}
-
 
 {{/*
   Sprig Template - DefaultLabels
 */}}
 {{- define "lib.utils.common.defaultLabels" -}}
-{{- include "lib.utils.common.selectorLabels" . }}
-{{- if and .Chart.AppVersion (not .versionunspecific) }}
+{{- include "lib.utils.common.defaultSelectorLabels" $ | nindent 0 }}
+  {{- if and .Chart.AppVersion (not .versionunspecific) }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-{{- end -}}
-
-
-{{/*
-  Sprig Template - OverwriteLabels
-*/}}
-{{- define "lib.utils.common.overwriteLabels" -}}
-  {{- if and $.Values.overwriteLabels (kindIs "map" $.Values.overwriteLabels) }}
-    {{- include "lib.utils.strings.template" (dict "value" $.Values.overwriteLabels "context" $) | nindent 0 }}
-  {{- else }}
-    {{- include "lib.utils.common.defaultLabels" . | indent 0}}
   {{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}  
 {{- end -}}
-
 
 {{/*
   Sprig Template - CommonLabels
 */}}
 {{- define "lib.utils.common.commonLabels" -}}
-  {{- include "lib.utils.common.overwriteLabels" . | indent 0 }}
-  {{- if and $.Values.commonLabels (kindIs "map" $.Values.commonLabels) }}
-    {{- include "lib.utils.strings.template" (dict "value" $.Values.commonLabels "context" $) | nindent 0 }}
+  {{- if and $.Values.overwriteLabels (kindIs "map" $.Values.overwriteLabels) }}
+    {{- include "lib.utils.strings.template" (dict "value" $.Values.overwriteLabels "context" $) | nindent 0 }}
+  {{- else }}
+    {{- include "lib.utils.common.defaultLabels" . | indent 0 }}
+    {{- if and $.Values.commonLabels (kindIs "map" $.Values.commonLabels) }}
+      {{- include "lib.utils.strings.template" (dict "value" $.Values.commonLabels "context" $) | nindent 0 }}
+    {{- end }}
   {{- end }}
 {{- end -}}
-
 
 {{/*
   Sprig Template - Labels
@@ -119,7 +115,6 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
   {{- toYaml (mergeOverwrite (fromYaml (include "lib.utils.common.commonLabels" (default . .context))) (default dict .labels)) | indent 0 }}
   {{- $_ := unset (default . .context) "versionunspecific" }}
 {{- end -}}
-
 
 {{/*
   Sprig Template - KubernetesCapabilities
