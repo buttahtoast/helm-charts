@@ -146,6 +146,33 @@ entries:
   library:
   - annotations:
       artifacthub.io/changes: |
+        - "[Removed]: overWriteLabels removed and simplified labels structure"
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/prerelease: "true"
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2021-08-10T14:28:10.763572402Z"
+    description: Buttahtoast Helm Library
+    digest: 6bacc32d0c59da88c397eb28a7e3bb181d1fdbb717ccc0f726447190ffe85b66
+    home: https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    icon: https://avatars0.githubusercontent.com/u/67652090?s=400&u=874d1c989b0afc2789865be01051f0bbfc84ae32&v=4
+    keywords:
+    - library
+    - sprig
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: library
+    sources:
+    - https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    type: library
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/library-1.2.0/library-1.2.0.tgz
+    version: 1.2.0
+  - annotations:
+      artifacthub.io/changes: |
         - "[Changed]: fullname does not apply toDns1123 conversion, if RELEASE-NAME is present (unit-testing)"
       artifacthub.io/containsSecurityUpdates: "false"
       artifacthub.io/prerelease: "true"
@@ -777,4 +804,4 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.1.0/tavern-0.1.0.tgz
     version: 0.1.0
-generated: "2021-08-10T11:17:12.855923364Z"
+generated: "2021-08-10T14:28:10.763668304Z"
