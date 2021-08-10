@@ -154,6 +154,35 @@ entries:
     version: 0.1.0
   library:
   - annotations:
+      artifacthub.io/changes: "- \"[Changed]: kubeCapabilities moved to global\"\n-
+        \"[Changed]: StorageClass renders empty if value is -\"\n- \"[Changed]: Changed
+        Capabilities source from `$.Capabilities.KubeVersion.GitVersion` to `$.Capabilities.KubeVersion.Version`
+        since it's marked as deprecated\"    \n"
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/prerelease: "true"
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2021-08-10T10:37:39.540615653Z"
+    description: Buttahtoast Helm Library
+    digest: e5841d20bb7d7449a7a581a96541f02dcbf91d170929771f955dd4ca1fcd9043
+    home: https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    icon: https://avatars0.githubusercontent.com/u/67652090?s=400&u=874d1c989b0afc2789865be01051f0bbfc84ae32&v=4
+    keywords:
+    - library
+    - sprig
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: library
+    sources:
+    - https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    type: library
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/library-1.0.0/library-1.0.0.tgz
+    version: 1.0.0
+  - annotations:
       artifacthub.io/changes: |
         - "[Added]: Default `.helmignore` values"
         - "[Changed]: Convert Proxy values into strings before executing `printf`"
@@ -753,4 +782,4 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.1.0/tavern-0.1.0.tgz
     version: 0.1.0
-generated: "2021-03-23T20:24:45.734552996Z"
+generated: "2021-08-10T10:37:39.540975958Z"
