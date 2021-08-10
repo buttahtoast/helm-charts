@@ -32,7 +32,6 @@ limitations under the License.
   {{- end }}
 {{- end -}}
 
-
 {{/*
   Sprig Template - Stringify
 */}}
@@ -46,7 +45,6 @@ limitations under the License.
     {{- fail "Template requires '.list' and '.context' as arguments" }}
   {{- end }}
 {{- end }}
-
 
 {{/*
   Sprig Template - ToDns1123
