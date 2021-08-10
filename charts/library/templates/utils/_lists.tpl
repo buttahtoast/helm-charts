@@ -35,7 +35,6 @@ limitations under the License.
   {{- end }}
 {{- end -}}
 
-
 {{/*
   Sprig Template - GetValueByKey
 */}}
