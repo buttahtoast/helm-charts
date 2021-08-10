@@ -56,7 +56,11 @@ limitations under the License.
         {{- $name = (printf "%s-%s" $prefix $name_p) -}}
      {{- end -}}
   {{- end -}}
-  {{- printf "%s" (include "lib.utils.strings.toDns1123" $name) }}
+  {{- if (contains "RELEASE-NAME" $name) }}
+    {{- printf "%s" $name }}
+  {{- else }}
+    {{- printf "%s" (include "lib.utils.strings.toDns1123" $name) }}
+  {{- end }}
 {{- end -}}
 
 
