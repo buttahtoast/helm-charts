@@ -146,6 +146,33 @@ entries:
   library:
   - annotations:
       artifacthub.io/changes: |
+        - "[Fixed]: ImagePullSecrets get merged together with global ImagePullSecrets"
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/prerelease: "true"
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2021-08-11T11:35:37.556758013Z"
+    description: Buttahtoast Helm Library
+    digest: cb4b17da9d5dbf5bcdb12da89868f1a74201cbb6cde436b4ee0017231b2a5ac5
+    home: https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    icon: https://avatars0.githubusercontent.com/u/67652090?s=400&u=874d1c989b0afc2789865be01051f0bbfc84ae32&v=4
+    keywords:
+    - library
+    - sprig
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: library
+    sources:
+    - https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    type: library
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/library-1.2.1/library-1.2.1.tgz
+    version: 1.2.1
+  - annotations:
+      artifacthub.io/changes: |
         - "[Removed]: overWriteLabels removed and simplified labels structure"
       artifacthub.io/containsSecurityUpdates: "false"
       artifacthub.io/prerelease: "true"
@@ -804,4 +831,4 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.1.0/tavern-0.1.0.tgz
     version: 0.1.0
-generated: "2021-08-10T14:28:10.763668304Z"
+generated: "2021-08-11T11:35:37.557299453Z"
