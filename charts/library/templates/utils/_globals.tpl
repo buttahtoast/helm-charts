@@ -93,11 +93,14 @@ limitations under the License.
 */}}
 {{- define "lib.utils.globals.imagePullSecrets" -}}
   {{- if .context }}
-    {{- $secrets := (default "" .pullSecrets)}}
+    {{- $secrets := list }}
+    {{- if (kindIs "slice" .pullSecrets) -}}
+      {{- $secrets = .pullSecrets }}
+    {{- end }}
     {{- $values := default .context .context.Values }}
     {{- if $values.global }}
-      {{- if $values.global.imagePullSecrets }}
-        {{- $secrets = $values.global.imagePullSecrets -}}
+      {{- if and $values.global.imagePullSecrets (kindIs "slice" $values.global.imagePullSecrets) }}
+        {{- $secrets = (concat $secrets $values.global.imagePullSecrets) -}}
       {{- end -}}
     {{- end -}}
     {{- if $secrets }}
