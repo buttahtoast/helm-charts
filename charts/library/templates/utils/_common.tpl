@@ -30,24 +30,42 @@ limitations under the License.
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{/*
+  Sprig Template - Name Check
+*/}}
+{{- define "lib.internal.common.nameCheck" -}}
+  {{- if or (contains .name .context.Release.Name) (contains $context.Release.Name $name_p) -}}
+       {{- printf "%s" $prefix -}}
+      {{- else -}}
+        {{- $name = (printf "%s-%s" $prefix $name_p) -}}
+     {{- end -}}
+{{- end -}}
+
+
+
 
 {{/*
   Sprig Template - Fullname
 */}}
 {{- define "lib.utils.common.fullname" -}}
   {{- $context := default . .context -}}
-  {{- $name_p := default $context.name .name -}}
-  {{- $fullname_p := default $context.fullname .fullname  -}}
+  {{- $name := default $context.name .name -}}
+  {{- $fullname := default $context.fullname .fullname  -}}
   {{- $prefix := default $context.Release.Name .prefix }}
-  {{- $name := "" -}}
-  {{- if $context.Values.fullnameOverride -}}
-    {{- if $name_p }}
-      {{- $name = (printf "%s-%s" $context.Values.fullnameOverride $name_p) -}}
-    {{- else }}
-      {{- $name = $context.Values.fullnameOverride -}}
-    {{- end }}
-  {{- else if $fullname_p }}
-    {{- $name = $fullname_p -}}
+  {{- $return := "" -}}
+  {{- if $fullname }}
+    {{- $return = $fullname -}}
+  {{ - else if $name_p }}
+    {{- if or (contains $name $prefix) (contains $name $prefix) -}}
+      {{- $return = (printf "%s" $prefix) -}}
+    {{- else -}}
+      {{- $return = (printf "%s-%s" $prefix $name) -}}
+    {{- end -}}
+
+  {{- else if $context.Values.fullnameOverride -}}
+    {{- $name = $context.Values.fullnameOverride -}}
+  {{- else }}
+    {{- $name = (default (include "lib.internal.common.name" $context) $name_p) }}
   {{- else -}}
     {{- $name_p := (default (include "lib.internal.common.name" $context) $name_p) }}
       {{- if or (contains $name_p $context.Release.Name) (contains $context.Release.Name $name_p) -}}
@@ -56,6 +74,9 @@ limitations under the License.
         {{- $name = (printf "%s-%s" $prefix $name_p) -}}
      {{- end -}}
   {{- end -}}
+
+
+
   {{- if (contains "RELEASE-NAME" $name) }}
     {{- printf "%s" $name }}
   {{- else }}

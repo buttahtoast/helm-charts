@@ -104,7 +104,7 @@ limitations under the License.
       {{- end -}}
     {{- end -}}
     {{- if $secrets }}
-      {{- toYaml $secrets | nindent 0 }}
+imagePullSecrets: {{- toYaml $secrets | nindent 0 }}
     {{- end }}
   {{- else }}
     {{- fail "Template requires '.context' as argument" }}
