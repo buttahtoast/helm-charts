@@ -19,5 +19,8 @@ sources:
 annotations:
   artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/changes: |
-    - "[Fixed]: ImagePullSecrets get merged together with global ImagePullSecrets"
-  artifacthub.io/prerelease: "true"
+    - "[Added]: Internal Function `lib.internal.common.prefix`"
+    - "[Added]: Internal Function `lib.internal.common.releaseNameCompare`"    
+    - "[Fixed]: ImagePullSecret evaluation returns as dict with field `imagePullSecrets`"  
+    - "[Changed]: Fullname always prepends prefix"  
+  artifacthub.io/prerelease: "false"
