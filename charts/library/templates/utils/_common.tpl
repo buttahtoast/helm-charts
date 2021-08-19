@@ -30,36 +30,59 @@ limitations under the License.
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{/*
+  Sprig Template - Release.Name Compare
+*/}}
+{{- define "lib.internal.common.releaseNameCompare" -}}
+  {{- if .name }}
+    {{- if or (contains .name .context.Release.Name) (contains .context.Release.Name .name) -}}
+        {{- printf "%s" .name -}}
+    {{- else -}}
+        {{- printf "%s-%s" .context.Release.Name .name -}}
+    {{- end -}}
+  {{- else }}
+    {{- printf "%s" .context.Release.Name -}}
+  {{- end -}}  
+{{- end -}}
+
+{{/*
+  Sprig Template - Name add Prefix
+*/}}
+{{- define "lib.internal.common.prefix" -}}
+  {{- if .prefix  -}}
+    {{- printf "%s-%s" .prefix .name -}}
+  {{- else -}}
+    {{- printf "%s" .name -}}
+  {{- end -}}
+{{- end -}}
+
+
 
 {{/*
   Sprig Template - Fullname
+    {{/*Release.Name*/}}
 */}}
 {{- define "lib.utils.common.fullname" -}}
   {{- $context := default . .context -}}
-  {{- $name_p := default $context.name .name -}}
-  {{- $fullname_p := default $context.fullname .fullname  -}}
-  {{- $prefix := default $context.Release.Name .prefix }}
-  {{- $name := "" -}}
+  {{- $name := default $context.name .name -}}
+  {{- $fullname := default $context.fullname .fullname  -}}
+  {{- $prefix := default $context.prefix .prefix }}
+  {{- $return := "" -}}
   {{- if $context.Values.fullnameOverride -}}
-    {{- if $name_p }}
-      {{- $name = (printf "%s-%s" $context.Values.fullnameOverride $name_p) -}}
-    {{- else }}
-      {{- $name = $context.Values.fullnameOverride -}}
-    {{- end }}
-  {{- else if $fullname_p }}
-    {{- $name = $fullname_p -}}
-  {{- else -}}
-    {{- $name_p := (default (include "lib.internal.common.name" $context) $name_p) }}
-      {{- if or (contains $name_p $context.Release.Name) (contains $context.Release.Name $name_p) -}}
-        {{- $name = $prefix -}}
-      {{- else -}}
-        {{- $name = (printf "%s-%s" $prefix $name_p) -}}
-     {{- end -}}
-  {{- end -}}
-  {{- if (contains "RELEASE-NAME" $name) }}
-    {{- printf "%s" $name }}
+    {{- $return = include "lib.internal.common.prefix" (dict "prefix" $prefix "name" $context.Values.fullnameOverride) -}}
+  {{- else if $fullname }}
+    {{- $return = include "lib.internal.common.prefix" (dict "prefix" $prefix "name" $fullname) -}}
+  {{- else if $name }}
+    {{- $return = include "lib.internal.common.prefix" (dict "prefix" $prefix "name" (include "lib.internal.common.releaseNameCompare" (dict "name" $name "context" $context))) -}}
+  {{- else if $context.Values.fullnameOverride -}}
+    {{- $return = include "lib.internal.common.prefix" (dict "prefix" $prefix "name" $context.Values.fullnameOverride) -}}
   {{- else }}
-    {{- printf "%s" (include "lib.utils.strings.toDns1123" $name) }}
+    {{- $return = include "lib.internal.common.prefix" (dict "prefix" $prefix "name" (include "lib.internal.common.releaseNameCompare" (dict "name" (include "lib.internal.common.name" $context) "context" $context))) -}}
+  {{- end -}}
+  {{- if (contains "RELEASE-NAME" $return) }}
+    {{- printf "%s" $return }}
+  {{- else }}
+    {{- printf "%s" (include "lib.utils.strings.toDns1123" $return) }}
   {{- end }}
 {{- end -}}
 
