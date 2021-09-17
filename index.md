@@ -3,5 +3,5 @@
 Add our Helm Repository:
 
 ```
-helm repo add kubernetli https://buttahtoast.github.io/helm-charts
+helm repo add buttahtoast https://buttahtoast.github.io/helm-charts
 ```
