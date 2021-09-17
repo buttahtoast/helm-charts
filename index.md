@@ -1,5 +1,3 @@
-# Buttahtoast Helm Repository
-
 Add our Helm Repository:
 
 ```
