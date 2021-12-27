@@ -145,6 +145,34 @@ entries:
     version: 0.1.0
   library:
   - annotations:
+      artifacthub.io/changes: |
+        - "[Added]: Dictionary Function `lib.utils.dicts.lookup`"
+        - "[Added]: Extra Function `lib.utils.extras.fail`"
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/prerelease: "false"
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2021-12-27T22:31:04.40716894Z"
+    description: Buttahtoast Helm Library
+    digest: 067399e1e7eff366ad69bc90f49d40e1d1633ee3163d2270e598155b92515ecc
+    home: https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    icon: https://avatars0.githubusercontent.com/u/67652090?s=400&u=874d1c989b0afc2789865be01051f0bbfc84ae32&v=4
+    keywords:
+    - library
+    - sprig
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: library
+    sources:
+    - https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    type: library
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/library-2.1.0/library-2.1.0.tgz
+    version: 2.1.0
+  - annotations:
       artifacthub.io/changes: "- \"[Added]: Internal Function `lib.internal.common.prefix`\"\n-
         \"[Added]: Internal Function `lib.internal.common.releaseNameCompare`\"    \n-
         \"[Fixed]: ImagePullSecret evaluation returns as dict with field `imagePullSecrets`\"
@@ -860,4 +888,4 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.1.0/tavern-0.1.0.tgz
     version: 0.1.0
-generated: "2021-08-19T13:49:54.54891511Z"
+generated: "2021-12-27T22:31:04.40730014Z"
