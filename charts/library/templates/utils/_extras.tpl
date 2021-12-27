@@ -80,3 +80,11 @@ kind: List
 items: {{- include "lib.utils.strings.template" (dict "value" $.Values.extraResources "context" $) | nindent 2 }}
   {{- end }}
 {{- end }}
+
+
+{{/*
+  Sprig Template - ExtraResources
+*/}}
+{{- define "lib.utils.extras.fail" -}}
+  {{- fail (printf "\n\n%s" $) -}}
+{{- end -}}  
