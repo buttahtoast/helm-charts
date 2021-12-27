@@ -43,3 +43,34 @@ limitations under the License.
     {{- end }}
   {{- end }}
 {{- end -}}
+
+
+{{/*
+  Sprig Template - Get a specific key path from the config
+*/}}
+{{- define "lib.utils.dicts.lookup" -}}
+  {{- $path := trimAll "." .path -}}
+  {{- if and $path .data -}}
+    {{- $buf := .data -}}
+    {{- $miss := dict "state" false "path" -}}
+    {{- range (splitList "." $path) }}
+      {{- if eq $miss.state false -}}
+        {{- if (hasKey $buf .) }}
+          {{- $buf = get $buf . -}}
+        {{- else -}}
+          {{- $_ := set $miss "path" . -}}
+          {{- $_ := set $miss "state" true -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if eq $miss.state false -}}
+      {{- printf "%s" (toYaml (dict "res" $buf)) -}}
+    {{- else -}}
+      {{- if eq (default false .required) true -}}
+        {{ include "lib.utils.extras.fail" (cat "Missing path" $miss.path "for lookup" $path "in structure\n" (toYaml .data | nindent 0)) }}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+

@@ -1,6 +1,6 @@
 # Buttahtoast Library
 
-![Version: 2.0.0](https://img.shields.io/badge/Version-2.0.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 2.1.0](https://img.shields.io/badge/Version-2.1.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 This is our take on a library Chart. It contains simple functions which are (will be) used across all of our charts. Feel free the add or improve the existing templates. This Chart is still under development/testing. Feel free to use it, if you find any issues with it, please create an issue/PR. We will try to get bugs fixed as soon as possible!
 
@@ -75,9 +75,11 @@ parse the file and that causes some issues. So don't forget to add a pair of `{}
 * **[Dictionaries](#dictionaries)**
   * [ParentAppend](#parentAppend)
   * [PrintYamlStructure](#printyamlstructure)
+  * [Lookup](#lookup)
 * **[Extras](#extras)**
   * [Environment](#environment)
   * [ExtraResources](#extraresources)
+  * [Fail](#fail)
 
 ## [Common](./templates/utils/_common.tpl)
 
@@ -666,7 +668,7 @@ Boolean
 #### Usage
 
 ```
-{- include "lib.utils.lists.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
+{- include "lib.utils.lists.hasValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
 ```
 
 ### GetValueByKey
@@ -868,6 +870,38 @@ my:
       {.data}
 ```
 
+### Lookup
+---
+
+Get a specific key by delivering the key path from a given dictionary.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will fail intentionally.
+
+  * `.path` - The key path
+  * `.required` - If set to true, and the key path value is not found or empty, the template will fail (Optional)
+  * `.data` - The dictionary to lookup
+
+#### Returns
+
+  Dictionary (With key `.result` in case the key resolves to a list)
+
+#### Usage:
+
+```
+{- include "lib.utils.dicts.lookup" (dict "path" "sub.key" "data" (dict "sub" (dict "key" (list "A" "B" "C")))) }
+```
+
+Will result in
+
+```
+result:
+  - A
+  - B
+  - C
+```
+
 ## [Extras](./templates/utils/_extras.tpl)
 
 ### Environment
@@ -936,4 +970,25 @@ Usage:
 
 ```
 env: {- include "lib.utils.extras.resources" $ | nindent 2 }
+```
+
+### Fail
+---
+
+Executes a fail but adds two new lines to make the error more visible.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will fail intentionally.
+
+  * `.` -  Error Message
+
+#### Returns
+
+Helm Fail
+
+#### Usage:
+
+```
+{- include "lib.utils.extras.fail" (printf "My Custom Error") }
 ```
