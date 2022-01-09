@@ -1,22 +1,5 @@
 {{/*
-
-Copyright © 2021 Buttahtoast
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-*/}}
-{{/*
-  Sprig Template - ParentAppend
+  ParentAppend <Template>
 */}}
 {{- define "lib.utils.dicts.parentAppend" -}}
   {{- $baseDict := dict -}}
@@ -26,7 +9,7 @@ limitations under the License.
 
 
 {{/*
-  Sprig Template - PrintYamlStructure
+  PrintYamlStructure <Template>
 */}}
 {{- define "lib.utils.dicts.printYAMLStructure" -}}
   {{- if .structure }}
@@ -46,7 +29,7 @@ limitations under the License.
 
 
 {{/*
-  Sprig Template - Get a specific key path from the config
+  Lookup <Template>
 */}}
 {{- define "lib.utils.dicts.lookup" -}}
   {{- $path := trimAll "." .path -}}
@@ -70,7 +53,7 @@ limitations under the License.
         {{ include "lib.utils.extras.fail" (cat "Missing path" $miss.path "for lookup" $path "in structure\n" (toYaml .data | nindent 0)) }}
       {{- end -}}
     {{- end -}}
+  {{- else -}}
+    {{- include "lib.utils.errors.params" (dict "tpl" "lib.utils.dicts.lookup" "params" (list "path" "data")) -}}
   {{- end -}}
 {{- end -}}
-
-

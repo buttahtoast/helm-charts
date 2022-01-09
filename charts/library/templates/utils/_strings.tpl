@@ -1,22 +1,5 @@
 {{/*
-
-Copyright © 2021 Buttahtoast
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-*/}}
-{{/*
-  Sprig Template - Template
+  Template <Template>
 */}}
 {{- define "lib.utils.strings.template" -}}
   {{- if .context }}
@@ -28,12 +11,12 @@ limitations under the License.
     {{- end }}
     {{- $_ := unset .context (default "extraVars" .extraValuesKey) }}
   {{- else }}
-    {{- fail "Template requires '.context' as argument" }}
+    {{- include "lib.utils.errors.params" (dict "tpl" "lib.utils.strings.template" "params" (list "context")) -}}
   {{- end }}
 {{- end -}}
 
 {{/*
-  Sprig Template - Stringify
+  Stringify <Template>
 */}}
 {{- define "lib.utils.strings.stringify" -}}
   {{- if and .list .context }}
@@ -42,12 +25,12 @@ limitations under the License.
         {{- printf "%s" (include "lib.utils.strings.template" (dict "value" (.list | join $delimiter) "context" .context)) | indent 0 }}
     {{- end }}
   {{- else }}
-    {{- fail "Template requires '.list' and '.context' as arguments" }}
+    {{- include "lib.utils.errors.params" (dict "tpl" "lib.utils.strings.stringify" "params" (list "list" "context")) -}}
   {{- end }}
 {{- end }}
 
-{{/*
-  Sprig Template - ToDns1123
+{{/* 
+  ToDns1123 <Template> 
 */}}
 {{- define "lib.utils.strings.toDns1123" -}}
   {{- if (kindIs "string" .) }}

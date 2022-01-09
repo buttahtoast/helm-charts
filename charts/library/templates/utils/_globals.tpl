@@ -1,22 +1,5 @@
 {{/*
-
-Copyright © 2021 Buttahtoast
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-*/}}
-{{/*
-  Sprig Template - DockerImage
+  DockerImage <Template>
 */}}
 {{- define "lib.utils.globals.image" -}}
   {{- if and .image .context }}
@@ -58,13 +41,13 @@ limitations under the License.
       {{- printf "%s" $imagePath -}}
     {{- end }}
   {{- else }}
-    {{- fail "Template requires '.registry' and '.context' as arguments" }}
+    {{- include "lib.utils.errors.params" (dict "tpl" "lib.utils.globals.imagePullPolicy" "params" (list "registry" "context")) -}}
   {{- end }}
 {{- end -}}
 
 
 {{/*
-  Sprig Template - ImagePullPolicy
+  ImagePullPolicy <Template>
 */}}
 {{- define "lib.utils.globals.imagePullPolicy" -}}
   {{- if .context }}
@@ -83,13 +66,13 @@ limitations under the License.
       {{- printf "%s" $policy }}
     {{- end }}
   {{- else }}
-    {{- fail "Template requires '.context' as argument" }}
+    {{- include "lib.utils.errors.params" (dict "tpl" "lib.utils.globals.imagePullPolicy" "params" (list "context")) -}}
   {{- end }}
 {{- end -}}
 
 
 {{/*
-  Sprig Template - ImagePullsecrets
+  ImagePullsecrets <Template>
 */}}
 {{- define "lib.utils.globals.imagePullSecrets" -}}
   {{- if .context }}
@@ -107,13 +90,13 @@ limitations under the License.
 imagePullSecrets: {{- toYaml $secrets | nindent 0 }}
     {{- end }}
   {{- else }}
-    {{- fail "Template requires '.context' as argument" }}
+    {{- include "lib.utils.errors.params" (dict "tpl" "lib.utils.globals.imagePullSecrets" "params" (list "context")) -}}
   {{- end }}
 {{- end }}
 
 
 {{/*
-  Sprig Template - StorageClass
+  StorageClass <Template>
 */}}
 {{- define "lib.utils.globals.storageClass" -}}
   {{- if .context }}
@@ -133,6 +116,6 @@ imagePullSecrets: {{- toYaml $secrets | nindent 0 }}
       {{- printf "\"%s\"" $storageClass -}}
     {{- end }}
   {{- else }}
-    {{- fail "Template requires '.context' as argument" }}
+    {{- include "lib.utils.errors.params" (dict "tpl" "lib.utils.globals.storageClass" "params" (list "context")) -}}
   {{- end }}
 {{- end -}}
