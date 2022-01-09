@@ -143,6 +143,32 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/csgo-0.1.0/csgo-0.1.0.tgz
     version: 0.1.0
+  helmize:
+  - annotations:
+      artifacthub.io/prerelease: "true"
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-01-09T19:25:31.415868968Z"
+    dependencies:
+    - name: library
+      repository: https://buttahtoast.github.io/helm-charts/
+      version: 2.2.0
+    description: Go Sprig based deployment engine deployed via Helm
+    digest: acfb583fcc68c7d69750690c39ec7d235bf073647f427055f3eab086755c8add
+    home: https://buttahtoast.github.io/helmize/
+    icon: https://raw.githubusercontent.com/buttahtoast/helmize/main/icon.jpg
+    keywords:
+    - library
+    - sprig
+    - deploy
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    name: helmize
+    type: library
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/helmize-0.1.0-rc.0/helmize-0.1.0-rc.0.tgz
+    version: 0.1.0-rc.0
   library:
   - annotations:
       artifacthub.io/changes: |
@@ -917,4 +943,4 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.1.0/tavern-0.1.0.tgz
     version: 0.1.0
-generated: "2022-01-09T14:15:30.392974907Z"
+generated: "2022-01-09T19:25:31.41604187Z"
