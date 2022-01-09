@@ -1,6 +1,6 @@
 # Buttahtoast Library
 
-![Version: 2.1.0](https://img.shields.io/badge/Version-2.1.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 2.2.0](https://img.shields.io/badge/Version-2.2.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 This is our take on a library Chart. It contains simple functions which are (will be) used across all of our charts. Feel free the add or improve the existing templates. This Chart is still under development/testing. Feel free to use it, if you find any issues with it, please create an issue/PR. We will try to get bugs fixed as soon as possible!
 
@@ -52,6 +52,7 @@ parse the file and that causes some issues. So don't forget to add a pair of `{}
 
 * **[Common](#common)**
   * [Fullname](#fullname)
+  * [Chart](#chart)
   * [SelectorLabels](#selectorlabels)
   * [DefaultLabels](#defaultlabels)
   * [CommonLabels](#commonlabels)
@@ -79,7 +80,12 @@ parse the file and that causes some issues. So don't forget to add a pair of `{}
 * **[Extras](#extras)**
   * [Environment](#environment)
   * [ExtraResources](#extraresources)
-  * [Fail](#fail)
+* **[Errors](#errors)**
+  * [fail](#fail)
+  * [unmarshalingError](#unmarshalingError)
+  * [params](#params)
+* **[Types](#types)**
+  * [validate](#validate)
 
 ## [Common](./templates/utils/_common.tpl)
 
@@ -124,6 +130,20 @@ String
 
 ```
 {- include "lib.utils.common.fullname" $) }
+```
+
+### Chart
+
+Chart Name
+
+#### Returns
+
+String
+
+#### Usage
+
+```
+{- include "lib.internal.common.chart" $) }
 ```
 
 ### SelectorLabels
@@ -972,6 +992,8 @@ Usage:
 env: {- include "lib.utils.extras.resources" $ | nindent 2 }
 ```
 
+## [Errors](./templates/utils/_errors.tpl)
+
 ### Fail
 ---
 
@@ -990,5 +1012,118 @@ Helm Fail
 #### Usage:
 
 ```
-{- include "lib.utils.extras.fail" (printf "My Custom Error") }
+{- include "lib.utils.errors.fail" (printf "My Custom Error") }
+```
+
+### unmarshalingError
+---
+
+Evaluates a dictionary which was parsed from YAMl if it has an Error field.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will fail intentionally. Returns True if that's the case.
+
+  * `.` -  Data
+
+#### Returns
+
+Bool
+
+#### Usage:
+
+```
+{- if not (include "lib.utils.errors.unmarshalingError" (fromYaml (include "my.data" $))) }
+No Error!
+{- else -}
+Error: (fromYaml (include "my.data" $)).Error
+{- end -}
+```
+
+### Params
+---
+
+Prints an error that a template is missing parameters
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will fail intentionally. Returns True if that's the case.
+
+  * `.tpl` -  Template Name
+  * `.params` -  Parameter List
+
+#### Returns
+
+Helm Fail
+
+#### Usage:
+
+```
+{- if and $.data $.ctx}
+Do Stuff
+{- else -}
+  {- include "lib.utils.errors.params" (dict "tpl" "my.tpl" "params" (list "data" "ctx") }
+{- end -}
+```
+
+# [Types](./templates/utils/_types.tpl)
+
+### Validate
+---
+
+Validate Types against data
+
+#### Type
+
+This is what a type declartion could look like:
+
+```
+{- define "my.type" -}
+
+# Field Config, matches the field name 'field-2'. The following properties are supported:22
+field-2:
+
+  # Declared 'field-2' as Required
+  required: true
+
+  # Allowed types for the content of 'field-2'
+  types: [ "string", "slice" ]
+
+  # Default Value if the field does not have a value
+  default: "default-value"
+
+  # Allowed Values for the fields value
+  values: [ "dev", "prod" ]
+
+# Field with just type
+field-3:
+  types: [ "map" ]
+
+# Field with just default
+field-3:
+  default: "east"
+
+{- end -}
+```
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will fail intentionally. Returns True if that's the case.
+
+  * `.type` -  Template Name of Type
+  * `.data` - Check Type against the given data
+  * `.ctx` -  Global Context
+
+#### Returns
+
+  * `.isType` -  If given data is type
+  * `.errors` -  Errors
+
+#### Usage:
+
+```
+{- $validate := fromYaml (include "lib.utils.types.validate" (dict "type" "my.type" "data" some.data "ctx" $)) -}
+{- if $validate.isType -}
+  Valid
+{- end -}
 ```

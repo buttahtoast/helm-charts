@@ -46,6 +46,12 @@ dependencies:
 
 The documentation for each chart is done with [helm-docs](https://github.com/norwoodj/helm-docs). This way we can ensure that values are consistent with the chart documentation.
 
+We have a script on the repository which will execute the helm-docs docker container, so that you don't have to worry about downloading the binary etc. Simply execute the script (Bash compatible, might require sudo privileges):
+
+```
+bash scripts/helm-docs.sh
+```
+
 **NOTE**: When creating your own `README.md.gotmpl`, don't forget to add it to your `.helmignore` file.
 
 ### Major Changes
@@ -88,24 +94,6 @@ Since we release our charts on [Artifacthub](https://artifacthub.io/) we encoura
   * [All Artifacthub Annotations](https://github.com/artifacthub/hub/blob/master/docs/helm_annotations.md)
 
 In some cases they might not be required.
-
-### Prerelease
-
-Annotation to mark chart release as prerelease:
-
-```
-annotations:
-  artifacthub.io/prerelease: "true"
-```
-
-### SecurityUpdates
-
-Annotation to mark that chart release contains security updates:
-
-```
-annotations:
-  artifacthub.io/containsSecurityUpdates: "true"
-```
 
 ### Changelog
 
