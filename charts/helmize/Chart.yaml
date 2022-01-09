@@ -1,0 +1,21 @@
+apiVersion: v2
+name: helmize
+description: Go Sprig based deployment engine deployed via Helm
+type: library
+version: "0.1.0-rc.0"
+appVersion: "0.1.0"
+home: https://buttahtoast.github.io/helmize/
+icon: https://raw.githubusercontent.com/buttahtoast/helmize/main/icon.jpg
+dependencies:
+  - name: library
+    version: "2.2.0"
+    repository: https://buttahtoast.github.io/helm-charts/  
+keywords:
+  - library
+  - sprig
+  - deploy
+maintainers:
+  - name: oliverbaehler
+    email: oliverbaehler@hotmail.com
+annotations:
+  artifacthub.io/prerelease: "true"

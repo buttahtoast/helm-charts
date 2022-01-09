@@ -1,0 +1,6 @@
+# Helmize Configuration
+#  The Values are valid in the values of the parent chart
+#  since library charts do not accept any values
+
+# config_file -- Configuration Location. You can specify a file path in your chart
+config_file: ""
