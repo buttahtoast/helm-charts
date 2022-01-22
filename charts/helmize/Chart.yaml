@@ -2,7 +2,7 @@ apiVersion: v2
 name: helmize
 description: Go Sprig based deployment engine deployed via Helm
 type: library
-version: "0.1.0-rc.0"
+version: "0.1.0-rc.1"
 appVersion: "0.1.0"
 home: https://buttahtoast.github.io/helmize/
 icon: https://raw.githubusercontent.com/buttahtoast/helmize/main/icon.jpg
