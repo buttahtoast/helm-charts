@@ -45,31 +45,34 @@
               {{- $condition_keys = append $condition_keys .default -}}
             {{- end -}}
           {{- else -}}
-
-            {{/* Validate Key Types */}}
-            {{- $type_error := 0 -}}
-            {{- if $condition.key_types -}}
-              {{- range $condition.key_types -}}
-                {{- if (kindIs . $key) -}}
-                  {{- $type_error = 1 -}}
-                {{- end -}}
-              {{- end -}}
-            {{- else -}}
-              {{- $type_error = 1 -}}
-            {{- end -}}
-
-
             {{- if (kindIs "slice" $key) -}}
               {{- $condition_keys = concat $condition_keys $key -}}
             {{- else -}}
               {{- $condition_keys = append $condition_keys $key -}}
             {{- end -}}  
           {{- end -}}
+
+          {{/* Validate Type */}}
+          {{- if $key -}}
+            {{- $type_error := 1 -}}
+            {{- if $condition.key_types -}}
+              {{- range $condition.key_types -}}
+                {{- if (kindIs . $key) -}}
+                  {{- $type_error = 0 -}}
+                {{- end -}}
+              {{- end -}}
+            {{- else -}}
+              {{- $type_error = 0 -}}
+            {{- end -}}
+            {{- if $type_error -}}
+              {{- $_ := set $return "errors" (concat $return.errors (list (dict "condition" $condition.name "error" (printf "Value for condition must be %s but is %s" ($condition.key_types| join ", ") (kindOf $key))))) -}}
+            {{- end -}}
+          {{- end -}}  
   
           {{/* Apply a filter to all results */}}
           {{- if $condition.filter -}}
             {{- $filtered_list := $condition_keys -}}
-            {{- if $condition.reverseFilter -}}
+            {{- if $condition.reverse_filter -}}
               {{- $filtered_list = list -}}
             {{- end -}}
             {{- if (kindIs "string" $condition.filter) -}}
@@ -79,7 +82,7 @@
               {{- $con := . -}}
               {{- range $condition.filter -}}
                 {{- if (regexMatch . $con) -}}
-                  {{- if $condition.reverseFilter -}}
+                  {{- if $condition.reverse_filter -}}
                     {{- $filtered_list = append $filtered_list $con -}}
                   {{- else -}}
                     {{- $filtered_list = without $filtered_list $con -}}

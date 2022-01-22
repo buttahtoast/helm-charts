@@ -20,7 +20,7 @@ path:
   types: [ "string" ]
 filter: 
   types: [ "string", "slice" ]
-reverseFilter:
+reverse_filter:
   types: [ "int", "bool" ]
 allow_root:
   types: [ "int", "bool" ]     
