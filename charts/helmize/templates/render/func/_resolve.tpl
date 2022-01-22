@@ -28,8 +28,6 @@
       {{/* Debug */}}
       {{- $_ := set $return "conditions" $conds.conditions -}}
 
-      {{- $_ := set $return "all" $conds -}}
-
       {{/* Iterate over each condition to get paths for file lookups */}}
       {{- $paths := list -}}
       {{- range $conds.conditions -}}

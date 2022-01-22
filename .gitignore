@@ -42,3 +42,7 @@ credentials.yml
 # Nodejs
 node_modules/
 package-lock.json
+
+# Charts
+*.tgz
+Chart.lock
