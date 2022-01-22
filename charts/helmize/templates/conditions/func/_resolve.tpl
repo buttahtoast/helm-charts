@@ -34,7 +34,10 @@
           {{- $condition_struct := dict "name" $condition.name "root_path" $condition_path "paths" list "keys" list "config" $condition -}}
   
           {{/* Add Condition Keys */}}
-          {{- $key := (fromYaml (include "lib.utils.dicts.lookup" (dict "data" $.ctx "path" (default "" $condition.key) "required" false))).res }}
+          {{- $key := "" -}}
+          {{- if $condition.key -}}
+            {{- $key = (fromYaml (include "lib.utils.dicts.lookup" (dict "data" $.ctx "path" $condition.key "required" false))).res -}}
+          {{- end -}}
           {{- if and $condition.key (and (not $key) ($condition.required)) -}}
             {{- include "inventory.helpers.fail" (printf "A Value for %s is required but not set" $condition.key) -}}
           {{- else if not $key -}}
@@ -42,18 +45,25 @@
               {{- $condition_keys = append $condition_keys .default -}}
             {{- end -}}
           {{- else -}}
+
+            {{/* Validate Key Types */}}
+            {{- $type_error := 0 -}}
+            {{- if $condition.key_types -}}
+              {{- range $condition.key_types -}}
+                {{- if (kindIs . $key) -}}
+                  {{- $type_error = 1 -}}
+                {{- end -}}
+              {{- end -}}
+            {{- else -}}
+              {{- $type_error = 1 -}}
+            {{- end -}}
+
+
             {{- if (kindIs "slice" $key) -}}
               {{- $condition_keys = concat $condition_keys $key -}}
             {{- else -}}
               {{- $condition_keys = append $condition_keys $key -}}
             {{- end -}}  
-          {{- end -}}
-  
-          {{/* Add groups as possible keys */}}
-          {{- if not $condition.groups_disabled -}}
-            {{- if $.roles -}}
-              {{- $condition_keys = concat $.roles $condition_keys -}}
-            {{- end -}}
           {{- end -}}
   
           {{/* Apply a filter to all results */}}
@@ -79,6 +89,12 @@
             {{- end -}}
             {{- $condition_keys = $filtered_list -}}
           {{- end -}}
+
+          {{/* Add Base */}}
+          {{- if $condition.allow_root -}}
+            {{- $condition_keys = prepend  $condition_keys "/" -}}
+          {{- end -}}
+
   
           {{/* Create Path for each Condition Key */}}
           {{- $condition_keys = $condition_keys | uniq -}}

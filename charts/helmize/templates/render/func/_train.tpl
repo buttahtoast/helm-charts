@@ -66,11 +66,11 @@
           {{- $_ := set $wagon "files" (concat $wagon.files $train_file.files) -}}
 
           {{/* Merge Errors */}}
-          {{- if $file.errors -}}
+          {{- if $train_file.errors -}}
             {{- $_ := set $wagon "errors" (concat $wagon.errors $train_file.errors) -}}
           {{- else -}}
             {{/* Merge Contents */}}
-            {{- if $file.content -}}
+            {{- if $train_file.content -}}
               {{- $content_buff := (mergeOverwrite $wagon.content $train_file.content) -}}
               {{- $_ := set $wagon "content" $content_buff -}}
             {{- end -}}  

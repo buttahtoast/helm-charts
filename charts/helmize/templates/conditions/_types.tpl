@@ -9,6 +9,9 @@ name:
   required: true
 key:
   types: [ "string" ]
+key_types:
+  types: [ "slice" ]
+  default: [ "string", "slice" ]
 required:
   types: [ "int", "bool" ]
 default:

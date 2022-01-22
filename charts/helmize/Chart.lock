@@ -1,0 +1,6 @@
+dependencies:
+- name: library
+  repository: https://buttahtoast.github.io/helm-charts/
+  version: 2.2.0
+digest: sha256:81e816eec4439aaffc6d96cc68c827dc23ecbc69361828172a0efe95b06eb2ad
+generated: "2022-01-16T15:32:21.23976689+01:00"
