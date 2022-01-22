@@ -4,5 +4,5 @@
 
 */}}
 {{- define "inventory.config.defaults.location" -}}
-  {{- default "_config.yaml" $.Values.config_file -}}
+  {{- default "helmize.yaml" $.Values.config_file -}}
 {{- end }}

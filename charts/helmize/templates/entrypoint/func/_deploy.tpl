@@ -9,6 +9,7 @@
 
   {{/* Resolve Files */}}
   {{- $deploy_raw := include "inventory.entrypoint.func.resolve" $ -}}
+  t: | {{ $deploy_raw | nindent 10 }}
   {{- $deploy := fromYaml ($deploy_raw) -}}
   {{- if (not (include "lib.utils.errors.unmarshalingError" $deploy)) -}}
 
