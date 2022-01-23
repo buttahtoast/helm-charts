@@ -105,8 +105,8 @@
           {{- end -}}
 
           {{/* Redirect Content */}}
-          {{- with $post_renders.content -}}
-            {{- $_ := set $file "content" . -}}
+          {{- if $post_renders.content -}}
+          {{- $_ := set $file "content" $post_renders.content -}}
           {{- end -}}
 
         {{- else -}}

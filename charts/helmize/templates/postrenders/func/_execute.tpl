@@ -61,10 +61,7 @@
           {{- if $postrender_result.errors -}}
             {{- $_ := set $return "errors" (concat $return.errors $postrender_result.errors) -}}
           {{- else -}}
-            {{/* Merge Content */}}
-            {{- if $postrender_result.content -}}
-              {{- $content_buff = $postrender_result.content -}}
-            {{- end -}}
+            {{- $content_buff = $postrender_result.content -}}
           {{- end -}}
 
         {{- else -}}
