@@ -4,14 +4,15 @@
 
 */}}
 {{- define "inventory.postrenders.renders.annotations" -}}
-  {{- $return := dict "content" $.content "errors" list -}}
-  {{- if $return.content.metadata -}}
-    {{- if $.ctx.Values.annotations -}}
-      {{- $_ := set $return.content.metadata "annotations" (mergeOverwrite (default dict $return.content.metadata.annotations) $.ctx.Values.annotations) -}}
-    {{- end -}}
-    {{- if $.Data.annotations -}}
-      {{- $_ := set $return.content.metadata "annotations" (mergeOverwrite (default dict $return.content.metadata.annotations) $.Data.annotations) -}}
+  {{- if $.content -}}
+    {{- if $.content.metadata -}}
+      {{- if $.ctx.Values.annotations -}}
+        {{- $_ := set $.content.metadata "annotations" (mergeOverwrite (default dict $.content.metadata.annotations) $.ctx.Values.annotations) -}}
+      {{- end -}}
+      {{- if $.Data.annotations -}}
+        {{- $_ := set $.content.metadata "annotations" (mergeOverwrite (default dict $.content.metadata.annotations) $.Data.annotations) -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
-  {{- printf "%s" (toYaml $return) -}}
+  {{- printf "%s" (toYaml $.content) -}}
 {{- end -}}
