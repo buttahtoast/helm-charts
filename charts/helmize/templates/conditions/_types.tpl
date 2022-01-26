@@ -9,6 +9,9 @@ name:
   required: true
 key:
   types: [ "string" ]
+key_types:
+  types: [ "slice" ]
+  default: [ "string", "slice" ]
 required:
   types: [ "int", "bool" ]
 default:
@@ -17,7 +20,7 @@ path:
   types: [ "string" ]
 filter: 
   types: [ "string", "slice" ]
-reverseFilter:
+reverse_filter:
   types: [ "int", "bool" ]
 allow_root:
   types: [ "int", "bool" ]     

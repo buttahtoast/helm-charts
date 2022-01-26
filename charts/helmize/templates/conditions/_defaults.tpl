@@ -16,4 +16,3 @@ conditions
 {{- define "inventory.conditions.defaults.inv_dir" -}}
 inventory_directory
 {{- end }}
-

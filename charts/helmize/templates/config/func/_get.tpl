@@ -10,10 +10,21 @@
   {{- $cfg_loc := (include "inventory.config.defaults.location" $) -}}
 
   {{/* Validate based on type how config is set */}}
-  {{- $cfg := fromYaml (.Files.Get $cfg_loc) -}}
+  {{- $cfg := .Files.Get $cfg_loc -}}
 
-  {{/* When config has values */}}
+  {{/* When config has content */}}
   {{- if $cfg -}}
+
+    {{/* Template Content */}}
+    {{- $template_config_raw := tpl $cfg $ -}}
+    {{- $template_config := fromYaml ($template_config_raw) -}}
+
+    {{/* Validate if conversation was successful, otherwise return with error */}}
+    {{- if not (include "lib.utils.errors.unmarshalingError" $template_config) -}}
+      {{- $cfg = $template_config -}}
+    {{- else -}}
+      {{- include "lib.utils.errors.fail" (printf "Templating of %s did not return valid YAML:\n%s" $cfg_loc ($template_config_raw | nindent 2)) -}}
+    {{- end -}}
 
     {{/* Validate Configuration */}}
     {{- $cfg_validate := fromYaml (include "lib.utils.types.validate" (dict "type" "inventory.config.types.config" "data" $cfg "ctx" $)) -}}

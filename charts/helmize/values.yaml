@@ -4,3 +4,6 @@
 
 # config_file -- Configuration Location. You can specify a file path in your chart
 config_file: ""
+
+# Summary
+summary: false

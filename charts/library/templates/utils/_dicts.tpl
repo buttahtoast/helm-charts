@@ -50,7 +50,7 @@
       {{- printf "%s" (toYaml (dict "res" $buf)) -}}
     {{- else -}}
       {{- if eq (default false .required) true -}}
-        {{ include "lib.utils.extras.fail" (cat "Missing path" $miss.path "for lookup" $path "in structure\n" (toYaml .data | nindent 0)) }}
+        {{ include "lib.utils.errors.fail" (cat "Missing path" $miss.path "for lookup" $path "in structure\n" (toYaml .data | nindent 0)) }}
       {{- end -}}
     {{- end -}}
   {{- else -}}
