@@ -15,13 +15,14 @@
   {{- if and $.files $.ctx -}}
     {{- $return := dict "files" list "errors" list -}}
 
+    {{- $_ := set $return "empty" (dict "meow" "me") -}}
+
     {{/* Variables */}}
     {{- $file_train := dict -}}
     {{- $file_counter := 0 -}}
 
     {{/* Iterate over files */}}
-    {{- range $.files -}}
-      {{- $file := . -}}
+    {{- range $file := $.files -}}
       {{- $train_file := dict "files" (list $file) "errors" list -}}
 
       {{/* Resolve Dropins for current path */}}
@@ -41,55 +42,22 @@
         {{- with $dropins.data -}}
           {{- $dropins_data = . -}}
         {{- end -}}
-
       {{- end -}}
 
 
-      {{/* Parse file */}}
-      {{- $p_file := fromYaml (include "inventory.render.func.files.parse" (dict "parse" ($file) "extra_ctx" $dropins_data "extra_ctx_key" "Data" "ctx" $.ctx)) -}}
-      {{- if (not (include "lib.utils.errors.unmarshalingError" $p_file)) -}}
+      {{/* Parse file(s) */}}
+      {{- $train_file_contents_raw := include "inventory.render.func.files.parse" (dict "parse" ($file) "extra_ctx" $dropins_data "extra_ctx_key" "Data" "ctx" $.ctx) -}}
+      {{- $train_file_contents := fromYaml ($train_file_contents_raw) -}}
+      {{- if (not (include "lib.utils.errors.unmarshalingError" $train_file_contents)) -}}
+
+        {{- $_ := set $return "DEBUG" (append (default list $return.DEBUG) (dict "raw" $train_file_contents_raw "parsed" $train_file_contents)) -}}
       
-        {{/* Merge Response */}}
-        {{- $train_file := merge $train_file (omit $p_file "errors") -}}
-        {{- $id := $train_file.identifier -}}
-
-        {{/* Redirect Errors */}}
-        {{- with $p_file.errors -}}
-          {{- $_ := set $train_file "errors" (concat $train_file.errors .) -}}
-        {{- end -}}
-
-        {{/* Check if any file with the same identifier is already present */}}
-        {{- $wagon := (get $file_train $id) -}}
-        {{- if $wagon -}}
-
-          {{/* Merge file Properties */}}
-          {{- $_ := set $wagon "files" (concat $wagon.files $train_file.files) -}}
-
-          {{/* Merge Errors */}}
-          {{- if $train_file.errors -}}
-            {{- $_ := set $wagon "errors" (concat $wagon.errors $train_file.errors) -}}
-          {{- else -}}
-            {{/* Merge Contents */}}
-            {{- if $train_file.content -}}
-              {{- $content_buff := (mergeOverwrite $wagon.content $train_file.content) -}}
-              {{- $_ := set $wagon "content" $content_buff -}}
-            {{- end -}}  
-          {{- end -}}
-
-          {{/* Update Wagon */}}
-          {{- $_ := set $file_train $id $wagon -}}
-
-        {{- else -}}
-
-          {{/* Add File as new file */}}
-          {{- $_ := set $file_train $id $train_file -}}
-
-        {{- end -}}
-
-      {{- else -}}
-
+        
       {{- end -}}
     {{- end -}}
+
+
+    {{- $_ := set $return "OUTER" $file_train -}}
 
     {{/* Conclude Train */}}
     {{- if $file_train -}}

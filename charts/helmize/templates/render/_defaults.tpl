@@ -26,3 +26,5 @@ file_extensions
 {{- define "inventory.render.defaults.file.merge_strategy" -}}
 merge_strategy
 {{- end -}}
+
+

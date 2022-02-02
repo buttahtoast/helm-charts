@@ -57,6 +57,10 @@
 
               {{/* Execute File Train */}}
               {{- $train := fromYaml (include "inventory.render.func.train" (dict "files" $files.files "groups" $.groups "ctx" $ctx)) -}}
+
+              {{/* DEBUG */}}
+              {{- $_ := set $return "debug" $train -}}
+
               {{- if (not (include "lib.utils.errors.unmarshalingError" $train)) -}}
                 
                 {{/* Error Redirect */}}
