@@ -15,8 +15,6 @@
   {{- if and $.files $.ctx -}}
     {{- $return := dict "files" list "errors" list -}}
 
-    {{- $_ := set $return "empty" (dict "meow" "me") -}}
-
     {{/* Variables */}}
     {{- $file_train := dict -}}
     {{- $file_counter := 0 -}}
@@ -52,7 +50,57 @@
 
         {{- $_ := set $return "DEBUG" (append (default list $return.DEBUG) (dict "raw" $train_file_contents_raw "parsed" $train_file_contents)) -}}
       
-        
+
+        {{/* Foreach resolved file */}}
+        {{- range $c := $train_file_contents.files -}}
+
+          {{/* Merge with Metadata */}}
+          {{- $incoming_wagon := mergeOverwrite $train_file (omit $c "errors") | deepCopy -}}
+ 
+          {{/* Parse Content, if not map */}}
+          {{- if not (kindIs "map" $incoming_wagon.content) -}}
+            {{- $_ := set $incoming_wagon "content" (fromYaml ($incoming_wagon.content)) -}}
+          {{- end -}}
+          
+          {{/* Persist Identifier */}}
+          {{- $id := $incoming_wagon.id -}}
+
+          {{/* PreCheck ID */}}
+          {{- if $id -}}
+  
+            {{/* Check if any file with the same identifier is already present */}}
+            {{- $wagon := (get $file_train $id) -}}
+            {{- if $wagon -}}
+  
+              {{/* Merge file Properties */}}
+              {{- with $incoming_wagon.files -}}
+                {{- $_ := set $wagon "files" (concat $wagon.files $incoming_wagon.files) -}}
+              {{- end -}}  
+  
+              {{/* Merge Errors */}}
+              {{- if $incoming_wagon.errors -}}
+                {{- $_ := set $wagon "errors" (concat $wagon.errors $incoming_wagon.errors) -}}
+              {{- else -}}
+                {{/* Merge Contents */}}
+                {{- if $incoming_wagon.content -}}
+                  {{- $_ := set $wagon "content" (mergeOverwrite (default dict $wagon.content) $incoming_wagon.content) -}}
+                {{- end -}}  
+              {{- end -}}
+  
+              {{/* Update Wagon */}}
+              {{- $_ := set $file_train $id $wagon -}}
+  
+            {{- else -}}
+  
+              {{/* Add File as new file */}}
+              {{- $_ := set $file_train $id $incoming_wagon -}}
+  
+            {{- end -}}
+          {{- else -}}
+            {{/* Error on Empty ID */}}
+          
+          {{- end -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
 
@@ -76,9 +124,6 @@
           {{- with $post_renders.content -}}
             {{- $_ := set $file "content" . -}}
           {{- end -}}
-
-        {{- else -}}
-
         {{- end -}}
       {{- end -}}
 

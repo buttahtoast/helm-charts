@@ -59,7 +59,7 @@
       {{/* For Each File Execute Templating */}}
       {{- range $partial_files -}}
 
-        {{- $partial_file := dict "identifiers" list "content" "" "errors" list -}}
+        {{- $partial_file := dict "id" "" "content" "" "errors" list -}}
   
         {{/* Template Content */}}
         {{- $template_content_raw := tpl . $context -}}
@@ -69,11 +69,11 @@
         {{- if not (include "lib.utils.errors.unmarshalingError" $templated_content) -}}
 
           {{/* Evaluate Identifier */}}
-          {{- $identifiers := fromYaml (include "inventory.render.func.files.identifier" (dict "id" $id "content" $templated_content "ctx" $context)) -}}
-          {{- if $identifiers.errors -}}
-            {{- $_ := set $partial_file "errors" (concat $return.errors $identifiers.errors) -}}
+          {{- $id := fromYaml (include "inventory.render.func.files.identifier" (dict "id" $id "content" $templated_content "ctx" $context)) -}}
+          {{- if $id.errors -}}
+            {{- $_ := set $partial_file "errors" (concat $return.errors $id.errors) -}}
           {{- else -}}
-            {{- $_ := set $partial_file "identifiers" $identifiers.identifiers -}}
+            {{- $_ := set $partial_file "id" $id.id -}}
           {{- end -}}
 
           {{/* Store Content as Multi-YAML. FromYaml attempts to merge the content fields if multiple files are returned for any reason. As Multiline, this does not happen */}}
@@ -98,74 +98,3 @@
     {{- include "lib.utils.errors.params" (dict "tpl" "inventory.render.files.parse" "params" (list "parse" "ctx")) -}}
   {{- end -}}
 {{- end -}}
-
-
-
-
-
-{{/* Multi YAML <Template>
-
-  params <dict>: 
-    parse: Required <dict>
-      file: Required <string> FilePath
-      path: Optional <string> Path to file
-    extra_ctx: Optional <dict> Extra variables that are available during templating
-    extra_ctx_key: Optional <string> Under which top key the given extra variables are publishes. Defaults to 'inv'
-    ctx: Required <dict> Global Context
-
-  returns <dict>:
-    identifier: <string> Identifier for the file. Defaults to the filename without it's path.
-    content: <dict> Parsed Content from file
-    errors: <slice> Errors encoutered during parsing
-
-
-*/}}
-{{- define "inventory.render.func.files.identifier" -}}
-  {{- if and $.id $.content $.ctx -}}
-    {{- $return := dict "identifiers" list "errors" list -}}
-
-    {{/* Identifiers */}}
-    {{- $ids := list -}}
-
-    {{/* Index Path based on Merge Strategy (Default) */}}
-    {{- $auto_index := $.id.filename -}}
-    
-    {{/* Validate Kind-Name identifier */}}
-    {{- if $.content.kind -}}
-      {{- with $.content.metadata -}}
-        {{- if .name -}}
-          {{- $auto_index = (tpl "{{ $.content.kind }}-{{ $.content.metadata.name }}.yaml" (set ($.ctx | deepCopy) "content" $.content | deepCopy) | lower) -}}
-        {{- end -}}
-      {{- end -}}
-    {{- end -}}
-
-    {{/* Add Auto Index as Identifier */}}
-    {{- $ids = append $ids $auto_index -}}
-
-    {{/* Reads Inline identifiers and removes them */}}
-    {{- if $.content.identifiers -}}
-
-      {{- $ids = concat $ids $.content.identifiers -}}
-      {{- $_ := set $ "content" (omit $.content "identifiers") -}}
-
-    {{- end -}}
-
-    {{/* Merge Path strategy for all */}}
-    {{- if eq ((fromYaml (include "inventory.config.func.resolve" (dict "path" (include "inventory.render.defaults.file.merge_strategy" $.ctx) "ctx" $.ctx))).res) "path" -}}
-      {{- range $index := $ids -}}
-        {{- $index = printf "%s/%s" (regexReplaceAll $.id.path (dir $.id.file) "${1}" | trimPrefix "/") $index -}}
-      {{- end -}}
-    {{- end -}}
-    {{- $_ := set $return "identifiers" $ids -}}
-
-    {{/* Return */}}
-    {{- printf "%s" (toYaml $return) -}}
-
-  {{- else -}}
-    {{- include "lib.utils.errors.params" (dict "tpl" "inventory.render.files.multi_yaml" "params" (list "content " "ctx")) -}}
-  {{- end -}}
-{{- end -}}
-
-
-
-

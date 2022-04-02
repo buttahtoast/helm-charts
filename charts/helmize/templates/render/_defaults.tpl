@@ -27,4 +27,13 @@ file_extensions
 merge_strategy
 {{- end -}}
 
+{{/* Merge Strategy <Template> 
+
+  Default Configuration Key within configuration for custom identifier evaluation
+
+*/}}
+{{- define "inventory.render.defaults.files.identifier_template" -}}
+custom_identifier_template
+{{- end -}}
+
 
