@@ -7,7 +7,7 @@
 */}}
 {{- define "inventory.entrypoint.func.deploy" -}}
   {{/* Summary */}}
-  {{- $summary := (fromYaml (include "lib.utils.dicts.lookup" (dict "data" $.Values "path" (include "inventory.entrypoint.defaults.summary_value" $) "required" false))).res -}}
+  {{- $summary := (fromYaml (include "lib.utils.dicts.lookup" (dict "data" $.Values "path" (include "inventory.entrypoint.defaults.summary_value" $)))).res -}}
   {{- if $summary -}}
     {{- include "inventory.entrypoint.func.summary" $ -}}
   {{- else -}}

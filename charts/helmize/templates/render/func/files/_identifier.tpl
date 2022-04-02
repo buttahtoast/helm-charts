@@ -88,13 +88,7 @@
 
 */}}
 {{- define "inventory.render.func.files.identifier.template" -}}
-  {{- $return := dict "id" "" "errors" list -}}
-  {{- printf "%s" (toYaml $return) -}}
-{{- end -}}
-
-
-{{- define "inventory.render.func.files.identifier.template2" -}}
-  {{- $return := dict "id" "" "errors" list "debug" (dict "name" "kaka")  -}}
+  {{- $return := dict "id" "" "errors" list "debug"  -}}
   {{- if $.content.kind -}}
     {{- with $.content.metadata -}}
       {{- if .name -}}

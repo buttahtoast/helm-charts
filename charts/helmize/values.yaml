@@ -2,8 +2,11 @@
 #  The Values are valid in the values of the parent chart
 #  since library charts do not accept any values
 
-# config_file -- Configuration Location. You can specify a file path in your chart
+# -- Configuration Location. You can specify a file path in your chart
 config_file: ""
 
-# Summary
+# -- Enable Summary Output
 summary: false
+
+# -- Enable Debug Information for Summary Output
+debug: false

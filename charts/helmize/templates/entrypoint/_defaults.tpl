@@ -15,3 +15,12 @@ force
 {{- define "inventory.entrypoint.defaults.summary_value" -}}
 summary
 {{- end -}}
+
+{{/* Debug <Template> 
+
+  Default Debug Values Key
+
+*/}}
+{{- define "inventory.entrypoint.defaults.debug_value" -}}
+debug
+{{- end -}}

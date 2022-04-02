@@ -13,7 +13,7 @@
 */}}
 {{- define "inventory.render.func.train" -}}
   {{- if and $.files $.ctx -}}
-    {{- $return := dict "files" list "errors" list -}}
+    {{- $return := dict "files" list "errors" list "debug" list -}}
 
     {{/* Variables */}}
     {{- $file_train := dict -}}
@@ -29,10 +29,7 @@
       {{- $dropins_data := dict -}}
       {{- $dropins := fromYaml (include "inventory.dropins.func.resolve" (dict "path" $file.file "ctx" $.ctx)) -}}
       {{- if (not (include "lib.utils.errors.unmarshalingError" $dropins)) -}}
-            
-        {{/* Dropins without errors */}}
-        {{- $_ := set $train_file "dropins" (omit $dropins "errors") -}}
-
+    
         {{/* Redirect Errors */}}
         {{- with $dropins.errors -}}
           {{- $_ := set $train_file "errors" (concat $train_file.errors .) -}}
@@ -42,79 +39,81 @@
         {{- with $dropins.data -}}
           {{- $dropins_data = . -}}
         {{- end -}}
+
       {{- end -}}
 
       {{/* Merge Data Store with Dropins */}}
-      {{- $dropins_data = mergeOverwrite $dropins_data $shared_data -}}
+      {{- $data := mergeOverwrite $dropins_data $shared_data -}}
+
+      {{/* Preserve Data for File (Post-Rendering) */}}
+      {{- $_ := set $train_file "data" $data -}}
 
       {{/* Parse file(s) */}}
-      {{- $train_file_contents_raw := include "inventory.render.func.files.parse" (dict "parse" ($file) "extra_ctx" $dropins_data "extra_ctx_key" "Data" "shared_data" $shared_data "ctx" $.ctx) -}}
+      {{- $train_file_contents_raw := include "inventory.render.func.files.parse" (dict "parse" ($file) "extra_ctx" $data "extra_ctx_key" "Data" "shared_data" $shared_data "ctx" $.ctx) -}}
       {{- $train_file_contents := fromYaml ($train_file_contents_raw) -}}
       {{- if (not (include "lib.utils.errors.unmarshalingError" $train_file_contents)) -}}
 
         {{/* Foreach resolved file */}}
-        {{- range $c := $train_file_contents.files -}}
-
-          {{/* Merge with Metadata */}}
-          {{- $incoming_wagon := mergeOverwrite $train_file (omit $c "errors") | deepCopy -}}
+        {{- range $incoming_wagon := $train_file_contents.files -}}
  
-          {{/* Parse Content, if not map */}}
-          {{- if not (kindIs "map" $incoming_wagon.content) -}}
-            {{- $_ := set $incoming_wagon "content" (fromYaml ($incoming_wagon.content)) -}}
-          {{- end -}}          
-
-
           {{/* Persist Identifier */}}
           {{- $id := $incoming_wagon.id -}}
-
-          {{/* PreCheck ID */}}
           {{- if $id -}}
-  
-            {{/* Check if any file with the same identifier is already present */}}
-            {{- $wagon := (get $file_train $id) -}}
-            {{- if $wagon -}}
-  
-              {{/* Merge file Properties */}}
-              {{- with $incoming_wagon.files -}}
-                {{- $_ := set $wagon "files" (concat $wagon.files $incoming_wagon.files) -}}
-              {{- end -}}  
-  
-              {{/* Merge Errors */}}
-              {{- if $incoming_wagon.errors -}}
-                {{- $_ := set $wagon "errors" (concat $wagon.errors $incoming_wagon.errors) -}}
-              {{- else -}}
+
+            {{/* Add As Debug */}}
+            {{- $_ := set $return "debug" (append $return.debug (dict "Source" $file.file "Manifest" $incoming_wagon "Dropins" $dropins)) -}}
+            {{- if include "inventory.entrypoint.func.debug" $ -}}
+              {{- $_ := set $return "debug" (append $return.debug (dict "Source" $file.file "Manifest" $incoming_wagon "Dropins" $dropins)) -}}
+            {{- end -}}
+
+            {{/* Handle Errors (File Won't be merged) */}}
+            {{- if $incoming_wagon.errors -}}
+              {{- $_ := set $return "errors" (append $return.errors (dict "file" $file.file "errors" $incoming_wagon.errors)) -}}
+            {{- else -}}
+
+              {{/* Parse Content, if not map */}}
+              {{- if not (kindIs "map" $incoming_wagon.content) -}}
+                {{- $_ := set $incoming_wagon "content" (fromYaml ($incoming_wagon.content)) -}}
+              {{- end -}}            
+
+              {{/* Check if any file with the same identifier is already present */}}
+              {{- $wagon := (get $file_train $id) -}}
+              {{- if $wagon -}}
+    
+                {{/* Merge file Properties */}}
+                {{- with $incoming_wagon.files -}}
+                  {{- $_ := set $wagon "files" (concat $wagon.files $incoming_wagon.files) -}}
+                {{- end -}}  
+    
                 {{/* Merge Contents */}}
                 {{- if $incoming_wagon.content -}}
                   {{- $_ := set $wagon "content" (mergeOverwrite (default dict $wagon.content) $incoming_wagon.content) -}}
                 {{- end -}}  
+    
+                {{/* Update Wagon */}}
+                {{- $_ := set $file_train $id $wagon -}}
+    
+              {{- else -}}
+    
+                {{/* Add File as new file */}}
+                {{- $_ := set $file_train $id $incoming_wagon -}}
+    
               {{- end -}}
-  
-              {{/* Update Wagon */}}
-              {{- $_ := set $file_train $id $wagon -}}
-  
-            {{- else -}}
-  
-              {{/* Add File as new file */}}
-              {{- $_ := set $file_train $id $incoming_wagon -}}
-  
+
             {{- end -}}
           {{- else -}}
-            {{/* Error on Empty ID */}}
-          
+            {{- $_ := set $return "errors" (append $return.errors (dict "file" $file.file "error" "Received empty ID" "trace" $incoming_wagon)) -}}
           {{- end -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
-
-
-    {{- $_ := set $return "OUTER" $file_train -}}
 
     {{/* Conclude Train */}}
     {{- if $file_train -}}
 
       {{/* Run PostRenderers */}}
       {{- range $file := $file_train -}}
-        {{- $post_renders := (fromYaml (include "inventory.postrenders.func.execute" (dict "file" $file "extra_ctx" $file.dropins.data "extra_ctx_key" "Data" "ctx" $.ctx) )) -}}
+        {{- $post_renders := (fromYaml (include "inventory.postrenders.func.execute" (dict "file" $file "extra_ctx" $file.data "extra_ctx_key" "Data" "ctx" $.ctx) )) -}}
         {{- if (not (include "lib.utils.errors.unmarshalingError" $post_renders)) -}}
 
           {{/* Redirect Error */}}
