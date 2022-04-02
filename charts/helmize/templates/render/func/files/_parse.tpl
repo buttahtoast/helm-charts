@@ -54,12 +54,14 @@
 
       {{/* Variables */}}
       {{- $yaml_delimiter := "\n---\n" -}}
+      {{- $filename_used := 0 -}}
       {{- $partial_files := splitList $yaml_delimiter $content -}}
 
       {{/* For Each File Execute Templating */}}
       {{- range $partial_files -}}
 
-        {{- $partial_file := dict "id" "" "content" "" "errors" list -}}
+        {{/* File Struct */}}
+        {{- $partial_file := dict "id" "" "content" "" "debug" list "errors" list -}}
   
         {{/* Template Content */}}
         {{- $template_content_raw := tpl . $context -}}
@@ -69,11 +71,24 @@
         {{- if not (include "lib.utils.errors.unmarshalingError" $templated_content) -}}
 
           {{/* Evaluate Identifier */}}
-          {{- $id := fromYaml (include "inventory.render.func.files.identifier" (dict "id" $id "content" $templated_content "ctx" $context)) -}}
-          {{- if $id.errors -}}
-            {{- $_ := set $partial_file "errors" (concat $return.errors $id.errors) -}}
+          {{- $template_id := fromYaml (include "inventory.render.func.files.identifier" (dict "id" $id "content" $templated_content "ctx" $context "partial" $partial_file)) -}}
+          {{- if $template_id.errors -}}
+            {{- $_ := set $partial_file "errors" (concat $return.errors $template_id.errors) -}}
           {{- else -}}
-            {{- $_ := set $partial_file "id" $id.id -}}
+
+            {{/* Evaluate if in current File loop the filename was already used. If it's an error */}}
+            {{- if (eq $template_id.id $id.filename) -}}
+              {{- if $filename_used -}}
+                {{- $err := dict "error" (printf "Found multiple resources with identifier %s. Make sure they are unique." $id.filename) -}}
+                {{- $_ := set $partial_file "errors" (append $return.errors $err) -}}
+              {{- else -}}
+                {{/* Set If it's used for the first time */}}
+                {{- $filename_used = 1 -}}
+                {{- $_ := set $partial_file "id" $template_id.id -}}
+              {{- end -}}
+            {{- else -}}
+               {{- $_ := set $partial_file "id" $template_id.id -}}
+            {{- end -}}
           {{- end -}}
 
           {{/* Store Content as Multi-YAML. FromYaml attempts to merge the content fields if multiple files are returned for any reason. As Multiline, this does not happen */}}

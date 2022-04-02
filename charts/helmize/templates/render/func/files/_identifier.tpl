@@ -22,12 +22,18 @@
     {{- $return := dict "id" $.id.filename "errors" list -}}
     
     {{/* Run Identifiert Template */}}
-    {{- $tpl := (fromYaml (include "inventory.config.func.resolve" (dict "path" (include "inventory.render.defaults.files.identifier_template" $.ctx) "ctx" $.ctx))).res -}}
-    
-    {{- if $tpl -}}
+    {{- $identifier_tpl_name := (fromYaml (include "inventory.config.func.resolve" (dict "path" (include "inventory.render.defaults.files.identifier_template" $.ctx) "ctx" $.ctx))).res -}}
+    {{- if $identifier_tpl_name -}}
+
       {{/* included evaluated Template with current Root context */}}
-      {{- $tpl_id_raw := include $tpl $ -}}
+      {{- $tpl_id_raw := include $identifier_tpl_name $ -}}
       {{- $tpl_id := fromYaml ($tpl_id_raw) -}}
+
+      {{/* Add Debug Information */}}
+      {{- with $tpl_id.debug -}}
+         {{- $_ := set $.partial "debug" (append $.partial.debug (dict "template" $identifier_tpl_name "trace" (toYaml .))) -}}
+      {{- end -}}
+
       {{/* Evaluate if returned YAML is valid */}}
       {{- if (not (include "lib.utils.errors.unmarshalingError" $tpl_id)) -}}
 
@@ -41,12 +47,13 @@
             {{- if $tpl_id.id -}}
               {{- $_ := set $return "id" $tpl_id.id -}}
             {{- else -}}
-              {{- if not $tpl_id.allowEmptyIds -}}
-                {{- $_ := set $return "errors" (append $return.errors (dict "error" (printf "Identifier Template '%s' returned empty id." $tpl))) -}}
+              {{/* Check if Template enforces ID */}}
+              {{- if $tpl_id.requireId -}}
+                {{- $_ := set $return "errors" (append $return.errors (dict "error" (printf "Identifier Template '%s' returned empty id." $identifier_tpl_name))) -}}
               {{- end -}}
             {{- end -}}
           {{- else -}}
-            {{- $_ := set $return "errors" (append $return.errors (dict "error" (printf "Identifier Template '%s' returned wrong type '%s'. Must be type 'str'" $tpl (kindOf $tpl_id.id)) "trace" $tpl_id_raw)) -}}
+            {{- $_ := set $return "errors" (append $return.errors (dict "error" (printf "Identifier Template '%s' returned wrong type '%s'. Must be type 'str'" $identifier_tpl_name (kindOf $tpl_id.id)) "trace" $tpl_id_raw)) -}}
           {{- end -}}
         {{- end -}}
 
@@ -57,7 +64,6 @@
     {{- end -}}
 
     {{/* Return */}}
-    {{- $_ := set $return "id" $.id.filename -}}
     {{- printf "%s" (toYaml $return) -}}
 
   {{- else -}}
@@ -90,7 +96,7 @@
 
 
 {{- define "inventory.render.func.files.identifier.template2" -}}
-  {{- $return := dict "id" "" "errors" list -}}
+  {{- $return := dict "id" "" "errors" list "debug" (dict "name" "kaka")  -}}
   {{- if $.content.kind -}}
     {{- with $.content.metadata -}}
       {{- if .name -}}

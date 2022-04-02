@@ -26,5 +26,5 @@
   default: [ ".yaml", ".yml", ".tpl" ]
 {{ include "inventory.render.defaults.files.identifier_template" $ }}:
   types: [ "string" ]
-  default: "inventory.render.func.files.identifier.template" 
+  default: "inventory.render.func.files.identifier.template2" 
 {{- end -}}
