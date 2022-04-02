@@ -18,10 +18,12 @@
     {{/* Variables */}}
     {{- $file_train := dict -}}
     {{- $file_counter := 0 -}}
+    {{/* Shared Data Over All Files */}}
+    {{- $shared_data := dict -}}
 
     {{/* Iterate over files */}}
     {{- range $file := $.files -}}
-      {{- $train_file := dict "files" (list $file) "errors" list -}}
+      {{- $train_file := dict "files" (list $file) "errors" list "debug" list -}}
 
       {{/* Resolve Dropins for current path */}}
       {{- $dropins_data := dict -}}
@@ -42,14 +44,13 @@
         {{- end -}}
       {{- end -}}
 
+      {{/* Merge Data Store with Dropins */}}
+      {{- $dropins_data = mergeOverwrite $dropins_data $shared_data -}}
 
       {{/* Parse file(s) */}}
-      {{- $train_file_contents_raw := include "inventory.render.func.files.parse" (dict "parse" ($file) "extra_ctx" $dropins_data "extra_ctx_key" "Data" "ctx" $.ctx) -}}
+      {{- $train_file_contents_raw := include "inventory.render.func.files.parse" (dict "parse" ($file) "extra_ctx" $dropins_data "extra_ctx_key" "Data" "shared_data" $shared_data "ctx" $.ctx) -}}
       {{- $train_file_contents := fromYaml ($train_file_contents_raw) -}}
       {{- if (not (include "lib.utils.errors.unmarshalingError" $train_file_contents)) -}}
-
-        {{- $_ := set $return "DEBUG" (append (default list $return.DEBUG) (dict "raw" $train_file_contents_raw "parsed" $train_file_contents)) -}}
-      
 
         {{/* Foreach resolved file */}}
         {{- range $c := $train_file_contents.files -}}
@@ -60,8 +61,9 @@
           {{/* Parse Content, if not map */}}
           {{- if not (kindIs "map" $incoming_wagon.content) -}}
             {{- $_ := set $incoming_wagon "content" (fromYaml ($incoming_wagon.content)) -}}
-          {{- end -}}
-          
+          {{- end -}}          
+
+
           {{/* Persist Identifier */}}
           {{- $id := $incoming_wagon.id -}}
 

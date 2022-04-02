@@ -36,4 +36,13 @@ merge_strategy
 custom_identifier_template
 {{- end -}}
 
+{{/* Data Key <Template> 
+
+  Key within Content which can innherit Data between all files
+
+*/}}
+{{- define "inventory.render.defaults.files.data_key" -}}
+Data
+{{- end -}}
+
 

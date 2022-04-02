@@ -71,25 +71,34 @@
         {{- if not (include "lib.utils.errors.unmarshalingError" $templated_content) -}}
 
           {{/* Evaluate Identifier */}}
-          {{- $template_id := fromYaml (include "inventory.render.func.files.identifier" (dict "id" $id "content" $templated_content "ctx" $context "partial" $partial_file)) -}}
-          {{- if $template_id.errors -}}
-            {{- $_ := set $partial_file "errors" (concat $return.errors $template_id.errors) -}}
-          {{- else -}}
+          {{- include "inventory.render.func.files.identifier" (dict "id" $id "content" $templated_content "ctx" $context "file" $partial_file) -}}
 
-            {{/* Evaluate if in current File loop the filename was already used. If it's an error */}}
-            {{- if (eq $template_id.id $id.filename) -}}
-              {{- if $filename_used -}}
-                {{- $err := dict "error" (printf "Found multiple resources with identifier %s. Make sure they are unique." $id.filename) -}}
-                {{- $_ := set $partial_file "errors" (append $return.errors $err) -}}
-              {{- else -}}
-                {{/* Set If it's used for the first time */}}
-                {{- $filename_used = 1 -}}
-                {{- $_ := set $partial_file "id" $template_id.id -}}
-              {{- end -}}
+          {{/* Evaluate if in current File loop the filename was already used. If it's an error */}}
+          {{- if (eq $partial_file.id $id.filename) -}}
+            {{- if $filename_used -}}
+              {{- $err := dict "error" (printf "Found multiple resources with identifier %s. Make sure they are unique." $id.filename) -}}
+              {{- $_ := set $partial_file "errors" (append $return.errors $err) -}}
             {{- else -}}
-               {{- $_ := set $partial_file "id" $template_id.id -}}
+              {{/* Set If it's used for the first time */}}
+              {{- $filename_used = 1 -}}
             {{- end -}}
           {{- end -}}
+
+          {{/* Get Data Context From Content */}}
+          {{- $data_key := include "inventory.render.defaults.files.data_key" $ -}}
+          {{- if (get $templated_content $data_key) -}}
+            {{- $shared_data := (get $templated_content $data_key) -}}
+
+            {{/* Extract to Extra Content Pointer */}}
+            {{- if (kindIs "map" $shared_data) -}}
+               {{- $_ := set $ "shared_data" (mergeOverwrite $.shared_data $shared_data) -}}
+            {{- end -}}
+            
+            {{/* Unset Data in Content */}}
+            {{- $_ := unset $templated_content $data_key -}}
+
+          {{- end -}}
+
 
           {{/* Store Content as Multi-YAML. FromYaml attempts to merge the content fields if multiple files are returned for any reason. As Multiline, this does not happen */}}
           {{- $_ := set $partial_file "content" (toYaml $templated_content) -}}
