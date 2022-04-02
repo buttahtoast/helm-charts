@@ -32,7 +32,6 @@
 
 */}}
 {{- define "inventory.postrenders.func.execute" -}}
-  {{- $return := dict "content" dict "errors" list -}}
   {{- if and $.file $.ctx -}}
 
     {{/* Extra Context */}}
@@ -57,9 +56,14 @@
         {{- $postrender_result := fromYaml ($postrender_result_raw) -}}
         {{- if not (include "lib.utils.errors.unmarshalingError" $postrender_result) -}}
 
+          {{/* Debug Output */}}
+          {{- if $postrender_result.debug -}}
+            {{- $_ := set $.file "debug" (concat $.file.debug $postrender_result.debug) -}}
+          {{- end -}}
+  
           {{/* If PostRenderer returns Errors */}}
           {{- if $postrender_result.errors -}}
-            {{- $_ := set $return "errors" (concat $return.errors $postrender_result.errors) -}}
+            {{- $_ := set $.file "errors" (concat $.file.errors $postrender_result.errors) -}}
           {{- else -}}
             {{/* Merge Content */}}
             {{- if $postrender_result.content -}}
@@ -68,14 +72,11 @@
           {{- end -}}
 
         {{- else -}}
-          {{- $_ := set $return "errors" (append $return.errors (dict "error" (cat "Encountered Error during postrendering" $postrender_result.Error) "renderer" . "trace" $postrender_result_raw)) -}}
+          {{- $_ := set $.file "errors" (append $.file.errors (dict "error" (cat "Encountered Error during postrendering" $postrender_result.Error) "renderer" . "trace" $postrender_result_raw)) -}}
         {{- end -}}
       {{- end -}}
-      {{- $_ := set $return "content" $content_buff -}}
+      {{- $_ := set $.file "content" $content_buff -}}
     {{- end -}}
-
-    {{/* Return */}}
-    {{- printf "%s" (toYaml $return) -}}
 
   {{- end -}}
 {{- end -}}

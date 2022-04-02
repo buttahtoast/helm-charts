@@ -36,7 +36,7 @@
     {{- end -}}
 
     {{/* Identifier for file */}}
-    {{- $id := dict "file" $file "path" $path "filename" (base $file) "fix" (default "" $.identifier) -}}
+    {{- $id := dict "file" $file "path" $path "filename" (base $file) -}}
 
     {{/* Extra Context */}}
     {{- if and $.extra_ctx (kindIs "map" $.extra_ctx) -}}

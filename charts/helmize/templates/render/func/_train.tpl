@@ -113,19 +113,7 @@
 
       {{/* Run PostRenderers */}}
       {{- range $file := $file_train -}}
-        {{- $post_renders := (fromYaml (include "inventory.postrenders.func.execute" (dict "file" $file "extra_ctx" $file.data "extra_ctx_key" "Data" "ctx" $.ctx) )) -}}
-        {{- if (not (include "lib.utils.errors.unmarshalingError" $post_renders)) -}}
-
-          {{/* Redirect Error */}}
-          {{- if $post_renders.errors -}}
-            {{- $_ := set $return "errors" (concat $return.errors $post_renders.errors) -}}
-          {{- end -}}
-
-          {{/* Redirect Content */}}
-          {{- with $post_renders.content -}}
-            {{- $_ := set $file "content" . -}}
-          {{- end -}}
-        {{- end -}}
+        {{- include "inventory.postrenders.func.execute" (dict "file" $file "extra_ctx" $file.data "extra_ctx_key" (include "inventory.render.defaults.files.data_key" $) "ctx" $.ctx) -}}
       {{- end -}}
 
       {{/* Post Manipulations */}}

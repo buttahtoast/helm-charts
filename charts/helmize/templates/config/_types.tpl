@@ -27,4 +27,6 @@
 {{ include "inventory.render.defaults.files.identifier_template" $ }}:
   types: [ "string" ]
   default: "inventory.render.func.files.identifier.template" 
+{{ include "inventory.postrenders.defaults.post_renderers" $ }}:
+  types: [ "slice" ]
 {{- end -}}
