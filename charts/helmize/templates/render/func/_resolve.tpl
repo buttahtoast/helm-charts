@@ -26,8 +26,10 @@
       {{- end -}}
 
       {{/* Debug */}}
-      {{- $_ := set $return "conditions" $conds.conditions -}}
-
+      {{- if (include "inventory.entrypoint.func.debug" $.ctx) -}}
+        {{- $_ := set $return "conditions" $conds.conditions -}}
+      {{- end -}}
+      
       {{/* Iterate over each condition to get paths for file lookups */}}
       {{- $paths := list -}}
       {{- range $conds.conditions -}}
@@ -53,13 +55,12 @@
             {{- if $files.files -}}
 
               {{/* Debug */}}
-              {{- $_ := set $return "paths" $files.files -}}
+              {{- if (include "inventory.entrypoint.func.debug" $.ctx) -}}
+                {{- $_ := set $return "paths" $files.files -}}
+              {{- end -}}
 
               {{/* Execute File Train */}}
               {{- $train := fromYaml (include "inventory.render.func.train" (dict "files" $files.files "groups" $.groups "ctx" $ctx)) -}}
-
-              {{/* DEBUG */}}
-              {{- $_ := set $return "debug" $train -}}
 
               {{- if (not (include "lib.utils.errors.unmarshalingError" $train)) -}}
                 

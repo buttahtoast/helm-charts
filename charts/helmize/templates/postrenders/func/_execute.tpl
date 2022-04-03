@@ -46,33 +46,49 @@
     {{- if $.file.content -}}
 
       {{/* Load Renderers */}}
-      {{- $raw_renders := (include "inventory.postrenders.includes" $.ctx) -}}
-      {{- $renders := splitList "\n" $raw_renders -}}
+      {{- $renders := (fromYaml (include "inventory.postrenders.func.get" (dict "ctx" $.ctx))).renders -}}
+
+      {{/* Add Post-Renderers as Debug */}}
+      {{- if (include "inventory.entrypoint.func.debug" $.ctx) -}}
+        {{- $_ := set $.file "renderers" $renders -}}
+      {{- end -}}
 
       {{/* Execute Renderers */}}
       {{- $content_buff := $.file.content -}}
-      {{- range $renders -}}
-        {{- $postrender_result_raw := include . (dict "content" $content_buff "File" (omit $.file "content") (default "inv" $.extra_ctx_key) (default dict $.extra_ctx) "ctx" $context) -}}
+      {{- range $ren := $renders -}}
+
+        {{/* Execute Renderer */}}
+        {{- $postrender_result_raw := include $ren (dict "content" $content_buff "File" (omit $.file "content") (default "inv" $.extra_ctx_key) (default dict $.extra_ctx) "ctx" $context) -}}
         {{- $postrender_result := fromYaml ($postrender_result_raw) -}}
+
         {{- if not (include "lib.utils.errors.unmarshalingError" $postrender_result) -}}
 
           {{/* Debug Output */}}
           {{- if $postrender_result.debug -}}
-            {{- $_ := set $.file "debug" (concat $.file.debug $postrender_result.debug) -}}
+            {{- $_ := set $.file "debug" (append $.file.debug (dict "post-renderer" $ren "debug" $postrender_result.debug)) -}}
           {{- end -}}
   
           {{/* If PostRenderer returns Errors */}}
           {{- if $postrender_result.errors -}}
             {{- $_ := set $.file "errors" (concat $.file.errors $postrender_result.errors) -}}
           {{- else -}}
-            {{/* Merge Content */}}
+
+            {{/* Use content */}}
             {{- if $postrender_result.content -}}
-              {{- $content_buff = $postrender_result.content -}}
+              {{- if (kindIs "map" $postrender_result.content) -}}
+                {{- $content_buff = $postrender_result.content -}}
+              {{- else -}}
+                {{- $_ := set $.file "errors" (append $.file.errors (dict "error" (printf "Content is kind '%s' but should be 'map'" (kindOf $postrender_result.content)) "post-renderer" $ren "trace" $postrender_result.content)) -}}
+              {{- end -}}
+            {{- else -}}
+              {{- if (include "inventory.entrypoint.func.debug" $.ctx) -}}
+                {{- $_ := set $.file "debug" (append $.file.debug (dict "post-renderer" $ren "debug" "Empty Content")) -}}
+              {{- end -}}
             {{- end -}}
           {{- end -}}
 
         {{- else -}}
-          {{- $_ := set $.file "errors" (append $.file.errors (dict "error" (cat "Encountered Error during postrendering" $postrender_result.Error) "renderer" . "trace" $postrender_result_raw)) -}}
+          {{- $_ := set $.file "errors" (append $.file.errors (dict "error" (cat "Encountered Error during postrendering" $postrender_result.Error) "post-renderer" $ren "trace" $postrender_result_raw)) -}}
         {{- end -}}
       {{- end -}}
       {{- $_ := set $.file "content" $content_buff -}}

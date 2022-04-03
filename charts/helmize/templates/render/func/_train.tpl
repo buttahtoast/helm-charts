@@ -17,7 +17,8 @@
 
     {{/* Variables */}}
     {{- $file_train := dict -}}
-    {{- $file_counter := 0 -}}
+    {{- $order := 0 -}}
+
     {{/* Shared Data Over All Files */}}
     {{- $shared_data := dict -}}
 
@@ -45,9 +46,6 @@
       {{/* Merge Data Store with Dropins */}}
       {{- $data := mergeOverwrite $dropins_data $shared_data -}}
 
-      {{/* Preserve Data for File (Post-Rendering) */}}
-      {{- $_ := set $train_file "data" $data -}}
-
       {{/* Parse file(s) */}}
       {{- $train_file_contents_raw := include "inventory.render.func.files.parse" (dict "parse" ($file) "extra_ctx" $data "extra_ctx_key" "Data" "shared_data" $shared_data "ctx" $.ctx) -}}
       {{- $train_file_contents := fromYaml ($train_file_contents_raw) -}}
@@ -60,9 +58,14 @@
           {{- $id := $incoming_wagon.id -}}
           {{- if $id -}}
 
-            {{/* Add As Debug */}}
-            {{- $_ := set $return "debug" (append $return.debug (dict "Source" $file.file "Manifest" $incoming_wagon "Dropins" $dropins)) -}}
-            {{- if include "inventory.entrypoint.func.debug" $ -}}
+            {{/* Preserve Data for File (Post-Rendering) */}}
+            {{- $_ := set $incoming_wagon "data" (mergeOverwrite $data $shared_data) -}}
+
+            {{/* Add Current File as Files (Assign Order) */}}
+            {{- $_ := set $incoming_wagon "files" (list (set $file "_order" $order)) -}}
+
+            {{/* Debug */}}
+            {{- if (include "inventory.entrypoint.func.debug" $.ctx) -}}
               {{- $_ := set $return "debug" (append $return.debug (dict "Source" $file.file "Manifest" $incoming_wagon "Dropins" $dropins)) -}}
             {{- end -}}
 
@@ -99,6 +102,9 @@
                 {{- $_ := set $file_train $id $incoming_wagon -}}
     
               {{- end -}}
+
+              {{/* Increase Order */}}
+              {{- $order = addf $order 1 -}}
 
             {{- end -}}
           {{- else -}}
