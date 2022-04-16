@@ -26,6 +26,10 @@
     {{- range $file := $.files -}}
       {{- $train_file := dict "files" (list $file) "errors" list "debug" list -}}
 
+      {{/* Benchmark */}}
+      {{- include "inventory.helpers.ts" (dict "msg" (printf "File %s initialied" $file.file) "ctx" $.ts) -}}
+
+
       {{/* Merge Data Store */}}
       {{- $data := $shared_data -}}
 
@@ -34,10 +38,9 @@
       {{- $train_file_contents := fromYaml ($train_file_contents_raw) -}}
       {{- if (not (include "lib.utils.errors.unmarshalingError" $train_file_contents)) -}}
 
-        {{- $_ := set $return "debug" (append $return.debug $train_file_contents) -}}
-
         {{/* Foreach resolved file */}}
         {{- range $incoming_wagon := $train_file_contents.files -}}
+
  
           {{/* Persist Identifier */}}
           {{- $ids := $incoming_wagon.id -}}
@@ -137,15 +140,28 @@
           {{- end -}}
         {{- end -}}
       {{- end -}}
+
+      {{/* Benchmark */}}
+      {{- include "inventory.helpers.ts" (dict "msg" (printf "File %s Executed" $file.file) "ctx" $.ts) -}}
+
     {{- end -}}
 
     {{/* Conclude Train */}}
     {{- if $file_train -}}
 
+      {{/* Benchmark */}}
+      {{- include "inventory.helpers.ts" (dict "msg" "Running Post-Renderers" "ctx" $.ts) -}}
+
       {{/* Run PostRenderers */}}
       {{- range $file := $file_train -}}
         {{- include "inventory.postrenders.func.execute" (dict "file" $file "extra_ctx" $file.data "extra_ctx_key" (include "inventory.render.defaults.files.data_key" $) "ctx" $.ctx) -}}
       {{- end -}}
+
+      {{/* Benchmark */}}
+      {{- include "inventory.helpers.ts" (dict "msg" "Post-Renderers Done" "ctx" $.ts) -}}
+
+      {{/* Benchmark */}}
+      {{- include "inventory.helpers.ts" (dict "msg" "Running Checksums" "ctx" $.ts) -}}
 
       {{/* Post Manipulations */}}
       {{- range $file := $file_train -}}
@@ -155,10 +171,8 @@
         {{- end -}}
       {{- end -}}
 
-      {{/* Collect all Errors */}}
-      {{- range $id, $prop := $file_train -}}
-        {{- $_ := set $return "errors" (concat $return.errors $prop.errors) -}}
-      {{- end -}}
+      {{/* Benchmark */}}
+      {{- include "inventory.helpers.ts" (dict "msg" "Checksums Done" "ctx" $.ts) -}}
 
       {{/* Convert to Slice */}}
       {{- $_ := set $return "files" $file_train -}} 

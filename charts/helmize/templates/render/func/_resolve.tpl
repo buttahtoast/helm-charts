@@ -14,7 +14,7 @@
 
     {{/* Variables */}}
     {{- $ctx := $ -}}
-    {{- $return := dict "files" list "errors" list -}}
+    {{- $return := dict "files" list "errors" list "timestamps" list -}}
 
     {{/* Fetch Conditions */}}
     {{- $conds := fromYaml (include "inventory.conditions.func.resolve" (dict "ctx" $ctx)) -}}
@@ -38,6 +38,9 @@
         {{- end -}}
       {{- end -}}
 
+      {{/* Benchmark */}}
+      {{- include "inventory.helpers.ts" (dict "msg" "Conditions initialized" "ctx" $return) -}}
+
       {{/* Only Lookup files if any path is present */}}
       {{- if $paths -}}
 
@@ -45,7 +48,7 @@
         {{- $func_files := (dict "tpl" "inventory.render.func.files.finder" "ctx" (dict "paths" $paths "ctx" $ctx)) -}}
         {{- $files := (fromYaml (include $func_files.tpl $func_files.ctx)) -}}
           {{- if (not (include "lib.utils.errors.unmarshalingError" $files)) -}}
-
+            
             {{/* Error Redirect */}}
             {{- with $files.errors -}}
               {{- $_ := set $return "errors" (concat $return.errors .) -}}
@@ -57,10 +60,16 @@
               {{/* Debug */}}
               {{- if (include "inventory.entrypoint.func.debug" $.ctx) -}}
                 {{- $_ := set $return "paths" $files.files -}}
-              {{- end -}}
+              {{- end -}} 
+
+              {{/* Benchmark */}}
+              {{- include "inventory.helpers.ts" (dict "msg" "Files initialized" "ctx" $return) -}}
 
               {{/* Execute File Train */}}
-              {{- $train := fromYaml (include "inventory.render.func.train" (dict "files" $files.files "groups" $.groups "ctx" $ctx)) -}}
+              {{- $train := fromYaml (include "inventory.render.func.train" (dict "files" $files.files "groups" $.groups "ctx" $ctx "ts" $return)) -}}
+
+              {{/* Benchmark */}}
+              {{- include "inventory.helpers.ts" (dict "msg" "Train initialized" "ctx" $return) -}}
 
               {{- if (not (include "lib.utils.errors.unmarshalingError" $train)) -}}
                 
@@ -80,18 +89,6 @@
           {{- end -}}    
       {{- end -}}
     {{- end -}}
-
-    {{/* Errors are duplicated. Therefor we evaluate which are unique based on checksums (Improvement on refactor pls) */}}
-    {{- $errs := list -}}
-    {{- $err_checksums := list -}}
-    {{- range $err := $return.errors -}}
-       {{- $check := (toYaml $err | sha1sum) -}}
-       {{- if not (has $check $err_checksums) -}}
-         {{- $err_checksums = append $err_checksums $check -}}
-         {{- $errs = append $errs $err -}}
-       {{- end -}}
-    {{- end -}}
-    {{- $_ := set $return "errors" $errs -}}
 
     {{/* Return */}}
     {{- printf "%s" (toYaml $return) -}}
