@@ -19,7 +19,7 @@
   {{- if and $.id $.content $.ctx -}}
 
     {{/* ID Defaults to Filename */}}
-    {{- $_ := set $.file "id" $.id.filename -}}
+    {{- $_ := set $.file "id" (list $.id.filename) -}}
 
     {{/* Run Identifiert Template */}}
     {{- $identifier_tpl_name := (fromYaml (include "inventory.config.func.resolve" (dict "path" (include "inventory.render.defaults.files.identifier_template" $.ctx) "ctx" $.ctx))).res -}}
@@ -43,7 +43,7 @@
         {{- else -}}
 
           {{/* Validate that returned id attribute has correct type */}}
-          {{- if (kindIs "string" $tpl_identifier.id) -}}
+          {{- if (kindIs "slice" $tpl_identifier.id) -}}
             {{/* Validate if empty Id is allowed */}}
             {{- if $tpl_identifier.id -}}
               {{- $_ := set $.file "id" $tpl_identifier.id -}}
@@ -82,19 +82,34 @@
     ctx: Required <dict> Global Context
 
   returns <dict>:
-    id: <string> Evaluated identifier
+    id: <slice> Evaluated identifier(s)
     allowEmptyIds: <bool> Tells the evaluating template if empty id values are allowed
     errors: <slice> Errors encoutered during parsing
 
 */}}
 {{- define "inventory.render.func.files.identifier.template" -}}
-  {{- $return := dict "id" "" "errors" list "debug"  -}}
+  {{- $return := dict "id" list "errors" list "debug"  -}}
+
+  {{/* Check if dedicated id field is set */}}
+  {{- if $.content.id -}}
+    {{- if (kindIs "slice" $.content.id) -}}
+      {{- $_ := set $return "id" (concat $return.id $.content.id) -}}
+    {{- else -}}
+      {{- $_ := set $return "id" (append $return.id ) -}}
+    {{- end -}}
+    {{- unset $.content "id" -}}
+  {{- end -}}
+
+  {{/* kind-name identifier */}}
   {{- if $.content.kind -}}
     {{- with $.content.metadata -}}
       {{- if .name -}}
-        {{- $_ := set $return "id" (tpl "{{ $.content.kind }}-{{ $.content.metadata.name }}.yaml" (set ($.ctx | deepCopy) "content" $.content | deepCopy) | lower) -}}
+        {{- $_ := set $return "id" (append $return.id ((tpl "{{ $.content.kind }}-{{ $.content.metadata.name }}.yaml" (set ($.ctx | deepCopy) "content" $.content | deepCopy) | lower))) -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
+
+  {{/* Return given */}}
   {{- printf "%s" (toYaml $return) -}}
+
 {{- end -}}

@@ -8,6 +8,8 @@
 {{- define "inventory.entrypoint.func.deploy" -}}
   {{/* Summary */}}
   {{- $summary := (fromYaml (include "lib.utils.dicts.lookup" (dict "data" $.Values "path" (include "inventory.entrypoint.defaults.summary_value" $)))).res -}}
+t: {{- toYaml $summary | nindent 2 -}}  
+  
   {{- if $summary -}}
     {{- include "inventory.entrypoint.func.summary" $ -}}
   {{- else -}}

@@ -16,7 +16,7 @@
 
     {{/* Resolve configuration */}}
     {{- $cfg := fromYaml (include "inventory.config.func.get" $.ctx) -}}
-    {{- $result := include "lib.utils.dicts.lookup" (dict "data" $cfg "path" $.path "required" (default false $.req)) }}
+    {{- $result := include "lib.utils.dicts.lookup" (dict "data" $cfg "path" $.path "required" (default false $.req)) -}}
     {{- printf "%s" ($result) -}}
 
   {{- else -}}

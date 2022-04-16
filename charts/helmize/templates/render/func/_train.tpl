@@ -55,8 +55,13 @@
         {{- range $incoming_wagon := $train_file_contents.files -}}
  
           {{/* Persist Identifier */}}
-          {{- $id := $incoming_wagon.id -}}
-          {{- if $id -}}
+          {{- $ids := $incoming_wagon.id -}}
+
+          {{/* If any IDs present */}}
+          {{- if $ids -}}
+
+            {{/* Match Config Control Variables */}}
+            {{- $matched := 1 -}}
 
             {{/* Preserve Data for File (Post-Rendering) */}}
             {{- $_ := set $incoming_wagon "data" (mergeOverwrite $data $shared_data) -}}
@@ -77,38 +82,56 @@
               {{/* Parse Content, if not map */}}
               {{- if not (kindIs "map" $incoming_wagon.content) -}}
                 {{- $_ := set $incoming_wagon "content" (fromYaml ($incoming_wagon.content)) -}}
-              {{- end -}}            
-
-              {{/* Check if any file with the same identifier is already present */}}
-              {{- $wagon := (get $file_train $id) -}}
-              {{- if $wagon -}}
-    
-                {{/* Merge file Properties */}}
-                {{- with $incoming_wagon.files -}}
-                  {{- $_ := set $wagon "files" (concat $wagon.files $incoming_wagon.files) -}}
-                {{- end -}}  
-    
-                {{/* Merge Contents */}}
-                {{- if $incoming_wagon.content -}}
-                  {{- $_ := set $wagon "content" (mergeOverwrite (default dict $wagon.content) $incoming_wagon.content) -}}
-                {{- end -}}  
-    
-                {{/* Update Wagon */}}
-                {{- $_ := set $file_train $id $wagon -}}
-    
-              {{- else -}}
-    
-                {{/* Add File as new file */}}
-                {{- $_ := set $file_train $id $incoming_wagon -}}
-    
               {{- end -}}
 
-              {{/* Increase Order */}}
-              {{- $order = addf $order 1 -}}
+              {{/* File can have multiple ids */}}
+              {{- range $id := $ids -}}
 
+                {{/* Check if matched and single */}}
+                {{- if not (and ($matched) (eq (get $incoming_wagon.cfg (include "inventory.render.defaults.file_cfg.match" $)) "single")) -}}
+
+                  {{/* Check if any file with the same identifier is already present */}}
+                  {{- $wagon := (get $file_train $id) -}}
+
+                  {{/* Match for given ID */}}
+                  {{- if $wagon -}}
+
+                    {{/* Overwrite Matched */}}
+                    {{- $matched = 0 -}}
+                     
+                    {{/* Merge file Properties */}}
+                    {{- with $incoming_wagon.files -}}
+                      {{- $_ := set $wagon "files" (concat $wagon.files $incoming_wagon.files) -}}
+                    {{- end -}}  
+        
+                    {{/* Merge Contents */}}
+                    {{- if $incoming_wagon.content -}}
+                      {{- $_ := set $wagon "content" (mergeOverwrite (default dict $wagon.content) $incoming_wagon.content) -}}
+                    {{- end -}}  
+        
+                    {{/* Update Wagon */}}
+                    {{- $_ := set $file_train $id $wagon -}}
+        
+                  {{/* No Match for given ID */}}
+                  {{- else -}}
+
+                    {{/* Skip File if configured */}}
+                    {{- if not (eq (get $incoming_wagon.cfg (include "inventory.render.defaults.file_cfg.no_match" $)) "skip") -}}
+        
+                      {{/* Add File as new file */}}
+                      {{- $_ := set $file_train $id $incoming_wagon -}}
+
+                    {{- end -}}
+                  {{- end -}}
+
+                  {{/* Increase Order */}}
+                  {{- $order = addf $order 1 -}}
+
+                {{- end -}}
+              {{- else -}}
+                {{- $_ := set $return "errors" (append $return.errors (dict "file" $file.file "error" "Received empty ID" "trace" $incoming_wagon)) -}}
+              {{- end -}}
             {{- end -}}
-          {{- else -}}
-            {{- $_ := set $return "errors" (append $return.errors (dict "file" $file.file "error" "Received empty ID" "trace" $incoming_wagon)) -}}
           {{- end -}}
         {{- end -}}
       {{- end -}}

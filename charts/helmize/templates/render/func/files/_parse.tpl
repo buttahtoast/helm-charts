@@ -61,28 +61,29 @@
       {{- range $partial_files -}}
 
         {{/* File Struct */}}
-        {{- $partial_file := dict "id" "" "content" "" "debug" list "errors" list -}}
-  
+        {{- $partial_file := dict "id" list "content" "" "debug" list "errors" list -}}
+
         {{/* Template Content */}}
         {{- $template_content_raw := tpl . $context -}}
         {{- $templated_content := (fromYaml ($template_content_raw) | deepCopy) -}}
-  
+
         {{/* Validate if conversation was successful, otherwise return with error */}}
         {{- if not (include "lib.utils.errors.unmarshalingError" $templated_content) -}}
 
+          {{/* Resolve File Configuration within file, if not set get empty dict */}}
+          {{- $file_cfg := default dict (fromYaml (include "lib.utils.dicts.lookup" (dict "data" $templated_content "path" (include "inventory.render.defaults.file_cfg.key" $)))) -}}
+
+          {{/* Compares against Type */}}
+          {{- $file_cfg_type := fromYaml (include "lib.utils.types.validate" (dict "type" "inventory.render.types.file_configuration"  "data" $file_cfg  "ctx" $.ctx)) -}}
+          {{- if $file_cfg_type.isType -}}
+            {{- $_ := set $partial_file "cfg" $file_cfg -}}
+          {{- else -}}
+            {{/* Error Redirect */}}
+            {{- $_ := set $partial_file "errors" (append $partial_file.errors (dict "error" "File has type errors" "type_errors" $file_cfg_type.errors)) -}}
+          {{- end -}}
+
           {{/* Evaluate Identifier */}}
           {{- include "inventory.render.func.files.identifier" (dict "id" $id "content" $templated_content "ctx" $context "file" $partial_file) -}}
-
-          {{/* Evaluate if in current File loop the filename was already used. If it's an error */}}
-          {{- if (eq $partial_file.id $id.filename) -}}
-            {{- if $filename_used -}}
-              {{- $err := dict "error" (printf "Found multiple resources with identifier %s. Make sure they are unique." $id.filename) -}}
-              {{- $_ := set $partial_file "errors" (append $return.errors $err) -}}
-            {{- else -}}
-              {{/* Set If it's used for the first time */}}
-              {{- $filename_used = 1 -}}
-            {{- end -}}
-          {{- end -}}
 
           {{/* Get Data Context From Content */}}
           {{- $data_key := include "inventory.render.defaults.files.data_key" $ -}}
