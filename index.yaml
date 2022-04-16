@@ -148,6 +148,31 @@ entries:
       artifacthub.io/prerelease: "true"
     apiVersion: v2
     appVersion: 0.1.0
+    created: "2022-04-16T17:55:14.770730424Z"
+    dependencies:
+    - name: library
+      repository: https://buttahtoast.github.io/helm-charts/
+      version: 2.2.3
+    description: Go Sprig based deployment engine deployed via Helm
+    digest: d22c17b178b887a3f3201ceb5ce782c12153968f14391cf6fc20d39e1264b2cd
+    home: https://helmize.dev
+    icon: https://raw.githubusercontent.com/buttahtoast/helmize/main/icons/icon-transparent.png
+    keywords:
+    - library
+    - sprig
+    - deploy
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    name: helmize
+    type: library
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/helmize-0.1.0-rc.3/helmize-0.1.0-rc.3.tgz
+    version: 0.1.0-rc.3
+  - annotations:
+      artifacthub.io/prerelease: "true"
+    apiVersion: v2
+    appVersion: 0.1.0
     created: "2022-01-26T19:14:49.802208153Z"
     dependencies:
     - name: library
@@ -1053,4 +1078,4 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.1.0/tavern-0.1.0.tgz
     version: 0.1.0
-generated: "2022-04-16T17:42:09.39255465Z"
+generated: "2022-04-16T17:55:14.770979726Z"
