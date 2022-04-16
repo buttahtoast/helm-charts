@@ -197,6 +197,33 @@ entries:
   library:
   - annotations:
       artifacthub.io/changes: |
+        - "[Changed]: Types Function `lib.utils.types.validate` Allows empty data"
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/prerelease: "false"
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-04-16T17:42:09.392348848Z"
+    description: Buttahtoast Helm Library
+    digest: a555618689a0ebf1e0d20c4f90d9aa6c619499f99a16c48f933fda8b67a808fa
+    home: https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    icon: https://avatars0.githubusercontent.com/u/67652090?s=400&u=874d1c989b0afc2789865be01051f0bbfc84ae32&v=4
+    keywords:
+    - library
+    - sprig
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: library
+    sources:
+    - https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    type: library
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/library-2.2.3/library-2.2.3.tgz
+    version: 2.2.3
+  - annotations:
+      artifacthub.io/changes: |
         - "[Changed]: Common Function `lib.utils.common.defaultLabels` includes `helm.sh/chart`. You might need to delete existing pods and reinstall them."
         - "[Added]: Error Templates"
         - "[Added]: Types Templates"
@@ -1026,4 +1053,4 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.1.0/tavern-0.1.0.tgz
     version: 0.1.0
-generated: "2022-04-16T09:28:17.124845154Z"
+generated: "2022-04-16T17:42:09.39255465Z"
