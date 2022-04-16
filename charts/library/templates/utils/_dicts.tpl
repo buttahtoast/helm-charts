@@ -32,6 +32,7 @@
   Lookup <Template>
 */}}
 {{- define "lib.utils.dicts.lookup" -}}
+  {{- $result := dict "res" "" -}}
   {{- $path := trimAll "." .path -}}
   {{- if and $path .data -}}
     {{- $buf := .data -}}
@@ -51,9 +52,11 @@
     {{- else -}}
       {{- if eq (default false .required) true -}}
         {{ include "lib.utils.errors.fail" (cat "Missing path" $miss.path "for lookup" $path "in structure\n" (toYaml .data | nindent 0)) }}
+      {{- else -}}
+        {{- printf "%s" (toYaml $result) -}}
       {{- end -}}
     {{- end -}}
   {{- else -}}
-    {{- include "lib.utils.errors.params" (dict "tpl" "lib.utils.dicts.lookup" "params" (list "path" "data")) -}}
+    {{- printf "%s" (toYaml $result) -}}
   {{- end -}}
 {{- end -}}
