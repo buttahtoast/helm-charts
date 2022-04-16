@@ -2,7 +2,7 @@
   Validate <Template> 
 */}}
 {{- define "lib.utils.types.validate" -}}
-  {{- if and $.type $.data $.ctx -}}
+  {{- if and $.type $.ctx -}}
     {{- $return := dict "isType" 1 "errors" list -}}
     {{- $type_raw := include $.type $.ctx -}}
     {{- $type := fromYaml ($type_raw) -}}
