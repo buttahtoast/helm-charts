@@ -10,3 +10,6 @@ summary: false
 
 # -- Enable Debug Information for Summary Output
 debug: false
+
+# -- Enable timestamp Output
+benchmark: false

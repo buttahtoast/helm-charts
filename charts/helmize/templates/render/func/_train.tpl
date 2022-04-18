@@ -17,6 +17,7 @@
 
     {{/* Variables */}}
     {{- $file_train := list -}}
+    {{- $yaml_delimiter := "\n---\n" -}}
     {{- $order := 0 -}}
 
     {{/* Shared Data Over All Files */}}
@@ -26,72 +27,93 @@
     {{- range $file := $.files -}}
       {{- $train_file := dict "files" (list $file) "errors" list "debug" list -}}
 
-      {{/* Benchmark */}}
-      {{- include "inventory.helpers.ts" (dict "msg" (printf "File %s initialied" $file.file) "ctx" $.ts) -}}
+      {{/* Parse File */}}
+      {{- $file_name := $file.file -}}
 
+      {{/* Benchmark */}}
+      {{- include "inventory.helpers.ts" (dict "msg" (printf "File %s initialied" $file_name) "ctx" $.ts) -}}
 
       {{/* Merge Data Store */}}
       {{- $data := $shared_data -}}
 
-      {{/* Parse file(s) */}}
-      {{- $train_file_contents_raw := include "inventory.render.func.files.parse" (dict "parse" ($file) "extra_ctx" $data "extra_ctx_key" "Data" "shared_data" $shared_data "ctx" $.ctx) -}}
-      {{- $train_file_contents := fromYaml ($train_file_contents_raw) -}}
-      {{- if (not (include "lib.utils.errors.unmarshalingError" $train_file_contents)) -}}
+      {{/* Identifier for file */}}
+      {{- $file_id := dict "file" $file_name "path" (dir $file.path) "filename" (base $file_name) -}}
 
-        {{/* Foreach resolved file */}}
-        {{- range $incoming_wagon := $train_file_contents.files -}}
+      {{/* Get Content */}}
+      {{- $content := ($.ctx.Files.Get $file_name) -}}
 
- 
-          {{/* Persist Identifier */}}
-          {{- $ids := $incoming_wagon.id -}}
+      {{/* Check if Content */}}
+      {{- if $content -}}
 
-          {{/* If any IDs present */}}
-          {{- if $ids -}}
+        {{/* Split Content by Delimiter */}}
+        {{- $partial_files := splitList $yaml_delimiter $content -}}
 
-            {{/* Match Config Control Variables */}}
-            {{- $matched := 0 -}}
+        {{/* Iterate over Partial File */}}
+        {{- range $partial_files -}}
 
-            {{/* Preserve Data for File (Post-Rendering) */}}
-            {{- $_ := set $incoming_wagon "data" (mergeOverwrite $data $shared_data) -}}
+          {{/* Initialize Context */}}
+          {{- $context := $.ctx -}}
+          {{- $matched := 0 -}}
 
-            {{/* Debug */}}
-            {{- if (include "inventory.entrypoint.func.debug" $.ctx) -}}
+          {{/* File Struct */}}
+          {{- $incoming_wagon := dict "id" list "content" "" "file_id" $file_id "subpath" (regexReplaceAll $file_id.path $file_id.file "${1}" | trimPrefix "/" | dir) "debug" list "errors" list -}}
 
-              {{/* Add Current File as Files (Assign Order) */}}
-              {{- $_ := set $incoming_wagon "files" (list (set (set $file "_order" $order) "config" $incoming_wagon.cfg)) -}}
+          {{/* Evaluate Content */}}
+          {{- $template_content_raw := tpl . $context -}}
+          {{- $templated_content := (fromYaml ($template_content_raw)) -}}
 
-              {{- $_ := set $return "debug" (append $return.debug (dict "Source" $file.file "Manifest" $incoming_wagon)) -}}
+          {{/* Validate if conversation was successful, otherwise return with error */}}
+          {{- if not (include "lib.utils.errors.unmarshalingError" $templated_content) -}}
+
+            {{- $_ := set $incoming_wagon "content" $templated_content -}}
+
+
+            {{/* Resolve File Configuration within file, if not set get empty dict */}}
+            {{- $file_cfg := default dict (fromYaml (include "lib.utils.dicts.lookup" (dict "data" $templated_content "path" (include "inventory.render.defaults.file_cfg.key" $)))).res -}}
+            {{- if $file_cfg -}}
+              {{- $_ := unset $templated_content (include "inventory.render.defaults.file_cfg.key" $) -}}
+            {{- end -}}
+  
+            {{/* Compares against Type */}}
+            {{- $file_cfg_type := fromYaml (include "lib.utils.types.validate" (dict "type" "inventory.render.types.file_configuration"  "data" $file_cfg  "ctx" $.ctx)) -}}
+            {{- if $file_cfg_type.isType -}}
+              {{- $_ := set $incoming_wagon "cfg" $file_cfg -}}
+            {{- else -}}
+              {{/* Error Redirect */}}
+              {{- $_ := set $incoming_wagon "errors" (append $incoming_wagon.errors (dict "error" "File has type errors" "type_errors" $file_cfg_type.errors)) -}}
             {{- end -}}
 
-            {{/* Parse Content, if not map */}}
-            {{- if $incoming_wagon.content -}}
-              {{- if not (kindIs "map" $incoming_wagon.content) -}}
-                {{- $parsed_content := (fromYaml ($incoming_wagon.content)) -}}
-                {{- if (not (include "lib.utils.errors.unmarshalingError" $parsed_content)) -}}
-                  {{- $_ := set $incoming_wagon "content" $parsed_content -}}
-                {{- else -}}
-                  {{- $_ := set $return "errors" (append $return.errors (dict "file" $file.file "errors" "Content not YAML" "trace" ($incoming_wagon.content))) -}}
-                {{- end -}}
-              {{- end -}}
-            {{- end -}}
+            {{/* Benchmark */}}
+            {{- include "inventory.helpers.ts" (dict "msg" (printf "Running Identifier") "ctx" $.ts) -}}
 
+            {{/* Evaluate Identifier */}}
+            {{- include "inventory.render.func.files.identifier" (dict "wagon" $incoming_wagon "ctx" $context) -}}
+             
+            {{/* Benchmark */}}
+            {{- include "inventory.helpers.ts" (dict "msg" (printf "Got Identifier") "ctx" $.ts) -}}
 
             {{/* Handle Errors (File Won't be merged) */}}
             {{- if $incoming_wagon.errors -}}
-              {{- $_ := set $return "errors" (append $return.errors (dict "file" $file.file "errors" $incoming_wagon.errors)) -}}
+              {{- $_ := set $return "errors" (append $return.errors (dict "file" $file_name "errors" $incoming_wagon.errors)) -}}
             {{- else -}}
+
+              {{/* Debug */}}
+              {{- if (include "inventory.entrypoint.func.debug" $.ctx) -}}
+
+              {{/* Add Current File as Files (Assign Order) */}}
+              {{- $_ := set $incoming_wagon "files" (list (set (set (set $file "_order" $order) "config" $incoming_wagon.cfg) "ids" $incoming_wagon.id)) -}}
+
+                {{- $_ := set $return "debug" (append $return.debug (dict "Source" $file.file "Manifest" $incoming_wagon)) -}}
+              {{- end -}}
 
               {{/* Iterate Trough Train to find Matches */}}
               {{- range $i, $wagon := $file_train -}}
 
-                {{/* Check if matched and single */}}
-                {{- if not (and ($matched) (eq (get $incoming_wagon.cfg (include "inventory.render.defaults.file_cfg.match" $)) "single")) -}}
-
-                  {{/* Validate Subpath */}}
-                  {{- if or (not (get $incoming_wagon.cfg (include "inventory.render.defaults.file_cfg.subpath" $))) (and (get $incoming_wagon.cfg (include "inventory.render.defaults.file_cfg.subpath" $)) (eq (default "" $incoming_wagon.subpath) (default "" $wagon.subpath)))  -}}
+                {{/* Validate Subpath */}}
+                {{- if or (not (get $incoming_wagon.cfg (include "inventory.render.defaults.file_cfg.subpath" $))) (and (get $incoming_wagon.cfg (include "inventory.render.defaults.file_cfg.subpath" $)) (eq $incoming_wagon.subpath $wagon.subpath)) -}}
 
                     {{/* ForEach incomfing ID iterate */}}
-                    {{- range $id := $ids -}}
+                    {{- range $id := $incoming_wagon.id -}}
                     
                       {{/* Check Against existing Wagon IDs */}}
                       {{- range $wagon_id := $wagon.id -}}
@@ -114,8 +136,7 @@
             
                           {{/* Increase Order */}}
                           {{- $order = addf $order 1 -}}
-  
-                        {{- end -}}
+
                       {{- end -}}
                     {{- end -}}
                   {{- end -}}
@@ -130,19 +151,24 @@
 
                   {{/* Skip File if configured */}}
                   {{- if not (eq (get $incoming_wagon.cfg (include "inventory.render.defaults.file_cfg.no_match" $)) "skip") -}}
-                    {{- $file_train = append $file_train (omit $incoming_wagon "cfg") -}}
+                    {{- $file_train = append $file_train (omit $incoming_wagon "cfg" "file_id") -}}
                     {{- $order = addf $order 1 -}}
                   {{- end -}}
 
                 {{- end -}}
               {{- end -}}
+
             {{- end -}}
+          {{- else -}}
+             {{- $_ := set $return "errors" (list (dict "error" $templated_content.Error "file" "empty" "trace" $template_content_raw)) -}}
           {{- end -}}
         {{- end -}}
+      {{- else -}}
+        {{- $_ := set $return "errors" (list (dict "error" "File not found or empty content" "file" $file_name)) -}}
       {{- end -}}
 
       {{/* Benchmark */}}
-      {{- include "inventory.helpers.ts" (dict "msg" (printf "File %s Executed" $file.file) "ctx" $.ts) -}}
+      {{- include "inventory.helpers.ts" (dict "msg" (printf "File Executed") "ctx" $.ts) -}}
 
     {{- end -}}
 
@@ -165,7 +191,6 @@
 
       {{/* Post Manipulations */}}
       {{- range $file := $file_train -}}
-        {{/* Add Checksum */}}
         {{- with $file.content -}}
           {{- $_ := set $file "checksum" (sha256sum (toYaml .)) -}}
         {{- end -}}
@@ -176,7 +201,6 @@
 
       {{/* Convert to Slice */}}
       {{- $_ := set $return "files" $file_train -}} 
-
     {{- end -}}
 
     {{/* Return */}}

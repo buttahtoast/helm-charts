@@ -24,3 +24,12 @@ summary
 {{- define "inventory.entrypoint.defaults.debug_value" -}}
 debug
 {{- end -}}
+
+{{/* Timestamps <Template> 
+
+  Print Timestamps (For Benchmarking)
+
+*/}}
+{{- define "inventory.entrypoint.defaults.benchmark_value" -}}
+benchmark
+{{- end -}}
