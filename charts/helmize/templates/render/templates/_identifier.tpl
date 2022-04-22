@@ -60,25 +60,30 @@
     errors: <slice> Errors encoutered during parsing
 
 */}}
-{{- define "inventory.render.func.files.identifier.template" -}}
-  {{/* Check if dedicated id field is set */}}
-  {{- if $.wagon.content.id -}}
-    {{- if (kindIs "slice" $.content.id) -}}
-      {{- $_ := set $.wagon "id" (concat $.wagon.id $.content.id) -}}
-    {{- else -}}
-      {{- $_ := set $.wagon "id" (append $.wagon.id $.content.id) -}}
+{{- define "inventory.render.templates.identifier" -}}
+
+  {{/* File has content */}}
+  {{- if $.wagon.content -}}
+
+    {{/* Check if dedicated id field is set */}}
+    {{- if $.wagon.content.id -}}
+      {{- if (kindIs "slice" $.wagon.content.id) -}}
+        {{- $_ := set $.wagon "id" (concat $.wagon.id $.wagon.content.id) -}}
+      {{- else -}}
+        {{- $_ := set $.wagon "id" (append $.wagon.id $.wagon.content.id) -}}
+      {{- end -}}
+      {{- unset $.wagon.content "id" -}}
     {{- end -}}
-    {{- unset $.wagon.content "id" -}}
-  {{- end -}}
-
-
-  {{/* kind-name identifier */}}
-  {{- if $.wagon.content.kind -}}
-    {{- with $.wagon.content.metadata -}}
-      {{- if .name -}}
-        {{- $_ := set $.wagon "id" (append $.wagon.id (printf "%s-%s.yaml" ($.wagon.content.kind | lower) ($.wagon.content.metadata.name | lower))) -}}
+  
+  
+    {{/* kind-name identifier */}}
+    {{- if $.wagon.content.kind -}}
+      {{- with $.wagon.content.metadata -}}
+        {{- if .name -}}
+          {{- $_ := set $.wagon "id" (append $.wagon.id (printf "%s-%s.yaml" ($.wagon.content.kind | lower) ($.wagon.content.metadata.name | lower))) -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
-  {{- end -}}
 
+  {{- end -}}
 {{- end -}}

@@ -17,4 +17,7 @@
 {{ include "inventory.render.defaults.file_cfg.pattern" $ }}:
   types: [ "bool" ]
   default: false
+{{ include "inventory.render.defaults.file_cfg.render" $ }}:
+  types: [ "bool" ]
+  default: false
 {{- end -}}

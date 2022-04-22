@@ -73,6 +73,16 @@ expand
 subpath
 {{- end -}}
 
+{{/* Render (File Configuration Type, Local) <Template> 
+
+   Configure if a file should be rendered in the final output. Note that it will still show up in the Summary
+
+*/}}
+{{- define "inventory.render.defaults.file_cfg.render" -}}
+render
+{{- end -}}
+
+
 
 {{/* Pattern (File Configuration Type, Local) <Template> 
 
@@ -81,4 +91,13 @@ subpath
 */}}
 {{- define "inventory.render.defaults.file_cfg.pattern" -}}
 pattern
+{{- end -}}
+
+{{/* Pattern (File Configuration Type, Local) <Template> 
+
+   IDs are used as Patterns to match against other ids. If Enabled the file won't be added if nothing matches.
+
+*/}}
+{{- define "inventory.render.defaults.file_cfg.fork" -}}
+fork
 {{- end -}}

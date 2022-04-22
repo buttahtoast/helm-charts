@@ -18,7 +18,10 @@
   default: [ ".yaml", ".yml", ".tpl" ]
 {{ include "inventory.render.defaults.files.identifier_template" $ }}:
   types: [ "string" ]
-  default: "inventory.render.func.files.identifier.template" 
+  default: "inventory.render.templates.identifier"
+{{ include "inventory.entrypoint.defaults.render_template" $ }}:
+  types: [ "string" ]
+  default: "inventory.entrypoint.templates.render" 
 {{ include "inventory.postrenders.defaults.cfg.post_renderers" $ }}:
   types: [ "slice" ]
   default: [ "{{ include "inventory.postrenders.defaults.cfg.post_renderers.inject_key" $ }}" ]

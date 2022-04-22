@@ -58,7 +58,7 @@
             {{- if $files.files -}}
 
               {{/* Debug */}}
-              {{- if (include "inventory.entrypoint.func.debug" $.ctx) -}}
+              {{- if (include "inventory.entrypoint.func.debug" $ctx) -}}
                 {{- $_ := set $return "paths" $files.files -}}
               {{- end -}} 
 

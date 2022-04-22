@@ -13,7 +13,7 @@
 */}}
 {{- define "inventory.render.func.train" -}}
   {{- if and $.files $.ctx -}}
-    {{- $return := dict "files" list "errors" list "debug" list -}}
+    {{- $return := dict "files" list "paths" list "errors" list "debug" list -}}
 
     {{/* Variables */}}
     {{- $file_train := list -}}
@@ -22,6 +22,9 @@
 
     {{/* Shared Data Over All Files */}}
     {{- $shared_data := dict -}}
+
+    {{/* Paths */}}
+    {{- $_ := set $return "paths" $.files -}}
 
     {{/* Iterate over files */}}
     {{- range $file := $.files -}}
@@ -70,9 +73,7 @@
 
             {{/* Resolve File Configuration within file, if not set get empty dict */}}
             {{- $file_cfg := default dict (fromYaml (include "lib.utils.dicts.lookup" (dict "data" $templated_content "path" (include "inventory.render.defaults.file_cfg.key" $)))).res -}}
-            {{- if $file_cfg -}}
-              {{- $_ := unset $templated_content (include "inventory.render.defaults.file_cfg.key" $) -}}
-            {{- end -}}
+            {{- $_ := unset $templated_content (include "inventory.render.defaults.file_cfg.key" $) -}}
   
             {{/* Compares against Type */}}
             {{- $file_cfg_type := fromYaml (include "lib.utils.types.validate" (dict "type" "inventory.render.types.file_configuration"  "data" $file_cfg  "ctx" $.ctx)) -}}
@@ -99,10 +100,7 @@
 
               {{/* Debug */}}
               {{- if (include "inventory.entrypoint.func.debug" $.ctx) -}}
-
-              {{/* Add Current File as Files (Assign Order) */}}
-              {{- $_ := set $incoming_wagon "files" (list (set (set (set $file "_order" $order) "config" $incoming_wagon.cfg) "ids" $incoming_wagon.id)) -}}
-
+                {{- $_ := set $incoming_wagon "files" (list (set (set (set $file "_order" $order) "config" $incoming_wagon.cfg) "ids" $incoming_wagon.id)) -}}
                 {{- $_ := set $return "debug" (append $return.debug (dict "Source" $file.file "Manifest" $incoming_wagon)) -}}
               {{- end -}}
 
@@ -119,7 +117,7 @@
                       {{- range $wagon_id := $wagon.id -}}
   
                         {{/* Checl Match */}}
-                        {{- if eq $id $wagon_id -}}
+                        {{- if or (eq $id $wagon_id) (and (get $incoming_wagon.cfg (include "inventory.render.defaults.file_cfg.pattern" $)) (regexFind $id $wagon_id)) -}}
   
                           {{/* Overwrite Matched */}}
                           {{- $matched = 1 -}}
