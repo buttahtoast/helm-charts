@@ -17,7 +17,7 @@
 
     {{/* Variables */}}
     {{- $file_train := list -}}
-    {{- $yaml_delimiter := "\n---\n" -}}
+    {{- $yaml_delimiter := "\n---" -}}
     {{- $order := 0 -}}
 
     {{/* Shared Data Over All Files */}}
@@ -52,7 +52,7 @@
         {{- $context := $.ctx -}}
 
         {{/* Template File Content */}}
-        {{- $template_content_raw := tpl . $context -}}
+        {{- $template_content_raw := tpl $content $context -}}
 
         {{/* Split Content, We have to valuate YAML on each Splitted element */}}
         {{- $partial_files := splitList $yaml_delimiter $template_content_raw | compact -}}
@@ -61,7 +61,7 @@
         {{- range $partial_file_content := $partial_files -}}
 
           {{/* If not empty without Spaces */}}
-          {{- if ($partial_file_content | nospace) -}}
+          {{- if ($partial_file_content | nospace | trimAll "\n") -}}
           
             {{/* Parse Content as YAML */}}
             {{- $parsed_content := (fromYaml ($partial_file_content)) -}}
@@ -92,7 +92,7 @@
               {{- include "inventory.helpers.ts" (dict "msg" (printf "Running Identifier") "ctx" $.ts) -}}
     
               {{/* Evaluate Identifier */}}
-              {{- include "inventory.render.func.files.identifier" (dict "wagon" $incoming_wagon "ctx" $context) -}}
+              {{- include "inventory.render.func.identifier" (dict "wagon" $incoming_wagon "ctx" $context) -}}
                  
               {{/* Benchmark */}}
               {{- include "inventory.helpers.ts" (dict "msg" (printf "Got Identifier") "ctx" $.ts) -}}
@@ -103,7 +103,7 @@
               {{- else -}}
   
                 {{/* Always Add File */}}
-                {{- $_ := set $incoming_wagon "files" (list (set (set (set $file "_order" $order) "config" $incoming_wagon.cfg) "ids" $incoming_wagon.id)) -}}
+                {{- $_ := set $incoming_wagon "files" (list (omit (set (set (set $file "_order" $order) "config" $incoming_wagon.cfg) "ids" $incoming_wagon.id) "partial_files")) -}}
   
                 {{/* Further Debug */}}
                 {{- if (include "inventory.entrypoint.func.debug" $.ctx) -}}
@@ -161,14 +161,16 @@
   
                   {{- end -}}
                 {{- end -}}
-              {{- else -}}
-                {{- $_ := set $return "errors" (list (dict "error" $parsed_content.Error "file" $file_name "trace" $partial_file_content)) -}}
-              {{- end -}}
+              {{- end -}}  
             {{- else -}}
                {{- $_ := set $return "errors" (list (dict "error" $parsed_content.Error "file" $file_name "trace" $partial_file_content)) -}}
             {{- end -}}
           {{- end -}}
         {{- end -}}
+
+        {{/* Partial Files */}}
+        {{- $_ := set $file "partial_files" $partial_files -}}
+
       {{- else -}}
         {{- $_ := set $return "errors" (list (dict "error" "File not found or empty content" "file" $file_name)) -}}
       {{- end -}}

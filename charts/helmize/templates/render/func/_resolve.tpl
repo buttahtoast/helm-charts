@@ -77,7 +77,6 @@
                 {{- with $train.errors -}}
                   {{- $_ := set $return "errors" (concat $return.errors $train.errors) -}}
                 {{- end -}}
-
                {{/* Files Redirect */}}
                 {{- with $train.files -}}
                   {{- $_ := set $return "files" . -}}
