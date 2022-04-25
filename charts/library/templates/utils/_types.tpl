@@ -15,7 +15,7 @@
 
         {{/* Assign Default if not present */}}
         {{- if (ne (toString $d_field) "false") -}}
-          {{- if and (not $d_field) (or ($prop.default) (eq (toString $prop.default) "false")) -}}
+          {{- if and (not $d_field) ($prop.default) -}}
             {{- $d_field = $prop.default -}}
             {{- $_ := set $.data $field $prop.default -}}
           {{- end -}}

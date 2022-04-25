@@ -124,44 +124,19 @@
       
                         {{/* Check Match */}}
                         {{- if or (eq $id $wagon_id) (and (get $incoming_wagon.cfg (include "inventory.render.defaults.file_cfg.pattern" $)) (regexFind $id $wagon_id)) -}}
+      
+                          {{/* Overwrite Matched */}}
+                          {{- $matched = 1 -}}
         
-                          {{/* Expand IDs, don't expand if pattern */}}
-                          {{- if (get $incoming_wagon.cfg (include "inventory.render.defaults.file_cfg.expand" $)) -}}
-                         
+                          {{/* Merge file Properties */}}
+                          {{- with $incoming_wagon.files -}}
+                            {{- $_ := set $wagon "files" (concat $wagon.files $incoming_wagon.files) -}}
                           {{- end -}}
-
-
-                          {{/* Fork to new File */}}
-                          {{- if (get $incoming_wagon.cfg (include "inventory.render.defaults.file_cfg.fork" $)) -}}
-                         
-                            {{- with $incoming_wagon.files -}}
-                              {{- $_ := set $incoming_wagon "files" (concat $wagon.files $incoming_wagon.files) -}}
-                            {{- end -}}
-
-                            {{- if $incoming_wagon.content -}}
-                              {{- $_ := set $incoming_wagon "content" (mergeOverwrite (default dict $wagon.content) $incoming_wagon.content) -}}
-                            {{- end -}}
-
-                            {{/* Identify as Fork */}}
-                            {{- $_ := set $incoming_wagon "fork" true -}}
-
-                          {{/* Merge with train */}}
-                          {{- else -}}
-
-                            {{/* Overwrite Matched */}}
-                            {{- $matched = 1 -}}
-
-                            {{/* Merge file Properties */}}
-                            {{- with $incoming_wagon.files -}}
-                              {{- $_ := set $wagon "files" (concat $wagon.files $incoming_wagon.files) -}}
-                            {{- end -}}
-
-                            {{/* Merge Contents */}}
-                            {{- if $incoming_wagon.content -}}
-                              {{- $_ := set $wagon "content" (mergeOverwrite (default dict $wagon.content) $incoming_wagon.content) -}}
-                            {{- end -}} 
-
-                          {{- end -}}
+        
+                          {{/* Merge Contents */}}
+                          {{- if $incoming_wagon.content -}}
+                            {{- $_ := set $wagon "content" (mergeOverwrite (default dict $wagon.content) $incoming_wagon.content) -}}
+                          {{- end -}}  
                 
                           {{/* Increase Order */}}
                           {{- $order = addf $order 1 -}}
