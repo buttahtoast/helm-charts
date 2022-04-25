@@ -82,7 +82,14 @@ subpath
 render
 {{- end -}}
 
+{{/* Pattern (File Configuration Type, Local) <Template> 
 
+   IDs are used as Patterns to match against other ids. If Enabled the file won't be added if nothing matches.
+
+*/}}
+{{- define "inventory.render.defaults.file_cfg.fork" -}}
+fork
+{{- end -}}
 
 {{/* Pattern (File Configuration Type, Local) <Template> 
 
@@ -91,13 +98,4 @@ render
 */}}
 {{- define "inventory.render.defaults.file_cfg.pattern" -}}
 pattern
-{{- end -}}
-
-{{/* Pattern (File Configuration Type, Local) <Template> 
-
-   IDs are used as Patterns to match against other ids. If Enabled the file won't be added if nothing matches.
-
-*/}}
-{{- define "inventory.render.defaults.file_cfg.fork" -}}
-fork
 {{- end -}}
