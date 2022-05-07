@@ -456,8 +456,7 @@ statefulset:
     pullPolicy: ""
 
     # statefulset.image.tag -- Configure Docker Image tag
-    # @default -- `latest`
-    tag: "latest"
+    tag: "sourcemod"
 
   ## Container Resources
   # statefulset.resources -- Configure Container [Resource](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)
