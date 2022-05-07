@@ -12,8 +12,8 @@ The chart is under active development and may contain bugs/unfinished documentat
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| oliverbaehler | oliverbaehler@hotmail.com |  |
-| chifu1234 | kk@sudo-i.net |  |
+| oliverbaehler | <oliverbaehler@hotmail.com> |  |
+| chifu1234 | <kk@sudo-i.net> |  |
 
 ## Source Code
 

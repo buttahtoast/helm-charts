@@ -10,8 +10,8 @@ This is a helm chart for all the docker image variants published by [cm2network]
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| oliverbaehler | oliverbaehler@hotmail.com |  |
-| chifu1234 | kk@sudo-i.net |  |
+| oliverbaehler | <oliverbaehler@hotmail.com> |  |
+| chifu1234 | <kk@sudo-i.net> |  |
 
 # Install Chart
 
