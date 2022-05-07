@@ -12,14 +12,17 @@
         {{/* Get Field */}}
         {{- $d_field := get $.data $field -}}
 
+
         {{/* Assign Default if not present */}}
-        {{- if and (not $d_field) ($prop.default) -}}
-          {{- $d_field = $prop.default -}}
-          {{- $_ := set $.data $field $prop.default -}}
+        {{- if (ne (toString $d_field) "false") -}}
+          {{- if and (not $d_field) (or ($prop.default) (eq (toString $prop.default) "false")) -}}
+            {{- $d_field = $prop.default -}}
+            {{- $_ := set $.data $field $prop.default -}}
+          {{- end -}}
         {{- end -}}
 
         {{/* Validate */}}
-        {{- if $d_field -}}
+        {{- if or $d_field (eq (toString $d_field) "false") -}}
 
           {{/* Values Comparison */}}
           {{- if $prop.values -}}
