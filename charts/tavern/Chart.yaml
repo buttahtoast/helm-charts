@@ -2,7 +2,7 @@ apiVersion: v2
 name: tavern
 description: "Unofficial Tavern Helm Chart"
 type: application
-version: 0.3.1
+version: 0.3.2
 appVersion: 1.1.0
 home: "https://tavern.readthedocs.io/en/latest/"
 icon: "https://tavern.readthedocs.io/en/latest/_static/icon.png"
