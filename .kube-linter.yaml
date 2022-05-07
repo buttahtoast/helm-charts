@@ -9,3 +9,7 @@ checks:
     - "unset-memory-requirements"
     - "no-read-only-root-fs"
     - "default-service-account"
+    - "use-namespace"
+    - "no-node-affinity"
+    - "non-isolated-pod"
+    - "minimum-three-replicas"

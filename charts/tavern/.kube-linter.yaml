@@ -4,5 +4,3 @@ checks:
     - (( prepend ))
     - "no-readiness-probe"
     - "no-liveness-probe"
-    - "no-node-affinity"
-    - "non-isolated-pod"
