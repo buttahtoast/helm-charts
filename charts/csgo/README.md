@@ -1,6 +1,6 @@
 # CSGO Server
 
-![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 This is a helm chart for all the docker image variants published by [cm2network](https://hub.docker.com/r/cm2network/csgo/). Container configurations can be looked up on the referenced link.
 
@@ -10,8 +10,8 @@ This is a helm chart for all the docker image variants published by [cm2network]
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| oliverbaehler | oliverbaehler@hotmail.com |  |
-| chifu1234 | kk@sudo-i.net |  |
+| oliverbaehler | <oliverbaehler@hotmail.com> |  |
+| chifu1234 | <kk@sudo-i.net> |  |
 
 # Install Chart
 
@@ -112,7 +112,7 @@ Major Changes to functions are documented with the version affected. **Before up
 | statefulset.image.pullPolicy | string | `""` | Configure Docker Pull Policy. Will be overwritten if set by global variable. |
 | statefulset.image.registry | string | `"docker.io"` | Configure Docker Registry. Will be overwritten if set by global variable. |
 | statefulset.image.repository | string | `"cm2network/csgo"` | Configure Docker Repository |
-| statefulset.image.tag | string | `latest` | Configure Docker Image tag |
+| statefulset.image.tag | string | `"sourcemod"` | Configure Docker Image tag |
 | statefulset.imagePullSecrets | list | `[]` | Define [ImagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/). Will be overwritten if set by global variable. |
 | statefulset.initContainers | list | `[]` | Pod [initContainers](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) |
 | statefulset.labels | object | `bedag-lib.commonLabels` | Merges given labels with common labels |
