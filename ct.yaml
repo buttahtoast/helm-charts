@@ -17,4 +17,4 @@ validate-maintainers: true
 validate-yaml: false
 excluded-charts:
   - "library"
-  - "helmize"
+k
