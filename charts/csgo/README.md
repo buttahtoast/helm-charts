@@ -112,7 +112,7 @@ Major Changes to functions are documented with the version affected. **Before up
 | statefulset.image.pullPolicy | string | `""` | Configure Docker Pull Policy. Will be overwritten if set by global variable. |
 | statefulset.image.registry | string | `"docker.io"` | Configure Docker Registry. Will be overwritten if set by global variable. |
 | statefulset.image.repository | string | `"cm2network/csgo"` | Configure Docker Repository |
-| statefulset.image.tag | string | `latest` | Configure Docker Image tag |
+| statefulset.image.tag | string | `"sourcemod"` | Configure Docker Image tag |
 | statefulset.imagePullSecrets | list | `[]` | Define [ImagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/). Will be overwritten if set by global variable. |
 | statefulset.initContainers | list | `[]` | Pod [initContainers](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) |
 | statefulset.labels | object | `bedag-lib.commonLabels` | Merges given labels with common labels |
