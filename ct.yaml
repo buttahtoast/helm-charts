@@ -17,4 +17,3 @@ validate-maintainers: true
 validate-yaml: false
 excluded-charts:
   - "library"
-k
