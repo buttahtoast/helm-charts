@@ -2,7 +2,7 @@ apiVersion: v2
 name: library
 description: Buttahtoast Helm Library
 type: library
-version: 2.2.4
+version: 2.2.5
 appVersion: 0.1.0
 home: https://github.com/buttahtoast/helm-charts/tree/master/charts/library
 icon: "https://avatars0.githubusercontent.com/u/67652090?s=400&u=874d1c989b0afc2789865be01051f0bbfc84ae32&v=4"
@@ -19,5 +19,5 @@ sources:
 annotations:
   artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/changes: |
-    - "[Fixed]: Types Function `lib.utils.types.validate` Allows false as default value"
+    - "[Added]: Added Function `lib.utils.dicts.unset"
   artifacthub.io/prerelease: "false"

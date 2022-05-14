@@ -60,3 +60,25 @@
     {{- printf "%s" (toYaml $result) -}}
   {{- end -}}
 {{- end -}}
+
+
+{{/*
+  Unset <Template>
+*/}}
+{{- define "lib.utils.dicts.unset" -}}
+  {{- $path := trimAll "." $.path -}}
+  {{- if and $path $.data -}}
+    {{- $buf := $.data -}}
+    {{- $paths := (splitList "." $path) -}}
+    {{- range $i, $p := $paths -}}
+        {{- if (hasKey $buf .) }}
+          {{- if eq (last $paths) . -}}
+            {{- $_ := unset $buf . -}}
+          {{- else -}}
+            {{- $buf = get $buf . -}}
+          {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
