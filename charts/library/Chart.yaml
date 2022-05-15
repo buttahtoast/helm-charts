@@ -19,5 +19,5 @@ sources:
 annotations:
   artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/changes: |
-    - "[Added]: Added Function `lib.utils.dicts.unset"
+    - "[Changed]: Function `lib.utils.types.validate` supports nested declartions"
   artifacthub.io/prerelease: "false"
