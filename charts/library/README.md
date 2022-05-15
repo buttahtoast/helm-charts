@@ -1,6 +1,6 @@
 # Buttahtoast Library
 
-![Version: 2.2.5](https://img.shields.io/badge/Version-2.2.5-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 2.3.0](https://img.shields.io/badge/Version-2.3.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 This is our take on a library Chart. It contains simple functions which are (will be) used across all of our charts. Feel free the add or improve the existing templates. This Chart is still under development/testing. Feel free to use it, if you find any issues with it, please create an issue/PR. We will try to get bugs fixed as soon as possible!
 
@@ -1093,7 +1093,7 @@ Do Stuff
 ### Validate
 ---
 
-Validate Types against data
+Validate Types against data. It's a simple abstraction of json schema for go sprig.
 
 #### Type
 
@@ -1125,6 +1125,17 @@ field-3:
 field-3:
   default: "east"
 
+# For nested dictionaries you need to use the _props keyword. If a field has the _props keyword
+# as key, everything below that field is treated as nested recursion
+field-4:
+  _props:
+    field-4-sub-1:
+      types: [ "string" ]
+      required: true
+    field-4-sub-2:
+      _props:
+        field-4-sub-2-sub-1:
+          types: [ "boolean" ]
 {- end -}
 ```
 
@@ -1134,6 +1145,8 @@ If an as required marked argument is missing, the template engine will fail inte
 
   * `.type` -  Template Name of Type
   * `.data` - Check Type against the given data
+  * `.validate` - Only validate, don't assign default values
+  * `.properties` - Directly assign type properties instead of using a template
   * `.ctx` -  Global Context
 
 #### Returns
