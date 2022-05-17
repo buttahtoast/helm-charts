@@ -82,3 +82,24 @@
   {{- end -}}
 {{- end -}}
 
+{{/*
+  Set <Template>
+*/}}
+{{- define "lib.utils.dicts.set" -}}
+  {{- $path := trimAll "." .path -}}
+  {{- if and $path $.data $.value -}}
+    {{- $buf := .data -}}
+    {{- $paths := (splitList "." $path) -}}
+    {{- range $paths }}
+      {{- if eq . (last $paths) -}}
+        {{- $_ := set $buf . $.value -}}
+      {{- else -}}
+        {{- if not (hasKey $buf .) }}
+          {{- $_ := set $buf . dict -}}
+        {{- end -}}
+        {{- $buf = get $buf . -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
