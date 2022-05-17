@@ -1,6 +1,6 @@
 # Buttahtoast Library
 
-![Version: 2.4.0](https://img.shields.io/badge/Version-2.4.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 2.4.1](https://img.shields.io/badge/Version-2.4.1-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 This is our take on a library Chart. It contains simple functions which are (will be) used across all of our charts. Feel free the add or improve the existing templates. This Chart is still under development/testing. Feel free to use it, if you find any issues with it, please create an issue/PR. We will try to get bugs fixed as soon as possible!
 
@@ -77,12 +77,14 @@ parse the file and that causes some issues. So don't forget to add a pair of `{}
   * [ParentAppend](#parentAppend)
   * [PrintYamlStructure](#printyamlstructure)
   * [Lookup](#lookup)
+  * [Unset](#unset)
+  * [Set](#set)
 * **[Extras](#extras)**
   * [Environment](#environment)
   * [ExtraResources](#extraresources)
 * **[Errors](#errors)**
   * [fail](#fail)
-  * [unmarshalingError](#unmarshalingError)
+  * [unmarshalingError](#unmarshalingerror)
   * [params](#params)
 * **[Types](#types)**
   * [validate](#validate)
@@ -93,8 +95,9 @@ Making use of all the common templates enable the following keys:
 
   * [All Common Values can be found here](./templates/values/_common.yaml)
 
-### Fullname
 ---
+
+### Fullname
 
 Extended Function to return a fullname.
 
@@ -132,6 +135,8 @@ String
 {- include "lib.utils.common.fullname" $) }
 ```
 
+---
+
 ### Chart
 
 Chart Name
@@ -146,8 +151,9 @@ String
 {- include "lib.internal.common.chart" $) }
 ```
 
-### SelectorLabels
 ---
+
+### SelectorLabels
 
 This template will return the default selectorLabels (Useable for Match/Selector Labels). In addition there is the
 option to overwrite these labels. If no selectorLabels are defined, the following labels are set:
@@ -183,8 +189,9 @@ YAML Structure, String
 {- include "lib.utils.common.selectorLabels" $) }
 ```
 
-### DefaultLabels
 ---
+
+### DefaultLabels
 
 This template represents the default templates. It includes the `SelectorLabel` template and sets the Application Version.
 
@@ -203,6 +210,8 @@ YAML Structure, String
 ```
 {- include "lib.utils.common.defaultLabels" $) }
 ```
+
+---
 
 ### OverwriteLabels
 
@@ -236,8 +245,9 @@ YAML Structure, String
 {- include "lib.utils.common.overwriteLabels" $) }
 ```
 
-### CommonLabels
 ---
+
+### CommonLabels
 
 This template allows to define common labels. Common labels are appended to the base labels (no merge). By Using this template
 the key `.Values.commonLabels` is considered in your value structure. If the key has values and is type `map` the values are used
@@ -273,8 +283,9 @@ YAML Structure, String
 {- include "lib.utils.common.commonLabels" $) }
 ```
 
-### Labels
 ---
+
+### Labels
 
 This template wraps around all the other label templates. Therefor all their functionalities are available with this template. In addition it's possible to pass labels, which overwrite the result of all the label templates.
 
@@ -311,8 +322,9 @@ YAML Structure, String
 {- include "lib.utils.common.labels" (dict "labels" (dict "custom.label" "value" "custom.label/2" "value") "context" $) }
 ```
 
-### KubeCapabilities
 ---
+
+### KubeCapabilities
 
 This template allows to define a custom KubeCapabilities Version (replaces `$.Capabilities.KubeVersion.GitVersion`). This might be useful when
 trying to test the chart or having client versions that differ from the server version.
@@ -354,8 +366,9 @@ Making use of all the global functions enable the following [global keys](https:
 
   * [All Global Values can be found here](./templates/values/_globals.yaml)
 
-### DockerImage
 ---
+
+### DockerImage
 
 This function overwrites local docker registries with global defined registries, if available. Returns the assembled output
 based on registry, repository and tag. The `$.global.defaultTag` value has precedence over the `.default` value.
@@ -438,8 +451,9 @@ String
 {- include "lib.utils.globals.image" (dict "registry" .Values.image "context" $ "default" .Chart.AppVersion) }
 ```
 
-### ImagePullPolicy
 ---
+
+### ImagePullPolicy
 
 This function overwrites local docker image pullpolicies with global defined pullpolicies, if available.
 
@@ -497,8 +511,9 @@ imagePullSecrets:
 {- include "lib.utils.globals.imagePullPolicy" (dict "pullPolicy" .Values.image.pullpolicy "context" $) }
 ```
 
-### ImagePullsecrets
 ---
+
+### ImagePullsecrets
 
 This function merges local pullSecrets with global defined pullSecrets, if available.
 
@@ -531,8 +546,9 @@ YAML Structure, String
 {- include "lib.utils.globals.imagePullSecrets" (dict "pullSecrets" .Values.imagePullSecrets "context" $) }
 ```
 
-### StorageClass
 ---
+
+### StorageClass
 
 This Function checks for a global storage class and returns it, if set.
 With the Parameter "persistence" you can pass your persistence structure. The function
@@ -585,8 +601,9 @@ String
 
 ## [Strings](./templates/utils/_strings.tpl)
 
-### Template
 ---
+
+### Template
 
 This function allows to render String/Map input with the go template engine. Since the
 go template engine doesn't directly accept maps, maps are dumped in YAML format. If you want to
@@ -616,8 +633,9 @@ or
 { $structure := fromYaml (include "lib.utils.strings.template" (dict "value" .Values.path.to.the.Value "context" $)) }
 ```
 
-### Stringify
 ---
+
+### Stringify
 
 This function allows to pass a list and create a single string, with a specific delimiter
 
@@ -639,8 +657,9 @@ String
 { include "lib.utils.strings.stringify" ( dict "list" (default (list 1 2 3) .Values.someList) "delimiter" ", " "context" $) }
 ```
 
-### ToDns1123
 ---
+
+### ToDns1123
 
 Converts the given string into DNS1123 accepted format. The format has the following conditions:
 
@@ -668,8 +687,9 @@ String (1:1 return if not given as string)
 
 ## [Lists](./templates/utils/_lists.tpl)
 
-### HasValueByKey
 ---
+
+### HasValueByKey
 
 Loops through subdicts in a given lists checking the given key for the given value. if matched, true is returned.
 
@@ -691,8 +711,9 @@ Boolean
 {- include "lib.utils.lists.hasValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
 ```
 
-### GetValueByKey
 ---
+
+### GetValueByKey
 
 Loops through subdicts in a given lists checking the given key for the given value. if matched, the value of the entire dict is returned.
 
@@ -714,6 +735,8 @@ YAML Structure, String
 {- include "lib.utils.lists.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
 ```
 
+---
+
 ### MergeList
 
 Merge two lists into one and returns the merged result.
@@ -734,8 +757,9 @@ YAML Structure, String
 {- include "lib.utils.lists.mergeList" (list $firstlist $secondlist) -}
 ```
 
-### MergeListOnKey
 ---
+
+### MergeListOnKey
 
 The default behavior for merging lists in array don't allow a combination of two elements of the different lists.
 Either you append the lists or completely overwrite the previous list. With this function you can merge list elements
@@ -762,8 +786,9 @@ YAML Structure, String
 {- include "lib.utils.lists.mergeListOnKey" (dict "source" $.Values.sourceList "target" $.Values.targetList "key" "id") -}
 ```
 
-### ExceptionList
 ---
+
+### ExceptionList
 
 This function allows list blacklisting. This means, that you can give an list of exceptions ("blacklist") as argument. The template
 iterates over a given list with dictionary elements and removes elements, which match one of the value in the exception list.
@@ -828,8 +853,9 @@ Results in:
 
 ## [Dictionaries](./templates/utils/_dicts.tpl)
 
-### ParentAppend
 ---
+
+### ParentAppend
 
 This function allows to append a given interface-map to a new parent key and returns the resulting YAML structure.
 
@@ -854,8 +880,9 @@ or
 {- include "lib.utils.dicts.parentAppend"  $.Values }
 ```
 
-### PrintYamlStructure
 ---
+
+### PrintYamlStructure
 
 This function allows to append a given struct to a new parent key and returns the resulting YAML structure.
 
@@ -890,8 +917,9 @@ my:
       {.data}
 ```
 
-### Lookup
 ---
+
+### Lookup
 
 Get a specific key by delivering the key path from a given dictionary.
 
@@ -922,8 +950,9 @@ result:
   - C
 ```
 
-### Unset
 ---
+
+### Unset
 
 Unset a key by path in a dictionary
 
@@ -944,8 +973,9 @@ Directly removes key on dictionary, no return
 {- include "lib.utils.dicts.unset" (dict "path" "sub.key" "data" (dict "sub" (dict "key" (list "A" "B" "C")))) }
 ```
 
-### Set
 ---
+
+### Set
 
 Set a key and it's value by path in a dictionary. The entire path is created, meaning subpaths don't have to exist to assign a value.
 
@@ -983,8 +1013,9 @@ sub:
 
 ## [Extras](./templates/utils/_extras.tpl)
 
-### Environment
 ---
+
+### Environment
 
 Returns useful environment variables being used for container. In addition adds built-in proxy support to your chart.
 Meaning proxy will be set directly in environment variables returned by the template.
@@ -1011,8 +1042,9 @@ Usage:
 env: {- include "lib.utils.extras.environment" $ | nindent 2 }
 ```
 
-### ExtraResources
 ---
+
+### ExtraResources
 
 Allows to have extra resources in the chart. Returns kind List with all given kubernetes extra resources.
 
@@ -1053,8 +1085,9 @@ env: {- include "lib.utils.extras.resources" $ | nindent 2 }
 
 ## [Errors](./templates/utils/_errors.tpl)
 
-### Fail
 ---
+
+### Fail
 
 Executes a fail but adds two new lines to make the error more visible.
 
@@ -1099,8 +1132,9 @@ Error: (fromYaml (include "my.data" $)).Error
 {- end -}
 ```
 
-### Params
 ---
+
+### Params
 
 Prints an error that a template is missing parameters
 
@@ -1127,8 +1161,9 @@ Do Stuff
 
 # [Types](./templates/utils/_types.tpl)
 
-### Validate
 ---
+
+### Validate
 
 Validate Types against data. It's a simple abstraction of json schema for go sprig.
 
