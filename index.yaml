@@ -184,6 +184,33 @@ entries:
   library:
   - annotations:
       artifacthub.io/changes: |
+        - "[Added]: Added function `lib.utils.dicts.set`"
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/prerelease: "false"
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-05-17T20:45:40.664128025Z"
+    description: Buttahtoast Helm Library
+    digest: fbeaf6c49caf0590d04c03b2a4a068b97e1958643ff3d32f0ed05b1ce597a506
+    home: https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    icon: https://avatars0.githubusercontent.com/u/67652090?s=400&u=874d1c989b0afc2789865be01051f0bbfc84ae32&v=4
+    keywords:
+    - library
+    - sprig
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: library
+    sources:
+    - https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    type: library
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/library-2.4.0/library-2.4.0.tgz
+    version: 2.4.0
+  - annotations:
+      artifacthub.io/changes: |
         - "[Changed]: Function `lib.utils.types.validate` supports nested declartions"
       artifacthub.io/containsSecurityUpdates: "false"
       artifacthub.io/prerelease: "false"
@@ -1163,4 +1190,4 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.1.0/tavern-0.1.0.tgz
     version: 0.1.0
-generated: "2022-05-15T14:24:03.059038522Z"
+generated: "2022-05-17T20:45:40.664303226Z"
