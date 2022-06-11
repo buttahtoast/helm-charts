@@ -1,0 +1,45 @@
+sample:
+  data:
+    - "list"
+    - "list2"
+  sample1:
+    data:
+      me: "here"
+  common:
+    data:
+      should: sample1
+
+  nested:
+    - name: "test"
+      base: "data"
+    - name: "sample1"
+      should: "not"
+    - name: "append"
+      should: "me"
+    - name: "fat"
+      should: "fuck"
+
+
+sample2:
+  data:
+    - "sample2"
+    - "mega_data"
+  sample2:
+    data:
+      me: "here"
+  common:
+    data:
+      is: sample2
+  nested:
+    - (( append ))
+    - name: "test"
+      meow: ",ew"
+      complex: "data"
+    - name: "sample2"
+      should: "be"
+
+
+test: 
+  - other 
+  - data
+  - (( append ))

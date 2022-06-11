@@ -103,3 +103,115 @@
   {{- end -}}
 {{- end -}}
 
+
+
+{{/*
+  Merge Nested Structures <Template>
+
+    dict "" "2" "" 
+    listBehavior: 
+    mergeOn
+
+
+*/}}
+{{- define "lib.utils.dicts.merge" -}}
+  {{- $base := $.base -}}
+  {{- range $key, $data := $.data -}}
+
+    {{/* Overwrite if not set */}}
+    {{- $base_data := (get $base $key) -}}
+    {{- if $base_data -}}
+
+      {{/* if types don't match the key is overwritten */}}
+      {{- if (eq (kindOf $data) (kindOf $base_data)) -}}
+        {{/* Compare Types */}}
+        {{- if (kindIs "map" $data) -}}
+
+          {{/* Recursive Call */}}
+          {{- include "lib.utils.dicts.merge" (dict "base" $base_data "data" $data "ctx" $.ctx) -}}
+        
+        {{/* Handle List merges */}}
+        {{- else if (kindIs "slice" $data) -}}
+          {{- $tmp_list := $data -}}
+
+            {{/* Iterate on Key */}}
+            {{- $merge_key := "name" -}}
+            {{- range $leaf := $tmp_list -}}
+
+              {{/* Nested Merge only when Leaf is map */}}
+              {{- if (kindIs "map" $leaf) -}}
+                {{- if (get $leaf $merge_key) -}}
+                  {{- range $i, $base_leaf := $base_data -}}
+                    {{- if (get $base_leaf $merge_key) -}}
+                      {{/* Validate if Key Same */}}
+                      {{- if eq (get $leaf $merge_key) (get $base_leaf $merge_key) -}}
+
+                        {{/* Recursive Call */}}
+                        {{- include "lib.utils.dicts.merge" (dict "base" $base_leaf "data" $leaf "ctx" $.ctx) -}}
+
+                        {{/* Unset on Base Leaf */}}
+                
+
+                      {{- end -}}
+                    {{- end -}}
+                  {{- end -}}
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+
+
+            {{/* If the Base Leaf is empty, there's nothing to do */}}
+            {{- if $base_data -}}
+              {{- $matched := 1 -}}
+              {{- range $i, $leaf := $tmp_list -}}
+              
+                {{/* Validate Type */}}
+                {{- if and (kindIs "string" $leaf) -}}
+
+                  {{/* Validate Append */}}
+                  {{- $append_regex := "^\(\(.*append.*\)\)$" -}}
+                  {{- $append_value := (regexFind $append_regex ($leaf | lower)) -}}
+                  {{- if $append_value -}}
+                    {{- $tmp_list = without $tmp_list $append_value -}}
+                    {{- if (not $matched) -}}
+                      {{- $tmp_list = concat $base_data $tmp_list -}}
+                      {{- $matched = 0 -}}
+                    {{- end -}}
+
+                  {{/* Validate Prepend */}}
+                  {{- else -}}
+                    {{- $prepend_regex := "^\(\(.*prepend.*\)\)$" -}}
+                    {{- $prepend_value := (regexFind $$prepend_regex ($leaf | lower)) -}}
+                    {{- if $prepend_value -}}
+                      {{- $tmp_list = without $tmp_list $prepend_value -}}
+                      {{- if (not $matched) -}}
+                        {{- $tmp_list = concat $tmp_list $base_data -}}
+                        {{- $matched = 0 -}}
+                      {{- end -}}
+                    {{- end -}}
+                  {{- end -}}
+
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+
+            {{/* Redirect to Base */}}
+            {{- $_ := set $base $key $tmp_list -}}
+         
+        {{/* Redirect Data */}}
+        {{- else -}}
+          {{- $_ := set $base $key $data -}}
+        {{- end -}}
+      {{/* Overwrite */}}
+      {{- else -}}
+        {{- $_ := set $base $key $data -}}
+      {{- end -}}
+    {{/* Overwrite */}}
+    {{- else -}}
+      {{- $_ := set $base $key $data -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+
+

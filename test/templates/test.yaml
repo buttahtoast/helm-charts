@@ -1,0 +1,5 @@
+t: |
+
+  {{- include "lib.utils.dicts.merge"  (dict "base" $.Values.sample "data" $.Values.sample2 "ctx" $)  | nindent 10 -}}
+  {{- toYaml $.Values.sample | nindent 10 -}}
+
