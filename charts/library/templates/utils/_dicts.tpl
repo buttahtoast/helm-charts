@@ -132,11 +132,14 @@
         
         {{/* Handle List merges */}}
         {{- else if (kindIs "slice" $data) -}}
-          {{- $tmp_list := $data -}}
+            {{- $unmatched_base := $base_data -}}
+            {{- $tmp_list := $data -}}
 
             {{/* Iterate on Key */}}
             {{- $merge_key := "name" -}}
-            {{- range $leaf := $tmp_list -}}
+            {{- range $leaf := $data -}}
+
+              {{- $merged := 0 -}}
 
               {{/* Nested Merge only when Leaf is map */}}
               {{- if (kindIs "map" $leaf) -}}
@@ -146,11 +149,11 @@
                       {{/* Validate if Key Same */}}
                       {{- if eq (get $leaf $merge_key) (get $base_leaf $merge_key) -}}
 
-                        {{/* Recursive Call */}}
-                        {{- include "lib.utils.dicts.merge" (dict "base" $base_leaf "data" $leaf "ctx" $.ctx) -}}
+                        {{/* Unset in Base */}}
+                        {{- $unmatched_base = without $unmatched_base $base_leaf -}}
 
-                        {{/* Unset on Base Leaf */}}
-                
+                        {{/* Recursive Call */}}
+                        {{- include "lib.utils.dicts.merge" (dict "base" $base_leaf "data" $leaf "ctx" $.ctx) -}}      
 
                       {{- end -}}
                     {{- end -}}
@@ -160,37 +163,34 @@
             {{- end -}}
 
 
-            {{/* If the Base Leaf is empty, there's nothing to do */}}
-            {{- if $base_data -}}
-              {{- $matched := 1 -}}
+            {{/* If the Unmatched From Base leaf, can be injected */}}
+            {{- if $unmatched_base -}}
+              {{- $matched := 0 -}}
               {{- range $i, $leaf := $tmp_list -}}
               
                 {{/* Validate Type */}}
                 {{- if and (kindIs "string" $leaf) -}}
 
                   {{/* Validate Append */}}
-                  {{- $append_regex := "^\(\(.*append.*\)\)$" -}}
-                  {{- $append_value := (regexFind $append_regex ($leaf | lower)) -}}
-                  {{- if $append_value -}}
-                    {{- $tmp_list = without $tmp_list $append_value -}}
-                    {{- if (not $matched) -}}
-                      {{- $tmp_list = concat $base_data $tmp_list -}}
-                      {{- $matched = 0 -}}
+                  {{- $inject_key := "__inject__" -}}
+                  {{- if (eq ($leaf | lower) $inject_key) -}}
+                    
+                    {{/* IF First Entry */}}
+                    {{- if (eq $i 0) -}}
+                      {{- $tmp_list = concat  $unmatched_base $tmp_list -}}
+
+                    {{/* Inject Within List */}}
+                    {{- else -}}
+                      {{- $partial_list := slice $tmp_list 0 $i -}}
+                      {{- $partial_list = concat $partial_list $unmatched_base -}}
+                      {{- $partial_list = concat $partial_list (slice $tmp_list $i) -}}
+                      {{- $tmp_list = $partial_list -}}
                     {{- end -}}
 
-                  {{/* Validate Prepend */}}
-                  {{- else -}}
-                    {{- $prepend_regex := "^\(\(.*prepend.*\)\)$" -}}
-                    {{- $prepend_value := (regexFind $$prepend_regex ($leaf | lower)) -}}
-                    {{- if $prepend_value -}}
-                      {{- $tmp_list = without $tmp_list $prepend_value -}}
-                      {{- if (not $matched) -}}
-                        {{- $tmp_list = concat $tmp_list $base_data -}}
-                        {{- $matched = 0 -}}
-                      {{- end -}}
-                    {{- end -}}
+                    {{/* Split Array */}}
+                    {{- $tmp_list = without $tmp_list $inject_key -}}
+
                   {{- end -}}
-
                 {{- end -}}
               {{- end -}}
             {{- end -}}

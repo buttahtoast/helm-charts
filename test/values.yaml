@@ -12,6 +12,14 @@ sample:
   nested:
     - name: "test"
       base: "data"
+      priority: 1
+      sublist:
+        - sample_1
+        - test_1
+      complex_list:
+        - name: "sampler"
+          sub_data_1: "true"
+
     - name: "sample1"
       should: "not"
     - name: "append"
@@ -31,10 +39,17 @@ sample2:
     data:
       is: sample2
   nested:
-    - (( append ))
     - name: "test"
-      meow: ",ew"
+      priority: 2
       complex: "data"
+      sublist:
+        - ((append))
+        - sample_2
+        - test_2
+      complex_list:
+        - name: "sampler"
+          sub_data_2: "true"
+    - __inject__
     - name: "sample2"
       should: "be"
 
