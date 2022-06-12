@@ -19,6 +19,9 @@ sample:
       complex_list:
         - name: "sampler"
           sub_data_1: "true"
+      overwriter:
+        - slice
+
 
     - name: "sample1"
       should: "not"
@@ -42,6 +45,8 @@ sample2:
     - name: "test"
       priority: 2
       complex: "data"
+      overwriter:
+        map: type
       sublist:
         - __inject__
         - sample_2

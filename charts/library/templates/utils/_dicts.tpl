@@ -134,6 +134,7 @@
         {{- else if (kindIs "slice" $data) -}}
             {{- $unmatched_base := $base_data -}}
             {{- $tmp_list := $data -}}
+            {{- $tmp_list = append $tmp_list "WAS_HERE" -}}
 
             {{/* Iterate on Key */}}
             {{- $merge_key := "name" -}}
