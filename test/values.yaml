@@ -43,7 +43,7 @@ sample2:
       priority: 2
       complex: "data"
       sublist:
-        - ((append))
+        - __inject__
         - sample_2
         - test_2
       complex_list:
