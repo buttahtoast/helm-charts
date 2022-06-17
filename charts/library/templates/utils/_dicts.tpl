@@ -142,8 +142,18 @@
             {{- $unmatched_base := list -}}
             {{- $unmatched_data := $data -}}
 
-            {{/* Iterate on Key */}}
+            {{/* Evaluate Merge Key */}}
             {{- $merge_key := "name" -}}
+            {{- range $u := $data -}}
+              {{- if (kindIs "string" $u) -}}
+                {{/* Match on Expression ((*)) */}}
+                {{- $merge_exp := regexFind "\(\(.*\)\)" $u -}}
+                {{- if $merge_exp -}}
+                  {{- $_ := set $.data $key (without (get $data $key) $merge_exp) -}}
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+
 
             {{/* Range Over Base (This way we can remove unmatched entries) */}}
             {{- range $i, $base_leaf := $base_data -}}

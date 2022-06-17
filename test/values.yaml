@@ -34,6 +34,7 @@ sample:
       should: "me"
     - name: "fat"
       should: "fuck"
+    - (( meow ))
 
 
 sample2:
