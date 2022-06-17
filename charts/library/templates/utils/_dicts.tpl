@@ -110,12 +110,17 @@
 
     dict "" "2" "" 
     listBehavior: 
-    mergeOn
+    injectKey
 
 
 */}}
 {{- define "lib.utils.dicts.merge" -}}
   {{- $base := $.base -}}
+
+  {{/* Merge Options */}}
+  {{- $inject_key := default "__inject__" $.injectKey -}}
+
+  {{/* Iterate over Keys */}}
   {{- range $key, $data := $.data -}}
 
     {{/* Overwrite if not set */}}
@@ -128,76 +133,90 @@
         {{- if (kindIs "map" $data) -}}
 
           {{/* Recursive Call */}}
-          {{- include "lib.utils.dicts.merge" (dict "base" $base_data "data" $data "ctx" $.ctx) -}}
+          {{- include "lib.utils.dicts.merge" (dict "base" $base_data "data" $data "injectKey" $inject_key "ctx" $.ctx) -}}
         
         {{/* Handle List merges */}}
         {{- else if (kindIs "slice" $data) -}}
-            {{- $unmatched_base := $base_data -}}
-            {{- $tmp_list := $data -}}
-            {{- $tmp_list = append $tmp_list "WAS_HERE" -}}
+
+            {{/* Need to dereference */}}
+            {{- $unmatched_base := list -}}
+            {{- $unmatched_data := $data -}}
 
             {{/* Iterate on Key */}}
             {{- $merge_key := "name" -}}
-            {{- range $leaf := $data -}}
 
-              {{- $merged := 0 -}}
+            {{/* Range Over Base (This way we can remove unmatched entries) */}}
+            {{- range $i, $base_leaf := $base_data -}}
+              {{- $merged := 1 -}}
 
-              {{/* Nested Merge only when Leaf is map */}}
-              {{- if (kindIs "map" $leaf) -}}
-                {{- if (get $leaf $merge_key) -}}
-                  {{- range $i, $base_leaf := $base_data -}}
-                    {{- if (get $base_leaf $merge_key) -}}
+              {{- if (kindIs "map" $base_leaf) -}}
+
+                {{- range $leaf := $data -}}
+                  {{- if (kindIs "map" $leaf) -}}
                       {{/* Validate if Key Same */}}
                       {{- if eq (get $leaf $merge_key) (get $base_leaf $merge_key) -}}
-
-                        {{/* Unset in Base */}}
-                        {{- $unmatched_base = without $unmatched_base $base_leaf -}}
-
-                        {{/* Recursive Call */}}
-                        {{- include "lib.utils.dicts.merge" (dict "base" $base_leaf "data" $leaf "ctx" $.ctx) -}}      
-
+  
+                        {{/* Remove Leaf on Data */}}
+                        {{- $unmatched_data = without $unmatched_data $leaf -}}
+                        {{- $merged = 0 -}}
+  
+                        {{/* Recursion */}}
+                        {{- include "lib.utils.dicts.merge" (dict "base" $base_leaf "data" $leaf "injectKey" $inject_key "ctx" $.ctx) -}}
+  
                       {{- end -}}
-                    {{- end -}}
                   {{- end -}}
                 {{- end -}}
               {{- end -}}
+
+              {{/* Append Unmerged Leafs to base */}}
+              {{- if $merged -}}
+                {{- $unmatched_base = append $unmatched_base $base_leaf -}}
+              {{- end -}}
+            {{- end -}}
+
+            {{/* Remove Unmatched From Base List */}}
+            {{- range $u := $unmatched_base -}}
+              {{- $_ := set $base $key (without (get $base $key) $u) -}}
+            {{- end -}}
+
+            {{/* Add Unmatched from Data */}}
+            {{- range $u := $unmatched_data -}}
+              {{- $_ := set $base $key (append (get $base $key) $u) -}}
             {{- end -}}
 
 
-            {{/* If the Unmatched From Base leaf, can be injected */}}
+            {{/* Data Injector */}}
             {{- if $unmatched_base -}}
-              {{- $matched := 0 -}}
-              {{- range $i, $leaf := $tmp_list -}}
-              
-                {{/* Validate Type */}}
-                {{- if and (kindIs "string" $leaf) -}}
-
-                  {{/* Validate Append */}}
-                  {{- $inject_key := "__inject__" -}}
-                  {{- if (eq ($leaf | lower) $inject_key) -}}
-                    
-                    {{/* IF First Entry */}}
+              {{- range $i, $base_leaf := (get $base $key) -}}
+                {{- if and (kindIs "string" $base_leaf) -}}
+                  {{- $tmp := list -}}
+                  {{- if (eq ($base_leaf | lower) $inject_key) -}}
+                    {{/* First Entry */}}
                     {{- if (eq $i 0) -}}
-                      {{- $tmp_list = concat  $unmatched_base $tmp_list -}}
+                      {{- $tmp = concat $unmatched_base (get $base $key) -}}
 
                     {{/* Inject Within List */}}
                     {{- else -}}
-                      {{- $partial_list := slice $tmp_list 0 $i -}}
+                      {{- $partial_list := slice (get $base $key) 0 $i -}}
                       {{- $partial_list = concat $partial_list $unmatched_base -}}
-                      {{- $partial_list = concat $partial_list (slice $tmp_list $i) -}}
-                      {{- $tmp_list = $partial_list -}}
+                      {{- $partial_list = concat $partial_list (slice (get $base $key) $i) -}}
+                      {{- $tmp = $partial_list -}}
                     {{- end -}}
 
                     {{/* Split Array */}}
-                    {{- $tmp_list = without $tmp_list $inject_key -}}
+                    {{- $_ := set $base $key (without $tmp $inject_key ) -}}
 
                   {{- end -}}
                 {{- end -}}
               {{- end -}}
             {{- end -}}
 
-            {{/* Redirect to Base */}}
-            {{- $_ := set $base $key $tmp_list -}}
+
+
+
+            {{/* Redirect to Base
+            {{- $data := without $data $leaf -}}
+            {{- $_ := set $base $key $data -}}*/}}
          
         {{/* Redirect Data */}}
         {{- else -}}

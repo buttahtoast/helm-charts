@@ -21,6 +21,11 @@ sample:
           sub_data_1: "true"
       overwriter:
         - slice
+      map:
+        common:
+          here: 1
+        sample_1:
+          data: true
 
 
     - name: "sample1"
@@ -54,9 +59,14 @@ sample2:
       complex_list:
         - name: "sampler"
           sub_data_2: "true"
-    - __inject__
+      map:
+        common:
+          there: 2
+        sample_2:
+          data: true
     - name: "sample2"
       should: "be"
+    - __inject__
 
 
 test: 
