@@ -71,7 +71,6 @@ sample2:
     - name: "sample2"
       should: "be"
     - __inject__
-    - (( meow ))
     - meow: 1
       sampler:
         2: 2
@@ -80,6 +79,51 @@ sample2:
           - 3
           - 4
 
+d1:
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: nested
+  spec:
+    template:
+      spec:
+        containers:
+        - name: backend
+          image: ghcr.io/stefanprodan/podinfo:6.1.1
+          imagePullPolicy: IfNotPresent
+          ports:
+          - name: http
+            containerPort: 9898
+            protocol: TCP
+          - name: http-metrics
+            containerPort: 9797
+            protocol: TCP
+          command:
+          - ./podinfo
+          - --port=9898
+          - --port-metrics=9797
+          - --grpc-port=9999
+          - --grpc-service-name=backend
+          - --cache-server=cache:6379
+
+d2:
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: nested
+  spec:
+    template:
+      spec:
+        containers:
+        - name: backend
+          ports:
+          - name: grpc
+            containerPort: 9999
+            protocol: TCP
+          command:
+          - --level=info
+          - __inject__
+  
 
 test: 
   - other 

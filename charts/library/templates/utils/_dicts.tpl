@@ -160,13 +160,10 @@
               {{- end -}}
             {{- end -}}
 
-            {{/* Need to dereference */}}
+            {{/* Unmatched Base References */}}
             {{- $unmatched_base := list -}}
             {{- $unmatched_data := (get $.data $key) -}}
             
-
-
-
             {{/* Range Over Base (This way we can remove unmatched entries) */}}
             {{- range $i, $base_leaf := $base_data -}}
               {{- $merged := 1 -}}
@@ -208,13 +205,15 @@
 
 
             {{/* Data Injector */}}
+            {{- $injected := 0 -}}
             {{- range $i, $base_leaf := (get $base $key) -}}
-              {{- if and (kindIs "string" $base_leaf) -}}
-                {{- $tmp := list -}}
+              {{- if and (kindIs "string" $base_leaf) (not $injected)  -}}
                 {{- if (eq ($base_leaf | lower) $inject_key) -}}
 
                   {{/* Inject on Unmatched Base Data */}}
                   {{- if $unmatched_base -}}
+                    {{- $tmp := list -}}
+
                     {{/* First Entry */}}
                     {{- if (eq $i 0) -}}
                       {{- $tmp = concat $unmatched_base (get $base $key) -}}
@@ -226,11 +225,12 @@
                       {{- $tmp = $partial_list -}}
                     {{- end -}}
 
+                    {{- $injected = 1 -}}
+
                     {{/* Redirect Injected Slice */}}
                     {{- $_ := set $base $key $tmp -}}
 
                   {{- end -}}
-
                 {{- end -}}
               {{- end -}}
             {{- end -}}
