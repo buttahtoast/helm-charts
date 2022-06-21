@@ -34,7 +34,12 @@ sample:
       should: "me"
     - name: "fat"
       should: "fuck"
-
+    - meow: 1
+      sampler:
+        1: 1
+        list:
+          - 1
+          - 2
 sample2:
   data:
     - "sample2"
@@ -67,6 +72,13 @@ sample2:
       should: "be"
     - __inject__
     - (( meow ))
+    - meow: 1
+      sampler:
+        2: 2
+        list:
+          - __inject__
+          - 3
+          - 4
 
 
 test: 

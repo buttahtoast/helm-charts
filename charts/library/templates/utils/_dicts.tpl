@@ -138,23 +138,45 @@
         {{/* Handle List merges */}}
         {{- else if (kindIs "slice" $data) -}}
 
+            {{/* Evaluate Merge Key */}}
+            {{- $merge_key := "name" -}}
+            {{- range $u := (get $.data $key) -}}
+              {{- if (kindIs "string" $u) -}}
+
+                {{/* Match on Expression ((*)) */}}
+                {{- $merge_exp := regexFind "\\(\\(.*\\)\\)" $u  -}}
+                {{- if $merge_exp -}}
+
+                  {{/* Format Merge Key */}}
+                  {{- $f_key := ($merge_exp | nospace | replace "(" "" | replace ")" "" ) -}}
+                  {{- if $f_key -}}
+                    {{- $merge_key = $f_key -}}
+                  {{- end -}}
+
+                  {{/* Remove Key Anyway */}}
+                  {{- $_ := set $.data $key (without (get $.data $key) $merge_exp) -}}
+
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+
             {{/* Need to dereference */}}
             {{- $unmatched_base := list -}}
-            {{- $unmatched_data := $data -}}
+            {{- $unmatched_data := (get $.data $key) -}}
+            
 
 
 
             {{/* Range Over Base (This way we can remove unmatched entries) */}}
             {{- range $i, $base_leaf := $base_data -}}
               {{- $merged := 1 -}}
-              {{- $merge_key := "name" -}}
 
               {{- if (kindIs "map" $base_leaf) -}}
 
                 {{- range $leaf := (get $.data $key) -}}
                   {{- if (kindIs "map" $leaf) -}}
                       {{/* Validate if Key Same */}}
-                      {{- if eq (get $leaf $merge_key) (get $base_leaf $merge_key) -}}
+                      {{- if eq ((get $leaf $merge_key) | toString) ((get $base_leaf $merge_key) | toString) -}}
   
                         {{/* Remove Leaf on Data */}}
                         {{- $unmatched_data = without $unmatched_data $leaf -}}
@@ -186,15 +208,16 @@
 
 
             {{/* Data Injector */}}
-            {{- if $unmatched_base -}}
-              {{- range $i, $base_leaf := (get $base $key) -}}
-                {{- if and (kindIs "string" $base_leaf) -}}
-                  {{- $tmp := list -}}
-                  {{- if (eq ($base_leaf | lower) $inject_key) -}}
+            {{- range $i, $base_leaf := (get $base $key) -}}
+              {{- if and (kindIs "string" $base_leaf) -}}
+                {{- $tmp := list -}}
+                {{- if (eq ($base_leaf | lower) $inject_key) -}}
+
+                  {{/* Inject on Unmatched Base Data */}}
+                  {{- if $unmatched_base -}}
                     {{/* First Entry */}}
                     {{- if (eq $i 0) -}}
                       {{- $tmp = concat $unmatched_base (get $base $key) -}}
-
                     {{/* Inject Within List */}}
                     {{- else -}}
                       {{- $partial_list := slice (get $base $key) 0 $i -}}
@@ -203,20 +226,18 @@
                       {{- $tmp = $partial_list -}}
                     {{- end -}}
 
-                    {{/* Split Array */}}
-                    {{- $_ := set $base $key (without $tmp $inject_key ) -}}
+                    {{/* Redirect Injected Slice */}}
+                    {{- $_ := set $base $key $tmp -}}
 
                   {{- end -}}
+
                 {{- end -}}
               {{- end -}}
             {{- end -}}
 
-
-
-
-            {{/* Redirect to Base
-            {{- $data := without $data $leaf -}}
-            {{- $_ := set $base $key $data -}}*/}}
+            {{/* Remove Inject Key Anyway (Must Remove on Both Dicts) */}}
+            {{- $_ := set $.data $key (without (get $.data $key) $inject_key) -}}
+            {{- $_ := set $base $key (without (get $base $key) $inject_key) -}}
          
         {{/* Redirect Data */}}
         {{- else -}}
