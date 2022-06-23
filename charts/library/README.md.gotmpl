@@ -1012,6 +1012,92 @@ sub:
     - C
 ```
 
+### Merge
+
+Nested dictionary merge (Including lists). The Result is redirected the `$.base` argument, th
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will fail intentionally.
+
+  * `.base` - Base data
+  * `.data` - Data which is merged over the Base data
+  * `.injectKey` - The dictionary to lookup ```
+
+#### List Options
+
+**Inject Key**
+
+With the Inject Key you can inject the list elements from the base list, which weren't preserved. By default only the elements of the data list are used (presceding).
+
+
+```
+
+
+```
+
+This is combined with merge operations
+
+```
+
+
+
+```
+
+
+
+**Merge Key**
+
+By default list elements are merged on the key **name**. You can change the key inserting 
+
+```
+
+
+
+
+
+
+
+
+
+#### Returns
+
+Directly removes key on dictionary, no return
+
+#### Usage:
+
+```
+{- include "lib.utils.dicts.set" (dict "path" "new.sub.key" "value" (dict "something" "new") "data" (dict "sub" (dict "key" (list "A" "B" "C")))) }
+```
+
+Will result in:
+
+```
+new:
+  sub:
+    key:
+      something: new
+sub:
+  key:
+    - A
+    - B
+    - C
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## [Extras](./templates/utils/_extras.tpl)
 
 ---
