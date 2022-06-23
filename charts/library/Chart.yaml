@@ -19,5 +19,6 @@ sources:
 annotations:
   artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/changes: |
-    - "[Fixed]: Improved Documentation"
+    - "[Added]: Unit Tests"
+    - "[Added]: Merge function"
   artifacthub.io/prerelease: "false"
