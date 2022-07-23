@@ -920,7 +920,7 @@ my:
 
 ---
 
-### Lookup
+### Get
 
 Get a specific key by delivering the key path from a given dictionary.
 
@@ -934,21 +934,27 @@ If an as required marked argument is missing, the template engine will fail inte
 
 #### Returns
 
-  Dictionary (With key `.result` in case the key resolves to a list)
+  Dictionary (With key `.res` in case the key resolves to a list)
 
 #### Usage:
 
 ```
-{- include "lib.utils.dicts.lookup" (dict "path" "sub.key" "data" (dict "sub" (dict "key" (list "A" "B" "C")))) }
+{- include "lib.utils.dicts.get" (dict "path" "sub.key" "data" (dict "sub" (dict "key" (list "A" "B" "C")))) }
 ```
 
 Will result in
 
 ```
-result:
+res:
   - A 
   - B 
   - C
+```
+
+You can directly resolve without the `res` field using the following: 
+
+```
+{- (fromYaml (include "lib.utils.dicts.lookup" (dict "path" "sub.key" "data" (dict "sub" (dict "key" (list "A" "B" "C")))))).res }
 ```
 
 ---
@@ -1032,6 +1038,33 @@ With the Inject Key you can inject the list elements from the base list, which w
 
 
 ```
+# Base Data Dict
+Base:
+  spec:
+    selector:
+      app: nginx
+    ports:
+    - port: 80
+      name: http
+      targetPort: 80
+    - port: 443
+      name: https
+      targetPort: 80
+
+# Base Data Dict
+Data:
+  spec:
+    ports:
+    - __inject__
+
+    # Overwrites HTTPS Port
+    - port: 8443
+      name: https
+
+    # Add additional Port 
+    - port: 9001
+      name: metrics
+      targetPort: 9001
 
 
 ```
@@ -1062,7 +1095,7 @@ By default list elements are merged on the key **name**. You can change the key 
 
 #### Returns
 
-Directly removes key on dictionary, no return
+Direct operation on `$.Base`
 
 #### Usage:
 

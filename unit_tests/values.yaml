@@ -1,0 +1,23 @@
+unit_test: 
+  chart: "library"
+  type: "dict.merge"
+Base:
+  spec:
+    selector:
+      app: nginx
+    ports:
+    - port: 80
+      name: http
+      targetPort: 80
+    - port: 443
+      name: https
+      targetPort: 80
+Data:
+  spec:
+    ports:
+    - __inject__
+    - port: 8443
+      name: https
+    - port: 9001
+      name: metrics
+      targetPort: 9001

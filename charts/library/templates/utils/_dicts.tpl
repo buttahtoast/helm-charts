@@ -31,18 +31,19 @@
 {{/*
   Lookup <Template>
 */}}
-{{- define "lib.utils.dicts.lookup" -}}
-  {{- $result := dict "res" "" -}}
+{{- define "lib.utils.dicts.get" -}}
+  {{- $result := dict "res" dict -}}
   {{- $path := trimAll "." .path -}}
   {{- if and $path .data -}}
     {{- $buf := .data -}}
     {{- $miss := dict "state" false "path" -}}
-    {{- range (splitList "." $path) }}
+    {{- range $p := (splitList "." $path) -}}
+      {{- $p = $p | replace "$" "." -}}
       {{- if eq $miss.state false -}}
-        {{- if (hasKey $buf .) }}
-          {{- $buf = get $buf . -}}
+        {{- if (hasKey $buf $p) -}}
+          {{- $buf = get $buf $p -}}
         {{- else -}}
-          {{- $_ := set $miss "path" . -}}
+          {{- $_ := set $miss "path" $p -}}
           {{- $_ := set $miss "state" true -}}
         {{- end -}}
       {{- end -}}
@@ -51,7 +52,7 @@
       {{- printf "%s" (toYaml (dict "res" $buf)) -}}
     {{- else -}}
       {{- if eq (default false .required) true -}}
-        {{ include "lib.utils.errors.fail" (cat "Missing path" $miss.path "for lookup" $path "in structure\n" (toYaml .data | nindent 0)) }}
+        {{ include "lib.utils.errors.fail" (cat "Missing path" $miss.path "for get" $path "in structure\n" (toYaml .data | nindent 0)) }}
       {{- else -}}
         {{- printf "%s" (toYaml $result) -}}
       {{- end -}}
@@ -61,7 +62,6 @@
   {{- end -}}
 {{- end -}}
 
-
 {{/*
   Unset <Template>
 */}}
@@ -70,13 +70,14 @@
   {{- if and $path $.data -}}
     {{- $buf := $.data -}}
     {{- $paths := (splitList "." $path) -}}
-    {{- range $i, $p := $paths -}}
-        {{- if (hasKey $buf .) }}
-          {{- if eq (last $paths) . -}}
-            {{- $_ := unset $buf . -}}
-          {{- else -}}
-            {{- $buf = get $buf . -}}
-          {{- end -}}
+    {{- range $p := $paths -}}
+      {{- $p = $p | replace "$" "." -}}
+      {{- if (hasKey $buf $p) }}
+        {{- if eq (last $paths) $p -}}
+          {{- $_ := unset $buf $p -}}
+        {{- else -}}
+          {{- $buf = get $buf $p -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
@@ -90,14 +91,15 @@
   {{- if and $path $.data $.value -}}
     {{- $buf := .data -}}
     {{- $paths := (splitList "." $path) -}}
-    {{- range $paths }}
-      {{- if eq . (last $paths) -}}
-        {{- $_ := set $buf . $.value -}}
+    {{- range $p := $paths -}}
+      {{- $p = $p | replace "$" "." -}}
+      {{- if eq $p (last $paths) -}}
+        {{- include "lib.utils.dicts.merge" (dict "base" (get $buf $p) "data" $.value) -}}
       {{- else -}}
-        {{- if not (hasKey $buf .) }}
-          {{- $_ := set $buf . dict -}}
+        {{- if not (hasKey $buf $p) -}}
+          {{- $_ := set $buf $p dict -}}
         {{- end -}}
-        {{- $buf = get $buf . -}}
+        {{- $buf = get $buf $p -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
@@ -118,7 +120,7 @@
   {{- $base := $.base -}}
 
   {{/* Merge Options */}}
-  {{- $inject_key := default "__inject__" $.injectKey -}}
+  {{- $inject_key := (include "lib.utils.dicts.merge.int.inject_key" $) -}}
 
   {{/* Iterate over Keys */}}
   {{- range $key, $data := $.data -}}
@@ -241,18 +243,33 @@
          
         {{/* Redirect Data */}}
         {{- else -}}
-          {{- $_ := set $base $key $data -}}
+          {{- include "lib.utils.dicts.merge.int.redirect" (dict "base" $base "data" $data "key" $key "ctx" $.ctx) -}}
         {{- end -}}
       {{/* Overwrite */}}
       {{- else -}}
-        {{- $_ := set $base $key $data -}}
+        {{- include "lib.utils.dicts.merge.int.redirect" (dict "base" $base "data" $data "key" $key "ctx" $.ctx) -}}
       {{- end -}}
     {{/* Overwrite */}}
     {{- else -}}
-      {{- $_ := set $base $key $data -}}
+      {{- include "lib.utils.dicts.merge.int.redirect" (dict "base" $base "data" $data "key" $key "ctx" $.ctx) -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
 
+{{/*
+  Redirect <Internal Template>
+    Format Data Before Redirecting 
+*/}}
+{{- define "lib.utils.dicts.merge.int.redirect" -}}
+  {{- if (kindIs "slice" $.data) -}}
+    {{- $_ := set $ "data" (without $.data (include "lib.utils.dicts.merge.int.inject_key" $)) -}}
+  {{- end -}}
+  {{- $_ := set $.base $.key $.data -}}
+{{- end -}}
 
-
+{{/*
+  Inject Key <Internal Template>
+*/}}
+{{- define "lib.utils.dicts.merge.int.inject_key" -}}
+__inject__
+{{- end -}}

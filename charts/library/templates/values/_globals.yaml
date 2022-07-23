@@ -30,4 +30,9 @@ global:
   # global.kubeCapabilities -- Overwrite the Kube GitVersion
   # @default -- `$.Capabilities.KubeVersion.GitVersion`
   kubeCapabilities: ""
+
+  ## Define Container Timezone
+  # timezone -- Define Container Timezone (Sets TZ Environment)
+  timezone: "Europe/Zurich"
+
 {{- end }}
