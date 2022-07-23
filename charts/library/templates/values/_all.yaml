@@ -5,6 +5,4 @@
 {{ include "lib.values.globals" $ | nindent 0 }}
 
 {{ include "lib.values.common" $ | nindent 0 }}
-
-{{ include "lib.values.extras" $ | nindent 0 }}
 {{- end -}}

@@ -1,6 +1,6 @@
 # Buttahtoast Library
 
-![Version: 2.4.1](https://img.shields.io/badge/Version-2.4.1-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 3.0.0](https://img.shields.io/badge/Version-3.0.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 This is our take on a library Chart. It contains simple functions which are (will be) used across all of our charts. Feel free the add or improve the existing templates. This Chart is still under development/testing. Feel free to use it, if you find any issues with it, please create an issue/PR. We will try to get bugs fixed as soon as possible!
 
@@ -76,9 +76,10 @@ parse the file and that causes some issues. So don't forget to add a pair of `{}
 * **[Dictionaries](#dictionaries)**
   * [ParentAppend](#parentAppend)
   * [PrintYamlStructure](#printyamlstructure)
-  * [Lookup](#lookup)
-  * [Unset](#unset)
+  * [Get](#get)
   * [Set](#set)
+  * [Unset](#unset)
+  * [Merge](#merge)
 * **[Extras](#extras)**
   * [Environment](#environment)
   * [ExtraResources](#extraresources)
@@ -919,7 +920,7 @@ my:
 
 ---
 
-### Lookup
+### Get
 
 Get a specific key by delivering the key path from a given dictionary.
 
@@ -933,21 +934,27 @@ If an as required marked argument is missing, the template engine will fail inte
 
 #### Returns
 
-  Dictionary (With key `.result` in case the key resolves to a list)
+  Dictionary (With key `.res` in case the key resolves to a list)
 
 #### Usage:
 
 ```
-{- include "lib.utils.dicts.lookup" (dict "path" "sub.key" "data" (dict "sub" (dict "key" (list "A" "B" "C")))) }
+{- include "lib.utils.dicts.get" (dict "path" "sub.key" "data" (dict "sub" (dict "key" (list "A" "B" "C")))) }
 ```
 
 Will result in
 
 ```
-result:
+res:
   - A
   - B
   - C
+```
+
+You can directly resolve without the `res` field using the following:
+
+```
+{- (fromYaml (include "lib.utils.dicts.lookup" (dict "path" "sub.key" "data" (dict "sub" (dict "key" (list "A" "B" "C")))))).res }
 ```
 
 ---
@@ -1009,6 +1016,99 @@ sub:
     - A
     - B
     - C
+```
+
+### Merge
+
+Nested dictionary merge (Including lists). The Result is redirected the `$.base` argument, th
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will fail intentionally.
+
+  * `.base` - Base data
+  * `.data` - Data which is merged over the Base data
+
+#### List Options
+
+**Inject Key**
+
+With the Inject Key you can inject the list elements from the base list, which weren't preserved. By default only the elements of the data list are used (presceding).
+
+```
+# Base Data Dict
+Base:
+  spec:
+    selector:
+      app: nginx
+    ports:
+    - port: 80
+      name: http
+      targetPort: 80
+    - port: 443
+      name: https
+      targetPort: 80
+
+# Base Data Dict
+Data:
+  spec:
+    ports:
+    - __inject__
+
+    # Overwrites HTTPS Port
+    - port: 8443
+      name: https
+
+    # Add additional Port
+    - port: 9001
+      name: metrics
+      targetPort: 9001
+```
+
+**Merge Key**
+
+By default list elements are merged on the key **name**. You can change the key the lists are merged on. In this example the objects are merged, based on the value in the **port** field:
+
+```
+# Base Data Dict
+Base:
+  spec:
+    selector:
+      app: nginx
+    ports:
+    - port: 80
+      name: http
+      targetPort: 80
+    - port: 443
+      name: https
+      targetPort: 80
+
+# Base Data Dict
+Data:
+  spec:
+    ports:
+    - __inject__
+
+    - ((port))
+
+    # Overwrites HTTPS Port
+    - port: 8443
+      name: https
+
+    # Add additional Port
+    - port: 9001
+      name: metrics
+      targetPort: 9001
+```
+
+#### Returns
+
+Direct operation on `$.Base`
+
+#### Usage:
+
+```
+{- include "lib.utils.dicts.merge" (dict "base" $.Base "data" $.Data) }
 ```
 
 ## [Extras](./templates/utils/_extras.tpl)

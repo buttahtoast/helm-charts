@@ -73,9 +73,10 @@ parse the file and that causes some issues. So don't forget to add a pair of `{}
 * **[Dictionaries](#dictionaries)**
   * [ParentAppend](#parentAppend)
   * [PrintYamlStructure](#printyamlstructure)
-  * [Lookup](#lookup)
-  * [Unset](#unset)
+  * [Get](#get)
   * [Set](#set)
+  * [Unset](#unset)
+  * [Merge](#merge)
 * **[Extras](#extras)**
   * [Environment](#environment)
   * [ExtraResources](#extraresources)
@@ -1028,7 +1029,6 @@ If an as required marked argument is missing, the template engine will fail inte
 
   * `.base` - Base data
   * `.data` - Data which is merged over the Base data
-  * `.injectKey` - The dictionary to lookup ```
 
 #### List Options
 
@@ -1065,33 +1065,43 @@ Data:
     - port: 9001
       name: metrics
       targetPort: 9001
-
-
 ```
-
-This is combined with merge operations
-
-```
-
-
-
-```
-
-
 
 **Merge Key**
 
-By default list elements are merged on the key **name**. You can change the key inserting 
+By default list elements are merged on the key **name**. You can change the key the lists are merged on. In this example the objects are merged, based on the value in the **port** field:
 
 ```
+# Base Data Dict
+Base:
+  spec:
+    selector:
+      app: nginx
+    ports:
+    - port: 80
+      name: http
+      targetPort: 80
+    - port: 443
+      name: https
+      targetPort: 80
 
+# Base Data Dict
+Data:
+  spec:
+    ports:
+    - __inject__
 
+    - ((port))
 
+    # Overwrites HTTPS Port
+    - port: 8443
+      name: https
 
-
-
-
-
+    # Add additional Port 
+    - port: 9001
+      name: metrics
+      targetPort: 9001
+```
 
 #### Returns
 
@@ -1100,35 +1110,8 @@ Direct operation on `$.Base`
 #### Usage:
 
 ```
-{- include "lib.utils.dicts.set" (dict "path" "new.sub.key" "value" (dict "something" "new") "data" (dict "sub" (dict "key" (list "A" "B" "C")))) }
+{- include "lib.utils.dicts.merge" (dict "base" $.Base "data" $.Data) }
 ```
-
-Will result in:
-
-```
-new:
-  sub:
-    key:
-      something: new
-sub:
-  key:
-    - A
-    - B
-    - C
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ## [Extras](./templates/utils/_extras.tpl)

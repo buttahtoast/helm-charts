@@ -108,13 +108,7 @@
 
 
 {{/*
-  Merge Nested Structures <Template>
-
-    dict "" "2" "" 
-    listBehavior: 
-    injectKey
-
-
+  Merge <Template>
 */}}
 {{- define "lib.utils.dicts.merge" -}}
   {{- $base := $.base -}}

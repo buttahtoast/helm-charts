@@ -20,9 +20,10 @@ annotations:
   artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/changes: |
     - "[Added]: Unit Tests"
-    - "[Added]: Merge function"
+    - "[Added]: Added function `lib.utils.dicts.merge`"
     - "[Changed]: Rename `lib.utils.dicts.lookup` to `lib.utils.dicts.get` (Breaking)"
-    - "[Changed]: Timezone Value is now looked up via `$.Values.global.timezone`, was `$.Values.timezone"
+    - "[Changed]: Timezone Value is now looked up via `$.Values.global.timezone`, was `$.Values.timezone` (Breaking)"
+    - "[Changed]: Proxy Values are now looked up via `$.Values.global.proxy.*`, was `$.Values.proxy.*` (Breaking)"
 
 
 
