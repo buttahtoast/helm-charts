@@ -95,7 +95,7 @@
       {{- $p = $p | replace "$" "." -}}
       {{- if eq $p (last $paths) -}}
         {{- if (kindIs "map" $.value) -}}
-          {{- include "lib.utils.dicts.merge" (dict "base" (get $buf $p) "data" $.value) -}}
+          {{- include "lib.utils.dicts.merge" (dict "base" (default dict (get $buf $p)) "data" $.value) -}}
         {{- else -}}
           {{- $_ := set $buf $p $.value -}}
         {{- end -}}
@@ -121,7 +121,7 @@
   {{- $inject_key := (include "lib.utils.dicts.merge.int.inject_key" $) -}}
 
   {{/* Check if Maps */}}
-  {{- if and (kindIs "map" $base) (kindIs "map" $.data) -}}
+  {{- if $.data -}}
 
     {{/* Iterate over Keys */}}
     {{- range $key, $data := $.data -}}
@@ -255,9 +255,6 @@
         {{- include "lib.utils.dicts.merge.int.redirect" (dict "base" $base "data" $data "key" $key "ctx" $.ctx) -}}
       {{- end -}}
     {{- end -}}
-  {{- else -}}
-    {{/* Overwrite Base if not maps */}}
-    {{- $_ := set $ "base" $.data -}}
   {{- end -}}
 {{- end -}}
 

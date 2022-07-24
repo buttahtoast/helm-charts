@@ -1,0 +1,7 @@
+global:
+  imageRegistry: "registry.company.com"
+  
+  #defaultTag: ""
+  storageClass: "global-class"
+  imagePullSecrets:
+    - global-secrets

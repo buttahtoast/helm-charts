@@ -24,9 +24,7 @@ annotations:
     - "[Changed]: Rename `lib.utils.dicts.lookup` to `lib.utils.dicts.get` (Breaking)"
     - "[Changed]: Timezone Value is now looked up via `$.Values.global.timezone`, was `$.Values.timezone` (Breaking)"
     - "[Changed]: Proxy Values are now looked up via `$.Values.global.proxy.*`, was `$.Values.proxy.*` (Breaking)"
-
-
-
-
-    $.Values.global.timezone
+    - "[Removed]: Removed template `lib.utils.globals.imagePullPolicy` (Breaking)"
+    - "[Removed]: Removed template `lib.utils.globals.storageClass` (Breaking)"
+    - "[Removed]: Removed template `lib.utils.globals.image` (Breaking)"
   artifacthub.io/prerelease: "false"
