@@ -33,28 +33,16 @@ jobs:
             echo "::set-output name=changed::true"
             echo "::set-output name=changed_charts::$charts"
           fi
+
+      - name: Install Plugins
+        run: |
+          helm plugin install https://github.com/quintush/helm-unittest > /dev/null 2>&1
+
+      - name: Run chart-testing (lint) Unit Tests
+        run: ct lint --config ./unit_tests/ct.yaml --lint-conf ./charts/lint.yaml
+
       - name: Run chart-testing (lint)
         run: ct lint --config ./ct.yaml 
-
-      - name: Run docs-testing (helm-docs)
-        uses: buttahtoast/helm-testing-action@master
-        with:
-          charts: "${{ steps.list-changed.outputs.changed_charts }}"
-        if: steps.list-changed.outputs.changed == 'true'  
-
-      - name: Run kube-linter 
-        uses: buttahtoast/helm-testing-action@master
-        with:
-          exec: "linter"
-          charts: "${{ steps.list-changed.outputs.changed_charts }}"
-        if: steps.list-changed.outputs.changed == 'true'  
-
-      - name: Run Unit-Tests
-        uses: buttahtoast/helm-testing-action@master
-        with:
-          exec: "unit-tests"
-          charts: "${{ steps.list-changed.outputs.changed_charts }}"
-        if: steps.list-changed.outputs.changed == 'true'
 
       - name: Create kind cluster
         uses: helm/kind-action@v1.2.0
