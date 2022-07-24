@@ -1,0 +1,445 @@
+'[Dicts | Get]: Functionality (Map Type)':
+  1: |
+    res:
+      matchLabels:
+        app: backend
+'[Dicts | Get]: Functionality (Primitive Type)':
+  1: |
+    res: 3
+'[Dicts | Get]: Functionality (Slice Type)':
+  1: |
+    res:
+    - command:
+      - ./podinfo
+      - --port=9898
+      - --port-metrics=9797
+      - --grpc-port=9999
+      - --grpc-service-name=backend
+      - --level=info
+      - --cache-server=cache:6379
+      env:
+      - name: PODINFO_UI_COLOR
+        value: '#34577c'
+      image: ghcr.io/stefanprodan/podinfo:6.1.1
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        exec:
+          command:
+          - podcli
+          - check
+          - http
+          - localhost:9898/healthz
+        initialDelaySeconds: 5
+        timeoutSeconds: 5
+      name: backend
+      ports:
+      - containerPort: 9898
+        name: http
+        protocol: TCP
+      - containerPort: 9797
+        name: http-metrics
+        protocol: TCP
+      - containerPort: 9999
+        name: grpc
+        protocol: TCP
+      readinessProbe:
+        exec:
+          command:
+          - podcli
+          - check
+          - http
+          - localhost:9898/readyz
+        initialDelaySeconds: 5
+        timeoutSeconds: 5
+      resources:
+        limits:
+          cpu: 2000m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 32Mi
+'[Dicts | Get]: Non Existent Path':
+  1: |
+    res: {}
+'[Dicts | Set]: Functionality (Primitive Type)':
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: backend
+    spec:
+      minReadySeconds: 10000
+      progressDeadlineSeconds: 60
+      revisionHistoryLimit: 5
+      selector:
+        matchLabels:
+          app: backend
+      strategy:
+        rollingUpdate:
+          maxUnavailable: 0
+        type: RollingUpdate
+      template:
+        metadata:
+          annotations:
+            prometheus.io/port: "9797"
+            prometheus.io/scrape: "true"
+          labels:
+            app: backend
+        spec:
+          containers:
+          - command:
+            - ./podinfo
+            - --port=9898
+            - --port-metrics=9797
+            - --grpc-port=9999
+            - --grpc-service-name=backend
+            - --level=info
+            - --cache-server=cache:6379
+            env:
+            - name: PODINFO_UI_COLOR
+              value: '#34577c'
+            image: ghcr.io/stefanprodan/podinfo:6.1.1
+            imagePullPolicy: IfNotPresent
+            livenessProbe:
+              exec:
+                command:
+                - podcli
+                - check
+                - http
+                - localhost:9898/healthz
+              initialDelaySeconds: 5
+              timeoutSeconds: 5
+            name: backend
+            ports:
+            - containerPort: 9898
+              name: http
+              protocol: TCP
+            - containerPort: 9797
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9999
+              name: grpc
+              protocol: TCP
+            readinessProbe:
+              exec:
+                command:
+                - podcli
+                - check
+                - http
+                - localhost:9898/readyz
+              initialDelaySeconds: 5
+              timeoutSeconds: 5
+            resources:
+              limits:
+                cpu: 2000m
+                memory: 512Mi
+              requests:
+                cpu: 100m
+                memory: 32Mi
+'[Dicts | Set]: Functionality Recursive (Empty Data)':
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: backend
+    spec:
+      minReadySeconds: 3
+      progressDeadlineSeconds: 60
+      revisionHistoryLimit: 5
+      selector:
+        matchLabels:
+          app: backend
+      strategy:
+        rollingUpdate:
+          maxUnavailable: 0
+        type: RollingUpdate
+      template:
+        metadata:
+          annotations:
+            prometheus.io/port: "9797"
+            prometheus.io/scrape: "true"
+          labels:
+            app: backend
+        spec:
+          containers:
+          - command:
+            - ./podinfo
+            - --port=9898
+            - --port-metrics=9797
+            - --grpc-port=9999
+            - --grpc-service-name=backend
+            - --level=info
+            - --cache-server=cache:6379
+            env:
+            - name: PODINFO_UI_COLOR
+              value: '#34577c'
+            image: ghcr.io/stefanprodan/podinfo:6.1.1
+            imagePullPolicy: IfNotPresent
+            livenessProbe:
+              exec:
+                command:
+                - podcli
+                - check
+                - http
+                - localhost:9898/healthz
+              initialDelaySeconds: 5
+              timeoutSeconds: 5
+            name: backend
+            ports:
+            - containerPort: 9898
+              name: http
+              protocol: TCP
+            - containerPort: 9797
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9999
+              name: grpc
+              protocol: TCP
+            readinessProbe:
+              exec:
+                command:
+                - podcli
+                - check
+                - http
+                - localhost:9898/readyz
+              initialDelaySeconds: 5
+              timeoutSeconds: 5
+            resources:
+              limits:
+                cpu: 2000m
+                memory: 512Mi
+              requests:
+                cpu: 100m
+                memory: 32Mi
+'[Dicts | Set]: Functionality Recursive (Map Type)':
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: backend
+    spec:
+      minReadySeconds: 3
+      progressDeadlineSeconds: 60
+      revisionHistoryLimit: 5
+      selector:
+        matchLabels:
+          app: backend
+      strategy:
+        rollingUpdate:
+          maxUnavailable: 0
+        type: RollingUpdate
+      subelement: {}
+      template:
+        metadata:
+          annotations:
+            prometheus.io/port: "9797"
+            prometheus.io/scrape: "true"
+          labels:
+            app: backend
+        spec:
+          containers:
+          - command:
+            - ./podinfo
+            - --port=9898
+            - --port-metrics=9797
+            - --grpc-port=9999
+            - --grpc-service-name=backend
+            - --level=info
+            - --cache-server=cache:6379
+            env:
+            - name: PODINFO_UI_COLOR
+              value: '#34577c'
+            image: ghcr.io/stefanprodan/podinfo:6.1.1
+            imagePullPolicy: IfNotPresent
+            livenessProbe:
+              exec:
+                command:
+                - podcli
+                - check
+                - http
+                - localhost:9898/healthz
+              initialDelaySeconds: 5
+              timeoutSeconds: 5
+            name: backend
+            ports:
+            - containerPort: 9898
+              name: http
+              protocol: TCP
+            - containerPort: 9797
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9999
+              name: grpc
+              protocol: TCP
+            readinessProbe:
+              exec:
+                command:
+                - podcli
+                - check
+                - http
+                - localhost:9898/readyz
+              initialDelaySeconds: 5
+              timeoutSeconds: 5
+            resources:
+              limits:
+                cpu: 2000m
+                memory: 512Mi
+              requests:
+                cpu: 100m
+                memory: 32Mi
+'[Dicts | Set]: Functionality Recursive (Primitive Type)':
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: backend
+    spec:
+      minReadySeconds: 3
+      progressDeadlineSeconds: 60
+      revisionHistoryLimit: 5
+      selector:
+        matchLabels:
+          app: backend
+      strategy:
+        rollingUpdate:
+          maxUnavailable: 0
+        type: RollingUpdate
+      subelement:
+        new-element: new-value
+      template:
+        metadata:
+          annotations:
+            prometheus.io/port: "9797"
+            prometheus.io/scrape: "true"
+          labels:
+            app: backend
+        spec:
+          containers:
+          - command:
+            - ./podinfo
+            - --port=9898
+            - --port-metrics=9797
+            - --grpc-port=9999
+            - --grpc-service-name=backend
+            - --level=info
+            - --cache-server=cache:6379
+            env:
+            - name: PODINFO_UI_COLOR
+              value: '#34577c'
+            image: ghcr.io/stefanprodan/podinfo:6.1.1
+            imagePullPolicy: IfNotPresent
+            livenessProbe:
+              exec:
+                command:
+                - podcli
+                - check
+                - http
+                - localhost:9898/healthz
+              initialDelaySeconds: 5
+              timeoutSeconds: 5
+            name: backend
+            ports:
+            - containerPort: 9898
+              name: http
+              protocol: TCP
+            - containerPort: 9797
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9999
+              name: grpc
+              protocol: TCP
+            readinessProbe:
+              exec:
+                command:
+                - podcli
+                - check
+                - http
+                - localhost:9898/readyz
+              initialDelaySeconds: 5
+              timeoutSeconds: 5
+            resources:
+              limits:
+                cpu: 2000m
+                memory: 512Mi
+              requests:
+                cpu: 100m
+                memory: 32Mi
+'[Dicts | Set]: Functionality Recursive (Slice Type)':
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: backend
+    spec:
+      minReadySeconds: 3
+      progressDeadlineSeconds: 60
+      revisionHistoryLimit: 5
+      selector:
+        matchLabels:
+          app: backend
+      strategy:
+        rollingUpdate:
+          maxUnavailable: 0
+        type: RollingUpdate
+      subelement:
+        new-element:
+        - element_1
+        - element_2
+      template:
+        metadata:
+          annotations:
+            prometheus.io/port: "9797"
+            prometheus.io/scrape: "true"
+          labels:
+            app: backend
+        spec:
+          containers:
+          - command:
+            - ./podinfo
+            - --port=9898
+            - --port-metrics=9797
+            - --grpc-port=9999
+            - --grpc-service-name=backend
+            - --level=info
+            - --cache-server=cache:6379
+            env:
+            - name: PODINFO_UI_COLOR
+              value: '#34577c'
+            image: ghcr.io/stefanprodan/podinfo:6.1.1
+            imagePullPolicy: IfNotPresent
+            livenessProbe:
+              exec:
+                command:
+                - podcli
+                - check
+                - http
+                - localhost:9898/healthz
+              initialDelaySeconds: 5
+              timeoutSeconds: 5
+            name: backend
+            ports:
+            - containerPort: 9898
+              name: http
+              protocol: TCP
+            - containerPort: 9797
+              name: http-metrics
+              protocol: TCP
+            - containerPort: 9999
+              name: grpc
+              protocol: TCP
+            readinessProbe:
+              exec:
+                command:
+                - podcli
+                - check
+                - http
+                - localhost:9898/readyz
+              initialDelaySeconds: 5
+              timeoutSeconds: 5
+            resources:
+              limits:
+                cpu: 2000m
+                memory: 512Mi
+              requests:
+                cpu: 100m
+                memory: 32Mi

@@ -7,4 +7,4 @@ appVersion: "0.1.0"
 dependencies:
 - name: library
   version: ">=0.0.0-0"
-  repository: "file://../library"
+  repository: "file://../charts/library"

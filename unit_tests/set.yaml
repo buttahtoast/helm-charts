@@ -1,33 +1,49 @@
+path: "spec.minReadySeconds"
+value: 10000
 Data:
+  apiVersion: apps/v1
+  kind: Deployment
   metadata:
-    name: overwritten
+    name: backend
   spec:
-    minReadySeconds: 100
-    revisionHistoryLimit: 10
+    minReadySeconds: 3
+    revisionHistoryLimit: 5
+    progressDeadlineSeconds: 60
+    strategy:
+      rollingUpdate:
+        maxUnavailable: 0
+      type: RollingUpdate
     selector:
       matchLabels:
-        app: overwritten
-        trusted: true
+        app: backend
+    template:
+      metadata:
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "9797"
+        labels:
+          app: backend
       spec:
         containers:
-        - name: sidecar
         - name: backend
+          image: ghcr.io/stefanprodan/podinfo:6.1.1
+          imagePullPolicy: IfNotPresent
           ports:
-          - __inject__
           - name: http
-            containerPort: 9443
-            protocol: UDP
-          - name: additonal
-            containerPort: 8888
+            containerPort: 9898
             protocol: TCP
-          - name: metrics
-            containerPort: 9001
+          - name: http-metrics
+            containerPort: 9797
             protocol: TCP
-          - __inject__
-          - name: http
-            containerPort: 10000
+          - name: grpc
+            containerPort: 9999
+            protocol: TCP
           command:
-          - __inject__
+          - ./podinfo
+          - --port=9898
+          - --port-metrics=9797
+          - --grpc-port=9999
+          - --grpc-service-name=backend
           - --level=info
           - --cache-server=cache:6379
           env:

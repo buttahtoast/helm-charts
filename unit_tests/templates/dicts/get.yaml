@@ -1,0 +1,2 @@
+{{- $data := (fromYaml (include "lib.utils.dicts.get" (dict "data" $.Values.Data "path" $.Values.path))) -}}
+{{- toYaml $data | nindent 0 }}

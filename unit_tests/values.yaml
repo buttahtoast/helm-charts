@@ -1,23 +1,77 @@
-unit_test: 
-  chart: "library"
-  type: "dict.merge"
-Base:
-  spec:
-    selector:
-      app: nginx
-    ports:
-    - port: 80
-      name: http
-      targetPort: 80
-    - port: 443
-      name: https
-      targetPort: 80
-Data:
-  spec:
-    ports:
-    - __inject__
-    - port: 8443
-      name: https
-    - port: 9001
-      name: metrics
-      targetPort: 9001
+#path: "spec.minReadySeconds"
+#value: 10000
+#
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: backend
+#spec:
+#  minReadySeconds: 3
+#  revisionHistoryLimit: 5
+#  progressDeadlineSeconds: 60
+#  strategy:
+#    rollingUpdate:
+#      maxUnavailable: 0
+#    type: RollingUpdate
+#  selector:
+#    matchLabels:
+#      app: backend
+#
+#
+#global:
+#  timezone: "Europe/Zurich"
+#  proxy:
+#    httpProxy:
+#      host: "proxy.company.com"
+#      port: 8080
+#      protocol: "http"
+#    httpsProxy:
+#      host: "proxy.company.com"
+#      port: 8080
+#      protocol: "https"
+#    noProxy: 
+#      - localhost
+#      - 127.0.0.1
+#      - company.com
+#extraResources:
+#  - apiVersion: v1
+#    kind: Pod
+#    metadata:
+#      name: nginx
+#    spec:
+#      containers:
+#      - name: nginx
+#        image: nginx:1.14.2
+#        ports:
+#        - containerPort: 80
+#  - apiVersion: v1
+#    kind: ConfigMap
+#    metadata:
+#      name: config-multi-env-files
+#      namespace: default
+#    data:
+#      allowed: '"true"'
+#      color: purple
+#      enemies: aliens
+#      how: fairlyNice
+#      lives: "3"
+#      textmode: "true"
+#
+#
+#
+#
+#Base: {}
+#Data:
+#  spec:
+#    ports:
+#    - __inject__
+#    - ((port))
+#    - port: 8443
+#      name: https_metrics
+#      targetPort: 8443
+#    - port: 80
+#      name: http_port
+#      targetPort: 80
+#    - port: 8888
+#      name: custom_port
+#      targetPort: 8888
