@@ -1,5 +1,9 @@
-path: "spec.minReadySeconds"
-value: 10000
+path: "spec.subelement.newElement"
+value: 
+  some:
+    map: "data"
+  new:
+    test: "value"
 Data:
   apiVersion: apps/v1
   kind: Deployment
