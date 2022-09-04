@@ -222,6 +222,38 @@ entries:
   library:
   - annotations:
       artifacthub.io/changes: |
+        - "[Added]: Added function `lib.utils.dicts.merge`"
+        - "[Changed]: Timezone Value is now looked up via `$.Values.global.timezone`, was `$.Values.timezone` (Breaking)"
+        - "[Changed]: Proxy Values are now looked up via `$.Values.global.proxy.*`, was `$.Values.proxy.*` (Breaking)"
+        - "[Removed]: Removed template `lib.utils.globals.imagePullPolicy` (Breaking)"
+        - "[Removed]: Removed template `lib.utils.globals.storageClass` (Breaking)"
+        - "[Removed]: Removed template `lib.utils.globals.image` (Breaking)"
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/prerelease: "true"
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-09-04T12:48:43.634171035Z"
+    description: Buttahtoast Helm Library
+    digest: be93e4d3830ffd5147dfafece4562087deb23fff908c750594267ce9d9333458
+    home: https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    icon: https://avatars0.githubusercontent.com/u/67652090?s=400&u=874d1c989b0afc2789865be01051f0bbfc84ae32&v=4
+    keywords:
+    - library
+    - sprig
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: library
+    sources:
+    - https://github.com/buttahtoast/helm-charts/tree/master/charts/library
+    type: library
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/library-3.0.0-rc.1/library-3.0.0-rc.1.tgz
+    version: 3.0.0-rc.1
+  - annotations:
+      artifacthub.io/changes: |
         - "[Changed]: Rename `lib.utils.dicts.lookup` to `lib.utils.dicts.get` (Breaking)"
       artifacthub.io/containsSecurityUpdates: "false"
       artifacthub.io/prerelease: "true"
@@ -1297,4 +1329,4 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.1.0/tavern-0.1.0.tgz
     version: 0.1.0
-generated: "2022-09-04T12:25:56.966868304Z"
+generated: "2022-09-04T12:48:43.634600045Z"
