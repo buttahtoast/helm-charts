@@ -77,6 +77,7 @@ parse the file and that causes some issues. So don't forget to add a pair of `{}
   * [Merge](#merge)
 * **[Extras](#extras)**
   * [Environment](#environment)
+  * [Java Proxy](#java-proxy)
   * [ExtraResources](#extraresources)
 * **[Errors](#errors)**
   * [fail](#fail)
@@ -892,7 +893,7 @@ If an as required marked argument is missing, the template engine will fail inte
 
 This template supports the following key structure:
 
-  * [Proxy Values](./templates/values/extras/_proxy.yaml)
+  * [Proxy Values](./templates/values/_globals.yaml)
 
 #### Returns
 
@@ -902,6 +903,36 @@ Usage:
 
 ```
 env: {- include "lib.utils.extras.environment" $ | nindent 2 }
+```
+
+---
+
+### Java Proxy
+
+Renders the JVM args for proxy configuration based on global values.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will fail intentionally.
+
+  * `.` - Inherited Root Context (Required)
+
+#### Structure
+
+This template supports the following key structure:
+
+  * [Proxy Values](./templates/values/_globals.yaml)
+
+#### Returns
+
+String
+
+Usage:
+
+```
+env:
+  - name: "JVM_ARGS"
+    values: {- template "lib.utils.extras.java_proxy" $ }
 ```
 
 ---
