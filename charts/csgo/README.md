@@ -1,6 +1,6 @@
 # CSGO Server
 
-![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 This is a helm chart for all the docker image variants published by [cm2network](https://hub.docker.com/r/cm2network/csgo/). Container configurations can be looked up on the referenced link.
 
@@ -97,7 +97,7 @@ Major Changes to functions are documented with the version affected. **Before up
 | service.extraPorts | list | `[]` | Add additional ports to the service |
 | service.labels | object | `{}` | Configure Service additional Labels |
 | service.loadBalancerIP | string | `""` | Configure Service [loadBalancerIP](https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer). Set the LoadBalancer service type to internal only. |
-| service.loadBalancerSourceRanges | list | `[]` | Configure Service [loadBalancerSourceRanges](https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service) |
+| service.loadBalancerSourceRanges | list | `[]` | Configure Service [loadBalancerSourceRanges](https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service) # Example: # loadBalancerSourceRanges: # - 10.10.10.0/24 # |
 | service.nodePort | string | `""` | Specify the nodePort value for the LoadBalancer and NodePort service types |
 | service.selector | object | `bedag-lib.selectorLabels` | Configure Service Selector Labels |
 | service.type | string | `"ClusterIP"` | Configure Service [Type](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types). |
@@ -135,7 +135,7 @@ Major Changes to functions are documented with the version affected. **Before up
 | statefulset.selectorLabels | object | `bedag-lib.selectorLabels` | Define SelectorLabels for the Pod Template |
 | statefulset.serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | statefulset.serviceAccount.apiVersion | string | v1 | Configure the api version used |
-| statefulset.serviceAccount.automountServiceAccountToken | bool | `true` | (bool) AutomountServiceAccountToken indicates whether pods running as this service account should have an API token automatically mounted. |
+| statefulset.serviceAccount.automountServiceAccountToken | bool | `true` | AutomountServiceAccountToken indicates whether pods running as this service account should have an API token automatically mounted. |
 | statefulset.serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
 | statefulset.serviceAccount.enabled | bool | `false` | Specifies whether a service account is enabled or not |
 | statefulset.serviceAccount.globalPullSecrets | bool | `false` | Evaluate global set pullsecrets and mount, if set |
@@ -160,7 +160,7 @@ Major Changes to functions are documented with the version affected. **Before up
 | tv.service.extraPorts | list | `[]` | Add additional ports to the service |
 | tv.service.labels | object | `{}` | Configure Service additional Labels |
 | tv.service.loadBalancerIP | string | `""` | Configure Service [loadBalancerIP](https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer). Set the LoadBalancer service type to internal only. |
-| tv.service.loadBalancerSourceRanges | list | `[]` | Configure Service [loadBalancerSourceRanges](https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service) |
+| tv.service.loadBalancerSourceRanges | list | `[]` | Configure Service [loadBalancerSourceRanges](https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service) # Example: # loadBalancerSourceRanges: # - 10.10.10.0/24 # |
 | tv.service.nodePort | string | `""` | Specify the nodePort value for the LoadBalancer and NodePort service types |
 | tv.service.portName | string | `"srcds_tv"` | Configure Service Port name |
 | tv.service.selector | object | `bedag-lib.selectorLabels` | Configure Service Selector Labels |

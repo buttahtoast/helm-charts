@@ -27,9 +27,8 @@
   {{- end }}
 {{- end -}}
 
-
 {{/*
-  Lookup <Template>
+  Get <Template>
 */}}
 {{- define "lib.utils.dicts.get" -}}
   {{- $result := dict "res" dict -}}

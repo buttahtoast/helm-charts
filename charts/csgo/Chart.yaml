@@ -2,7 +2,7 @@ apiVersion: v2
 name: csgo
 description: Source Server
 type: application
-version: 0.2.2
+version: 0.2.3
 appVersion: 1.0.0
 home: https://github.com/CM2Walki/CSGO
 icon: https://secure.gravatar.com/avatar/5bc9e6b19f1183776d7ff3a9652bd0a7.jpg?s=80&r=g&d=mm
