@@ -27,22 +27,22 @@
   {{- end }}
 {{- end -}}
 
-
 {{/*
-  Lookup <Template>
+  Get <Template>
 */}}
-{{- define "lib.utils.dicts.lookup" -}}
-  {{- $result := dict "res" "" -}}
+{{- define "lib.utils.dicts.get" -}}
+  {{- $result := dict "res" dict -}}
   {{- $path := trimAll "." .path -}}
   {{- if and $path .data -}}
     {{- $buf := .data -}}
     {{- $miss := dict "state" false "path" -}}
-    {{- range (splitList "." $path) }}
+    {{- range $p := (splitList "." $path) -}}
+      {{- $p = $p | replace "$" "." -}}
       {{- if eq $miss.state false -}}
-        {{- if (hasKey $buf .) }}
-          {{- $buf = get $buf . -}}
+        {{- if (hasKey $buf $p) -}}
+          {{- $buf = get $buf $p -}}
         {{- else -}}
-          {{- $_ := set $miss "path" . -}}
+          {{- $_ := set $miss "path" $p -}}
           {{- $_ := set $miss "state" true -}}
         {{- end -}}
       {{- end -}}
@@ -51,7 +51,7 @@
       {{- printf "%s" (toYaml (dict "res" $buf)) -}}
     {{- else -}}
       {{- if eq (default false .required) true -}}
-        {{ include "lib.utils.errors.fail" (cat "Missing path" $miss.path "for lookup" $path "in structure\n" (toYaml .data | nindent 0)) }}
+        {{ include "lib.utils.errors.fail" (cat "Missing path" $miss.path "for get" $path "in structure\n" (toYaml .data | nindent 0)) }}
       {{- else -}}
         {{- printf "%s" (toYaml $result) -}}
       {{- end -}}

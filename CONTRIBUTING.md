@@ -29,31 +29,12 @@ Your PR has to fulfill the following points, to be considered:
 
 There are certain requirements charts have to match, to be maintained in your Helm Repository. Most of the requirements are relevant when you are planning to add a new chart to the repository.
 
-## Manifests Library
-
-**Important**: All of the maintained charts in this repository should make use of the [Bedag Manifests Library](./charts/manifests). There might be exceptions.
-
-When adding the Bedag Manifests Library as dependency, we don't add it as local dependency (aka via `file://..`) since the library itself has dependencies, which are not included that way. Therefor you must declare the dependency from the repository itself:
-
-```
-dependencies:
-  - name: manifests
-    version: "~0.4.0"
-    repository: https://bedag.github.io/helm-charts/
-```
-
 ## Documentation
 
-The documentation for each chart is done with [helm-docs](https://github.com/norwoodj/helm-docs). This way we can ensure that values are consistent with the chart documentation.
-
-We have a script on the repository which will execute the helm-docs docker container, so that you don't have to worry about downloading the binary etc. Simply execute the script (Bash compatible, might require sudo privileges):
-
+The documentation for each chart is done with [helm-docs](https://github.com/norwoodj/helm-docs). This way we can ensure that values are consistent with the chart documentation:
 ```
-bash scripts/helm-docs.sh
+make helm-docs
 ```
-
-**NOTE**: When creating your own `README.md.gotmpl`, don't forget to add it to your `.helmignore` file.
-
 ### Major Changes
 
 Your chart should have a dedicated documentation part, where major changes to the chart are mentioned which cause a new major release. Here's a little example on how you could do that:
