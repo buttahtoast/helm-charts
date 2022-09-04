@@ -1,2 +1,2 @@
 {{- include "lib.utils.dicts.set" (dict "data" $.Values.Data "path" $.Values.path "value" $.Values.value) -}}
-{{- toYaml $.Values.Data | nindent 0 }}
+{{- toYaml $.Values.Data | nindent 0 -}}

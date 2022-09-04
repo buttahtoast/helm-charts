@@ -1,0 +1,13 @@
+remote: origin
+target-branch: main
+chart-dirs:
+  - unit_tests/
+validate-chart-schema: false
+validate-maintainers: false
+validate-yaml: false 
+exclude-deprecated: false
+check-version-increment: false
+additional-commands:
+  - "helm unittest --color -f unit_tests/*_test.yaml -3 {{ .Path }}"
+excluded-charts:
+  - "priority"  

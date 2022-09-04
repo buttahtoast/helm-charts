@@ -87,26 +87,36 @@
   Set <Template>
 */}}
 {{- define "lib.utils.dicts.set" -}}
-  {{- $path := trimAll "." .path -}}
-  {{- if and $path $.data $.value -}}
-    {{- $buf := .data -}}
-    {{- $paths := (splitList "." $path) -}}
-    {{- range $p := $paths -}}
-      {{- $p = $p | replace "$" "." -}}
-      {{- if eq $p (last $paths) -}}
-        {{- if (kindIs "map" $.value) -}}
-          {{/*{{- fail (printf "base: %s data: %s" (toYaml (get $buf $p)) (toYaml $.value)) -}}*/}}
-          {{- include "lib.utils.dicts.merge" (dict "base" (get $buf $p) "data" $.value) -}}
-        {{- else -}}
-          {{- $_ := set $buf $p $.value -}}
+  {{- if (kindIs "string" .path) -}}
+    {{- $path := trimAll "." (default "" .path) -}}
+    {{- if $path -}}
+      {{- if $.data -}}
+        {{- if $.value -}}
+          {{- $buf := .data -}}
+          {{- $paths := (splitList "." $path) -}}
+          {{- range $p := $paths -}}
+            {{- $p = $p | replace "$" "." -}}
+            {{- if eq $p (last $paths) -}}
+              {{- if (kindIs "map" $.value) -}}
+                {{- include "lib.utils.dicts.merge" (dict "base" (get $buf $p) "data" $.value) -}}
+              {{- else -}}
+                {{- $_ := set $buf $p $.value -}}
+              {{- end -}}
+            {{- else -}}
+              {{- if not (hasKey $buf $p) -}}
+                {{- $_ := set $buf $p dict -}}
+              {{- end -}}
+              {{- $buf = get $buf $p -}}
+            {{- end -}}
+          {{- end -}}
         {{- end -}}
       {{- else -}}
-        {{- if not (hasKey $buf $p) -}}
-          {{- $_ := set $buf $p dict -}}
-        {{- end -}}
-        {{- $buf = get $buf $p -}}
+      {{- $_ := set $ "data" dict -}}
+        {{- $_ := set $ "data" "HELLLOOO" -}}
       {{- end -}}
     {{- end -}}
+  {{- else -}}
+    {{- fail (printf "$.path must be type string but is %s (%s)" (kindOf $.path) ($.path)) -}}
   {{- end -}}
 {{- end -}}
 
@@ -116,158 +126,61 @@
   Merge <Template>
 */}}
 {{- define "lib.utils.dicts.merge" -}}
-  {{- $base := $.base -}}
-
-  {{/* Merge Options */}}
-  {{- $inject_key := (include "lib.utils.dicts.merge.int.inject_key" $) -}}
-
-  {{/* Check if Maps */}}
+  {{/* Check if Data present */}}
   {{- if $.data -}}
+    {{/* Check if Base present */}}
+    {{- if $.base -}}
+   
+      {{/* if types don't match the key is overwritten */}}
+      {{- if (eq (kindOf $.data) (kindOf $.base)) -}}
 
-    {{/* Iterate over Keys */}}
-    {{- range $key, $data := $.data -}}
+        {{/* Compare Types (Map) */}}
+        {{- if (kindIs "map" $.data) -}}
 
-      {{/* Convert Empty Map */}}
-      {{- if not (kindIs "map" $base) -}}
-        {{- $base = dict -}}
-      {{- end -}}
-  
-      {{/* Overwrite if not set */}}
-      {{- if (kindIs "map" $base) -}}
-        {{- $base_data := (get $base $key) -}}
-        {{- if $base_data -}}
-    
-          {{/* if types don't match the key is overwritten */}}
-          {{- if (eq (kindOf $data) (kindOf $base_data)) -}}
-            {{/* Compare Types */}}
-            {{- if (kindIs "map" $data) -}}
-    
+          {{/* Iterate over Key */}}
+          {{- range $key, $data := $.data -}}
+            {{/* Get Same Key in Base */}}
+            {{- $base_data := (get $.base $key) -}}
+            {{- if $base_data -}}
+
               {{/* Recursive Call */}}
-              {{- include "lib.utils.dicts.merge" (dict "base" $base_data "data" $data "injectKey" $inject_key "ctx" $.ctx) -}}
-            
-            {{/* Handle List merges */}}
-            {{- else if (kindIs "slice" $data) -}}
-    
-                {{/* Evaluate Merge Key */}}
-                {{- $merge_key := "name" -}}
-                {{- range $u := (get $.data $key) -}}
-                  {{- if (kindIs "string" $u) -}}
-    
-                    {{/* Match on Expression ((*)) */}}
-                    {{- $merge_exp := regexFind "\\(\\(.*\\)\\)" $u  -}}
-                    {{- if $merge_exp -}}
-    
-                      {{/* Format Merge Key */}}
-                      {{- $f_key := ($merge_exp | nospace | replace "(" "" | replace ")" "" ) -}}
-                      {{- if $f_key -}}
-                        {{- $merge_key = $f_key -}}
-                      {{- end -}}
-    
-                      {{/* Remove Key Anyway */}}
-                      {{- $_ := set $.data $key (without (get $.data $key) $merge_exp) -}}
-    
-                    {{- end -}}
-                  {{- end -}}
-                {{- end -}}
-    
-                {{/* Unmatched Base References */}}
-                {{- $unmatched_base := list -}}
-                {{- $unmatched_data := (get $.data $key) -}}
-                
-                {{/* Range Over Base (This way we can remove unmatched entries) */}}
-                {{- range $i, $base_leaf := $base_data -}}
-                  {{- $merged := 1 -}}
-    
-                  {{- if (kindIs "map" $base_leaf) -}}
-    
-                    {{- range $leaf := (get $.data $key) -}}
-                      {{- if (kindIs "map" $leaf) -}}
-                          {{/* Validate if Key Same */}}
-                          {{- if eq ((get $leaf $merge_key) | toString) ((get $base_leaf $merge_key) | toString) -}}
-      
-                            {{/* Remove Leaf on Data */}}
-                            {{- $unmatched_data = without $unmatched_data $leaf -}}
-                            {{- $merged = 0 -}}
-      
-                            {{/* Recursion */}}
-                            {{- include "lib.utils.dicts.merge" (dict "base" $base_leaf "data" $leaf "injectKey" $inject_key "ctx" $.ctx) -}}
-      
-                          {{- end -}}
-                      {{- end -}}
-                    {{- end -}}
-                  {{- end -}}
-    
-                  {{/* Append Unmerged Leafs to base */}}
-                  {{- if $merged -}}
-                    {{- $unmatched_base = append $unmatched_base $base_leaf -}}
-                  {{- end -}}
-                {{- end -}}
-    
-                {{/* Remove Unmatched From Base List */}}
-                {{- range $u := $unmatched_base -}}
-                  {{- $_ := set $base $key (without (get $base $key) $u) -}}
-                {{- end -}}
-    
-                {{/* Add Unmatched from Data */}}
-                {{- range $u := $unmatched_data -}}
-                  {{- $_ := set $base $key (append (get $base $key) $u) -}}
-                {{- end -}}
-    
-    
-                {{/* Data Injector */}}
-                {{- $injected := 0 -}}
-                {{- range $i, $base_leaf := (get $base $key) -}}
-                  {{- if and (kindIs "string" $base_leaf) (not $injected)  -}}
-                    {{- if (eq ($base_leaf | lower) $inject_key) -}}
-    
-                      {{/* Inject on Unmatched Base Data */}}
-                      {{- if $unmatched_base -}}
-                        {{- $tmp := list -}}
-    
-                        {{/* First Entry */}}
-                        {{- if (eq $i 0) -}}
-                          {{- $tmp = concat $unmatched_base (get $base $key) -}}
-                        {{/* Inject Within List */}}
-                        {{- else -}}
-                          {{- $partial_list := slice (get $base $key) 0 $i -}}
-                          {{- $partial_list = concat $partial_list $unmatched_base -}}
-                          {{- $partial_list = concat $partial_list (slice (get $base $key) $i) -}}
-                          {{- $tmp = $partial_list -}}
-                        {{- end -}}
-    
-                        {{- $injected = 1 -}}
-    
-                        {{/* Redirect Injected Slice */}}
-                        {{- $_ := set $base $key $tmp -}}
-    
-                      {{- end -}}
-                    {{- end -}}
-                  {{- end -}}
-                {{- end -}}
-    
-                {{/* Remove Inject Key Anyway (Must Remove on Both Dicts) */}}
-                {{- $_ := set $.data $key (without (get $.data $key) $inject_key) -}}
-                {{- $_ := set $base $key (without (get $base $key) $inject_key) -}}
-             
-            {{/* Redirect Data */}}
+              {{- include "lib.utils.dicts.merge" (dict "base" $base_data "data" $data "ctx" $.ctx) -}}
+
             {{- else -}}
-              {{- include "lib.utils.dicts.merge.int.redirect" (dict "base" $base "data" $.data "key" $key "ctx" $.ctx) -}}
+              {{/* Overwrite Base */}}
+              {{- set $.base $key $.data -}}
             {{- end -}}
-          {{/* Overwrite */}}
-          {{- else -}}
-            {{- include "lib.utils.dicts.merge.int.redirect" (dict "base" $base "data" $.data "key" $key "ctx" $.ctx) -}}
+
           {{- end -}}
-        {{/* Overwrite */}}
+
+        {{/* Compare Types (Slice) */}}
+        {{- else if (kindIs "slice" $.data) -}}
+
+          {{/* List Merge Recursion */}}
+          {{- include "lib.utils.lists.merge" (dict "base" $.base "data" $.data "ctx" $.ctx) -}}        
+
+        {{/* Overwrite (Any other Type) */}}
         {{- else -}}
-          {{- include "lib.utils.dicts.merge.int.redirect" (dict "base" $base "data" $.data "key" $key "ctx" $.ctx) -}}
+
+          {{/* Overwrite */}}
+          {{- set $ "base" $.data -}}
+
         {{- end -}}
+  
+  
       {{- else -}}
-          {{- fail "here" -}}
-          {{- include "lib.utils.dicts.merge.int.redirect" (dict "base" $base "data" $.data "key" $key "ctx" $.ctx) -}}
+        {{/* Overwrite */}}
+        {{- set $ "base" $.data -}}
+
       {{- end -}}
+    {{- else -}}
+      {{- set $ "base" $.data -}}
+
     {{- end -}}
   {{- end -}}
 {{- end -}}
+
+
 
 {{/*
   Redirect <Internal Template>
@@ -285,13 +198,6 @@
     {{- end -}}
   {{- end -}}
   {{- $_ := set $.base $.key $.data -}}
-{{- end -}}
-
-{{/*
-  Inject Key <Internal Template>
-*/}}
-{{- define "lib.utils.dicts.merge.int.inject_key" -}}
-__inject__
 {{- end -}}
 
 {{/*

@@ -84,7 +84,7 @@ Major Changes to functions are documented with the version affected. **Before up
 | job.selector | object | `{}` | A label query over pods that should match the pod count. Normally, the system sets this field for you. |
 | job.serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | job.serviceAccount.apiVersion | string | v1 | Configure the api version used |
-| job.serviceAccount.automountServiceAccountToken | bool | `true` | (bool) AutomountServiceAccountToken indicates whether pods running as this service account should have an API token automatically mounted. |
+| job.serviceAccount.automountServiceAccountToken | bool | `true` | AutomountServiceAccountToken indicates whether pods running as this service account should have an API token automatically mounted. |
 | job.serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
 | job.serviceAccount.enabled | bool | `false` | Specifies whether a service account is enabled or not |
 | job.serviceAccount.globalPullSecrets | bool | `false` | Evaluate global set pullsecrets and mount, if set |
