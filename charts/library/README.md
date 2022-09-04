@@ -1,6 +1,6 @@
 # Buttahtoast Library
 
-![Version: 3.0.0-rc.0](https://img.shields.io/badge/Version-3.0.0--rc.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 3.0.0-rc.1](https://img.shields.io/badge/Version-3.0.0--rc.1-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 This is our take on a library Chart. It contains simple functions which are (will be) used across all of our charts. Feel free the add or improve the existing templates. This Chart is still under development/testing. Feel free to use it, if you find any issues with it, please create an issue/PR. We will try to get bugs fixed as soon as possible!
 
@@ -58,11 +58,6 @@ parse the file and that causes some issues. So don't forget to add a pair of `{}
   * [CommonLabels](#commonlabels)
   * [Labels](#labels)
   * [KubeCapabilities](#kubecapabilities)
-* **[Globals](#globals)**
-  * [DockerImage](#dockerimage)
-  * [ImagePullPolicy](#imagepullpolicy)
-  * [ImagePullsecrets](#imagepullsecrets)
-  * [StorageClass](#storageclass)
 * **[Strings](#strings)**
   * [Template](#template)
   * [Stringify](#stringify)
@@ -77,14 +72,16 @@ parse the file and that causes some issues. So don't forget to add a pair of `{}
   * [ParentAppend](#parentAppend)
   * [PrintYamlStructure](#printyamlstructure)
   * [Get](#get)
-  * [Unset](#unset)
   * [Set](#set)
+  * [Unset](#unset)
+  * [Merge](#merge)
 * **[Extras](#extras)**
   * [Environment](#environment)
+  * [Java Proxy](#java-proxy)
   * [ExtraResources](#extraresources)
 * **[Errors](#errors)**
   * [fail](#fail)
-  * [unmarshalingError](#unmarshalingError)
+  * [unmarshalingError](#unmarshalingerror)
   * [params](#params)
 * **[Types](#types)**
   * [validate](#validate)
@@ -95,8 +92,9 @@ Making use of all the common templates enable the following keys:
 
   * [All Common Values can be found here](./templates/values/_common.yaml)
 
-### Fullname
 ---
+
+### Fullname
 
 Extended Function to return a fullname.
 
@@ -134,6 +132,8 @@ String
 {- include "lib.utils.common.fullname" $) }
 ```
 
+---
+
 ### Chart
 
 Chart Name
@@ -148,8 +148,9 @@ String
 {- include "lib.internal.common.chart" $) }
 ```
 
-### SelectorLabels
 ---
+
+### SelectorLabels
 
 This template will return the default selectorLabels (Useable for Match/Selector Labels). In addition there is the
 option to overwrite these labels. If no selectorLabels are defined, the following labels are set:
@@ -185,8 +186,9 @@ YAML Structure, String
 {- include "lib.utils.common.selectorLabels" $) }
 ```
 
-### DefaultLabels
 ---
+
+### DefaultLabels
 
 This template represents the default templates. It includes the `SelectorLabel` template and sets the Application Version.
 
@@ -205,6 +207,8 @@ YAML Structure, String
 ```
 {- include "lib.utils.common.defaultLabels" $) }
 ```
+
+---
 
 ### OverwriteLabels
 
@@ -238,8 +242,9 @@ YAML Structure, String
 {- include "lib.utils.common.overwriteLabels" $) }
 ```
 
-### CommonLabels
 ---
+
+### CommonLabels
 
 This template allows to define common labels. Common labels are appended to the base labels (no merge). By Using this template
 the key `.Values.commonLabels` is considered in your value structure. If the key has values and is type `map` the values are used
@@ -275,8 +280,9 @@ YAML Structure, String
 {- include "lib.utils.common.commonLabels" $) }
 ```
 
-### Labels
 ---
+
+### Labels
 
 This template wraps around all the other label templates. Therefor all their functionalities are available with this template. In addition it's possible to pass labels, which overwrite the result of all the label templates.
 
@@ -313,8 +319,9 @@ YAML Structure, String
 {- include "lib.utils.common.labels" (dict "labels" (dict "custom.label" "value" "custom.label/2" "value") "context" $) }
 ```
 
-### KubeCapabilities
 ---
+
+### KubeCapabilities
 
 This template allows to define a custom KubeCapabilities Version (replaces `$.Capabilities.KubeVersion.GitVersion`). This might be useful when
 trying to test the chart or having client versions that differ from the server version.
@@ -356,239 +363,11 @@ Making use of all the global functions enable the following [global keys](https:
 
   * [All Global Values can be found here](./templates/values/_globals.yaml)
 
-### DockerImage
----
-
-This function overwrites local docker registries with global defined registries, if available. Returns the assembled output
-based on registry, repository and tag. The `$.global.defaultTag` value has precedence over the `.default` value.
-
-#### Arguments
-
-If an as required marked argument is missing, the template engine will fail intentionally.
-
-  * `.image` - Local Registry definition, see the structure below (Required).
-  * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
-  * `.default` - Add a default value for the tag, if not set explicit (Optional, Defaults to "latest")
-
-#### Structure
-
-The following structure is expected for the key '.registry'. Keys with a '*' are optional. If on a parent key, this means you can
-add the structure with the parent key or just the structure within the parent key.
-
-```
-image*:
-  registry: docker.io
-  repository: bitnami/apache
-  digest*: "sha256:9de1e344a34292154ca0693c13aa629c5ad1f1764fafd895ab53032dde2ad8e4"
-  tag*: latest
-
-or
-
-registry: docker.io
-repository: bitnami/apache
-digest*: "sha256:9de1e344a34292154ca0693c13aa629c5ad1f1764fafd895ab53032dde2ad8e4"
-tag*: latest
-```
-
-#### Keys
-
-This function enables the following keys on the global scope:
-
-```
-global:
-
-  ## Global Docker Image Registry
-  # global.imageRegistry -- Global Docker Image Registry declaration. Will overwrite all child .registry fields.
-  imageRegistry: "company-registry/"
-
-  ## Global Default Image Tag
-  # global.defaultTag -- Global Docker Image Tag declaration. Will be used as default tag, if no tag is given by child
-  defaultTag: "1.0.0"
-```
-
-Each image referenced automatically is expected to have the above structure in the values (Example):
-
-```
-apache:
-  registry*: docker.io
-  repository: bitnami/apache
-  digest*: "sha256:9de1e344a34292154ca0693c13aa629c5ad1f1764fafd895ab53032dde2ad8e4"
-  tag*: latest
-
-or
-
-apache:
-  image:
-    repository: bitnami/apache
-```
-
-Is included as:
-
-```
-      containers:
-        - name: apache
-          image: {- include "lib.utils.globals.image" (dict "image" .Values.apache "context" $ "default" .Chart.AppVersion) }
-```
-
-#### Returns
-
-String
-
-#### Usage
-
-```
-{- include "lib.utils.globals.image" (dict "registry" .Values.image "context" $ "default" .Chart.AppVersion) }
-```
-
-### ImagePullPolicy
----
-
-This function overwrites local docker image pullpolicies with global defined pullpolicies, if available.
-
-####  Arguments
-
-If an as required marked argument is missing, the template engine will fail intentionally.
-
-  * `.imagePullPolicy` - Local docker image pullPolicy, which are overwritten if the global variable is set. If neither is set, an empty string is returned (Required).
-  * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
-
-#### Structure
-
-The following structure is expected for the key '.persistence'. Keys with a '*' are optional. If on a parent key, this means you an
-add the structure with the parent key or just the structure within the parent key.
-
-```
-image*:
-  imagePullPolicy: "Always"
-
-or
-
-imagePullPolicy: "Always"
-```
-
-Would both work with example:
-
-```
-{- include "lib.utils.globals.pullPolicy" (dict "imagePullPolicy" .Values "context" $) }
-```
-#### Keys
-
-This function enables the following keys on the global scope:
-
-```
-global:
-
-  ## Global Docker Image PullPolicy
-  # global.imagePullPolicy -- Global Docker Image Pull Policy declaration. Will overwrite all child .pullPolicy fields.
-  imagePullPolicy: "Always"
-```
-
-#### Returns
-
-Map, Empty if no PullSecrets Defined.
-
-```
-imagePullSecrets:
- - secret-1
- - global-secret-1
-```
-
-#### Usage
-
-```
-{- include "lib.utils.globals.imagePullPolicy" (dict "pullPolicy" .Values.image.pullpolicy "context" $) }
-```
-
-### ImagePullsecrets
----
-
-This function merges local pullSecrets with global defined pullSecrets, if available.
-
-#### Arguments
-
-If an as required marked argument is missing, the template engine will fail intentionally.
-
-  * `.pullSecrets` - Local pullSecrets, which are overwritten if the global variable is set. If neither is set, an empty string is returned (Optional, Defaults to empty).
-  * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
-
-#### Keys
-
-This function enables the following keys:
-
-```
-global:
-
-  ## Global Image Pull Secrets
-  # global.imagePullSecrets -- Global Docker Image Pull Secrets declaration. Added to local Docker Image Pull Secrets.
-  imagePullSecrets: []
-```
-
-#### Returns
-
-YAML Structure, String
-
-#### Usage
-
-```
-{- include "lib.utils.globals.imagePullSecrets" (dict "pullSecrets" .Values.imagePullSecrets "context" $) }
-```
-
-### StorageClass
----
-
-This Function checks for a global storage class and returns it, if set.
-With the Parameter "persistence" you can pass your persistence structure. The function
-is looking for a storageClass definition. If the Kind of the "persistence" is string,
-it's assumed the storageClass was directly given. If not, the function will look for a .storageClass
-in the given structure.
-
-#### Arguments
-
-If an as required marked argument is missing, the template engine will fail intentionally.
-
-  * `.persistence` - Local StorageClass/Persistence configuration, see the structure below.
-  * `.context` - Inherited Root Context (Required). Make sure global variables are accessible through the context.
-
-#### Structure
-
-The following structure is expected for the key '.persistence'. Keys with a '*' are optional. If on a parent key, this means you can
-add the structure with the parent key or just the structure within the parent key.
-
-```
-persistence*:
-  storageClass: "local-storage"
-
-or
-
-persistence: "local-storage"
-```
-
-#### Keys
-
-This function enables the following keys:
-
-```
-global:
-
-  ## Global StorageClass
-  # global.storageClass -- Global StorageClass declaration. Can be used to overwrite StorageClass fields.
-  storageClass: ""
-```
-
-#### Returns
-
-String
-
-#### Usage
-
-```
-{ include "lib.utils.globals.storageClass" (dict "persistence" .Values.persistence "context" $) }
-```
-
 ## [Strings](./templates/utils/_strings.tpl)
 
-### Template
 ---
+
+### Template
 
 This function allows to render String/Map input with the go template engine. Since the
 go template engine doesn't directly accept maps, maps are dumped in YAML format. If you want to
@@ -618,8 +397,9 @@ or
 { $structure := fromYaml (include "lib.utils.strings.template" (dict "value" .Values.path.to.the.Value "context" $)) }
 ```
 
-### Stringify
 ---
+
+### Stringify
 
 This function allows to pass a list and create a single string, with a specific delimiter
 
@@ -641,8 +421,9 @@ String
 { include "lib.utils.strings.stringify" ( dict "list" (default (list 1 2 3) .Values.someList) "delimiter" ", " "context" $) }
 ```
 
-### ToDns1123
 ---
+
+### ToDns1123
 
 Converts the given string into DNS1123 accepted format. The format has the following conditions:
 
@@ -670,8 +451,9 @@ String (1:1 return if not given as string)
 
 ## [Lists](./templates/utils/_lists.tpl)
 
-### HasValueByKey
 ---
+
+### HasValueByKey
 
 Loops through subdicts in a given lists checking the given key for the given value. if matched, true is returned.
 
@@ -693,8 +475,9 @@ Boolean
 {- include "lib.utils.lists.hasValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
 ```
 
-### GetValueByKey
 ---
+
+### GetValueByKey
 
 Loops through subdicts in a given lists checking the given key for the given value. if matched, the value of the entire dict is returned.
 
@@ -716,6 +499,8 @@ YAML Structure, String
 {- include "lib.utils.lists.getValueByKey" (dict "list" (list (dict "name" "firstItem" "value" "someValue") (dict "name" "secondItem" "value" "someValue2")) "value" "someValue2" "key" "value") -}
 ```
 
+---
+
 ### MergeList
 
 Merge two lists into one and returns the merged result.
@@ -736,8 +521,9 @@ YAML Structure, String
 {- include "lib.utils.lists.mergeList" (list $firstlist $secondlist) -}
 ```
 
-### MergeListOnKey
 ---
+
+### MergeListOnKey
 
 The default behavior for merging lists in array don't allow a combination of two elements of the different lists.
 Either you append the lists or completely overwrite the previous list. With this function you can merge list elements
@@ -764,8 +550,9 @@ YAML Structure, String
 {- include "lib.utils.lists.mergeListOnKey" (dict "source" $.Values.sourceList "target" $.Values.targetList "key" "id") -}
 ```
 
-### ExceptionList
 ---
+
+### ExceptionList
 
 This function allows list blacklisting. This means, that you can give an list of exceptions ("blacklist") as argument. The template
 iterates over a given list with dictionary elements and removes elements, which match one of the value in the exception list.
@@ -830,8 +617,9 @@ Results in:
 
 ## [Dictionaries](./templates/utils/_dicts.tpl)
 
-### ParentAppend
 ---
+
+### ParentAppend
 
 This function allows to append a given interface-map to a new parent key and returns the resulting YAML structure.
 
@@ -856,8 +644,9 @@ or
 {- include "lib.utils.dicts.parentAppend"  $.Values }
 ```
 
-### PrintYamlStructure
 ---
+
+### PrintYamlStructure
 
 This function allows to append a given struct to a new parent key and returns the resulting YAML structure.
 
@@ -892,8 +681,9 @@ my:
       {.data}
 ```
 
-### Get
 ---
+
+### Get
 
 Get a specific key by delivering the key path from a given dictionary.
 
@@ -907,25 +697,32 @@ If an as required marked argument is missing, the template engine will fail inte
 
 #### Returns
 
-  Dictionary (With key `.result` in case the key resolves to a list)
+  Dictionary (With key `.res` in case the key resolves to a list)
 
 #### Usage:
 
 ```
-{- include "lib.utils.dicts.lookup" (dict "path" "sub.key" "data" (dict "sub" (dict "key" (list "A" "B" "C")))) }
+{- include "lib.utils.dicts.get" (dict "path" "sub.key" "data" (dict "sub" (dict "key" (list "A" "B" "C")))) }
 ```
 
 Will result in
 
 ```
-result:
+res:
   - A
   - B
   - C
 ```
 
-### Unset
+You can directly resolve without the `res` field using the following:
+
+```
+{- (fromYaml (include "lib.utils.dicts.lookup" (dict "path" "sub.key" "data" (dict "sub" (dict "key" (list "A" "B" "C")))))).res }
+```
+
 ---
+
+### Unset
 
 Unset a key by path in a dictionary
 
@@ -946,8 +743,9 @@ Directly removes key on dictionary, no return
 {- include "lib.utils.dicts.unset" (dict "path" "sub.key" "data" (dict "sub" (dict "key" (list "A" "B" "C")))) }
 ```
 
-### Set
 ---
+
+### Set
 
 Set a key and it's value by path in a dictionary. The entire path is created, meaning subpaths don't have to exist to assign a value.
 
@@ -983,10 +781,104 @@ sub:
     - C
 ```
 
+### Merge
+
+Nested dictionary merge (Including lists). The Result is redirected the `$.base` argument, th
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will fail intentionally.
+
+  * `.base` - Base data
+  * `.data` - Data which is merged over the Base data
+
+#### List Options
+
+**Inject Key**
+
+With the Inject Key you can inject the list elements from the base list, which weren't preserved. By default only the elements of the data list are used (presceding).
+
+```
+# Base Data Dict
+Base:
+  spec:
+    selector:
+      app: nginx
+    ports:
+    - port: 80
+      name: http
+      targetPort: 80
+    - port: 443
+      name: https
+      targetPort: 80
+
+# Base Data Dict
+Data:
+  spec:
+    ports:
+    - __inject__
+
+    # Overwrites HTTPS Port
+    - port: 8443
+      name: https
+
+    # Add additional Port
+    - port: 9001
+      name: metrics
+      targetPort: 9001
+```
+
+**Merge Key**
+
+By default list elements are merged on the key **name**. You can change the key the lists are merged on. In this example the objects are merged, based on the value in the **port** field:
+
+```
+# Base Data Dict
+Base:
+  spec:
+    selector:
+      app: nginx
+    ports:
+    - port: 80
+      name: http
+      targetPort: 80
+    - port: 443
+      name: https
+      targetPort: 80
+
+# Base Data Dict
+Data:
+  spec:
+    ports:
+    - __inject__
+
+    - ((port))
+
+    # Overwrites HTTPS Port
+    - port: 8443
+      name: https
+
+    # Add additional Port
+    - port: 9001
+      name: metrics
+      targetPort: 9001
+```
+
+#### Returns
+
+Direct operation on `$.Base`
+
+#### Usage:
+
+```
+{- include "lib.utils.dicts.merge" (dict "base" $.Base "data" $.Data) }
+```
+
 ## [Extras](./templates/utils/_extras.tpl)
 
-### Environment
 ---
+
+### Environment
 
 Returns useful environment variables being used for container. In addition adds built-in proxy support to your chart.
 Meaning proxy will be set directly in environment variables returned by the template.
@@ -1001,7 +893,7 @@ If an as required marked argument is missing, the template engine will fail inte
 
 This template supports the following key structure:
 
-  * [Proxy Values](./templates/values/extras/_proxy.yaml)
+  * [Proxy Values](./templates/values/_globals.yaml)
 
 #### Returns
 
@@ -1013,8 +905,39 @@ Usage:
 env: {- include "lib.utils.extras.environment" $ | nindent 2 }
 ```
 
-### ExtraResources
 ---
+
+### Java Proxy
+
+Renders the JVM args for proxy configuration based on global values.
+
+#### Arguments
+
+If an as required marked argument is missing, the template engine will fail intentionally.
+
+  * `.` - Inherited Root Context (Required)
+
+#### Structure
+
+This template supports the following key structure:
+
+  * [Proxy Values](./templates/values/_globals.yaml)
+
+#### Returns
+
+String
+
+Usage:
+
+```
+env:
+  - name: "JVM_ARGS"
+    values: {- template "lib.utils.extras.java_proxy" $ }
+```
+
+---
+
+### ExtraResources
 
 Allows to have extra resources in the chart. Returns kind List with all given kubernetes extra resources.
 
@@ -1055,8 +978,9 @@ env: {- include "lib.utils.extras.resources" $ | nindent 2 }
 
 ## [Errors](./templates/utils/_errors.tpl)
 
-### Fail
 ---
+
+### Fail
 
 Executes a fail but adds two new lines to make the error more visible.
 
@@ -1101,8 +1025,9 @@ Error: (fromYaml (include "my.data" $)).Error
 {- end -}
 ```
 
-### Params
 ---
+
+### Params
 
 Prints an error that a template is missing parameters
 
@@ -1129,8 +1054,9 @@ Do Stuff
 
 # [Types](./templates/utils/_types.tpl)
 
-### Validate
 ---
+
+### Validate
 
 Validate Types against data. It's a simple abstraction of json schema for go sprig.
 

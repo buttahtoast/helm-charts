@@ -30,4 +30,49 @@ global:
   # global.kubeCapabilities -- Overwrite the Kube GitVersion
   # @default -- `$.Capabilities.KubeVersion.GitVersion`
   kubeCapabilities: ""
+
+  ## Define Container Timezone
+  # timezone -- Define Container Timezone (Sets TZ Environment)
+  timezone: "Europe/Zurich"
+
+  ## Proxy Values
+  proxy:
+  
+    ## HTTP Proxy Configuration
+    httpProxy:
+  
+      ## HTTP Proxy Host Configuration
+      # -- Configure HTTP Proxy Hostname/IP (without protocol://)
+      host: ""
+  
+      ## HTTP Proxy Port Configuration
+      # -- (int) Configure HTTP Proxy Port
+      port:
+  
+      ## HTTP Proxy Protocol Configuration
+      # -- Configure HTTP Proxy Protocol (http/https)
+      # @default -- http
+      protocol: ""
+  
+    ## HTTPS Proxy Configuration
+    httpsProxy:
+  
+      ## HTTPS Proxy Host Configuration
+      # -- Configure HTTPS Proxy Hostname/IP (without protocol://)
+      host: ""
+  
+      ## HTTP Proxy Port Configuration
+      # -- (int) Configure HTTPS Proxy Port
+      port:
+  
+      ## HTTP Proxy Protocol Configuration
+      # -- Configure HTTPS Proxy Protocol (http/https)
+      # @default -- http
+      protocol: ""
+  
+    ## No Proxy Hosts Configuration
+    # -- Configure No Proxy Hosts
+    # noProxy: [ "localhost", "127.0.0.1" ]
+    noProxy: []
+
 {{- end }}
