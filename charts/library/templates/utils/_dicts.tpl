@@ -265,9 +265,11 @@
   {{- if (kindIs "slice" $.data) -}}
     {{- $_ := set $ "data" (without $.data (include "lib.utils.dicts.merge.int.inject_key" $)) -}}
     {{- range $d := $.data -}}
-      {{- $mk := include "lib.utils.dicts.merge.int.merge_key" $d -}}
-      {{- if $mk -}}
-        {{- $_ := set $ "data" (without $.data $mk) -}}
+      {{- if (kindIs "string" $d) -}}
+        {{- $mk := include "lib.utils.dicts.merge.int.merge_key" $d -}}
+        {{- if $mk -}}
+          {{- $_ := set $ "data" (without $.data $mk) -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
