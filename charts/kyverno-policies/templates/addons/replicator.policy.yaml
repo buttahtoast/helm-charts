@@ -1,0 +1,50 @@
+
+{{- $label := include "kyverno-policies.labels.replicator" $ -}}
+{{- $label_use := printf "request.object.metadata.labels.\"%s/use\"" $label -}}
+{{- $label_name := printf "request.object.metadata.labels.\"%s/name\"" $label -}}
+{{- $label_namespace := printf "request.object.metadata.labels.\"%s/namespace\"" $label -}}
+{{- with $.Values.policies.replicator -}}
+  {{- if .enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: data-replicator
+  labels: {{ include "kyverno-policies.labels" $ | nindent 4 }}
+  annotations:
+    {{- with .meta.title }}
+    policies.kyverno.io/title: {{ . | quote }}
+    {{- end }}
+    {{- with .meta.category }}
+    policies.kyverno.io/category: {{ . | quote }}
+    {{- end }}
+    {{- with .meta.subject }}
+    policies.kyverno.io/subject: {{ . | quote }}
+    {{- end }}
+    policies.kyverno.io/description: >-
+      Replicate Configmaps/Secrets to other namespaces. 
+spec:
+  generateExistingOnPolicyUpdate: {{ default .generateExistingOnPolicyUpdate $.Values.global.config.generateExistingOnPolicyUpdate }}
+  background: false
+  rules:
+  - name: replicator
+    preconditions:
+      any:
+      - key: {{ include "kyverno-policies.printTpl" (printf "%s || ''" $label_use) }}
+        operator: Equals
+        value: "enabled"
+    match:
+      any:
+      - resources:
+          kinds:
+          - "Secret"
+          - "ConfigMap"
+    generate:
+      synchronize: {{ .synchronize }}
+      apiVersion: v1
+      kind: {{ include "kyverno-policies.printTpl" "request.object.kind" }}
+      name: {{ include "kyverno-policies.printTpl" (printf "%s || join('-', [request.object.metadata.name,'replicated'])" $label_name) }}
+      namespace: {{ include "kyverno-policies.printTpl" (printf "%s || request.object.metadata.namespace" $label_namespace) }}
+      data: 
+        data: {{ include "kyverno-policies.printTpl" "request.object.data" }}
+  {{- end }}
+{{- end }}

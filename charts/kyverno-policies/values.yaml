@@ -1,0 +1,42 @@
+# Global Values can be referenced from any chart.
+# Add this chart as dependency or add your own policies and reuse this values, if you want to.
+global: 
+
+  # -- label base for all selector labels
+  baseLabel: "gitops.ch"
+
+  config: 
+    # -- Sets the `generateExistingOnPolicyUpdate` property for all relevant policies
+    generateExistingOnPolicyUpdate:
+
+
+
+## Policies Configuration
+policies:
+
+  # Replicator Policy
+  replicator:
+    # -- Enable the Replicator Policy
+    enabled: true
+
+    # Metadata
+    meta:
+      # -- Policy Name (value of `policies.kyverno.io/title`)
+      title: "Data Replicator"
+      # -- Policy Category (value of `policies.kyverno.io/category`)
+      category: "Addon"
+      # -- Policy Subject (value of `policies.kyverno.io/subject`)
+      subject: "Replication"    
+
+    # -- Sets the `synchornize` property
+    synchronize: true
+    # -- Sets the `generateExistingOnPolicyUpdate` property
+    generateExistingOnPolicyUpdate: false
+
+  
+
+
+
+
+
+
