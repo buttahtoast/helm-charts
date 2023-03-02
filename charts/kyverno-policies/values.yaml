@@ -5,6 +5,9 @@ global:
   # -- label base for all selector labels
   baseLabel: "gitops.ch"
 
+  # -- value for enableing stuff (True)
+  enabledValue: "enabled"
+
   config: 
     # -- Sets the `generateExistingOnPolicyUpdate` property for all relevant policies
     generateExistingOnPolicyUpdate:
@@ -14,11 +17,57 @@ global:
 ## Policies Configuration
 policies:
 
+  kubeconfigs:
+    # -- Enable the Kubeconfig Policies
+    enabled: true
+    # Metadata
+    meta:
+      # -- Policy Name (value of `policies.kyverno.io/title`)
+      title: "Kubeconfig Generators"
+      # -- Policy Category (value of `policies.kyverno.io/category`)
+      category: "Addon"
+      # -- Policy Subject (value of `policies.kyverno.io/subject`)
+      subject: "Access"
+
+    # -- internal kubernetes endpoint
+    internal: "https://kubernetes.default.svc"
+
+    # -- Allow secrets to be created in a different namespace than the service account (disregards the `namespace` property)
+    allowSecretsInOtherNamespace: true
+    # -- The labels and annotations for the kubeconfig policy can be set on a serviceaccount level. If disabled it's only secrets of type `kubernetes.io/service-account-token`. If enabled, creates a new static token for the ServiceAccount.
+    allowServiceAccounts: true
+    # -- Creates an ownerrreference for the generated secret to the token secret
+    createOwnerReference: true
+
+    # -- Sets the `synchornize` property
+    synchronize: false    
+    # -- Sets the `generateExistingOnPolicyUpdate` property
+    generateExistingOnPolicyUpdate: false
+
+    # Types of kubeconfigs to generate
+    types: 
+      default:
+        # -- Enable the default kubeconfig type
+        enabled: true
+      argocd:
+        # -- Enable the argocd kubeconfig type
+        enabled: false
+        # -- ArgoCD Kubeconfigs are created in this namespace (if you want to prohibit this, set it to `"request.object.metadata.namespace"`)
+        defaultNamespace: "argocd"
+      custom_endpoints: []
+        # -- Enable the custom endpoint kubeconfig type
+        #- name: "capsule"
+        #  server: "https://capsule-proxy.capsule-system.svc"
+        #  skipVerify: false
+        #  caSecretNamespace: "capsule-system"
+        #  caSecretName: "capsule-proxy"
+        #  # (defaults to `ca.crt`)
+        #  caSecretKey: "ca"
+
   # Replicator Policy
   replicator:
     # -- Enable the Replicator Policy
     enabled: true
-
     # Metadata
     meta:
       # -- Policy Name (value of `policies.kyverno.io/title`)

@@ -1,0 +1,67 @@
+# CSGO Server
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+This is a helm chart for all the docker image variants published by [cm2network](https://hub.docker.com/r/cm2network/csgo/). Container configurations can be looked up on the referenced link.
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+
+
+# Policies
+
+We use the labels to identify the resources which should run through a policy. Other settings are then done via annotations.
+
+All the below label/annotations assume, that `$.Values.global.baseLabel` is set to `gitops.ch`.
+
+## KubeConfigs
+
+
+
+
+
+### Token/ServiceAccount Configuration
+
+With 
+
+**Labels**
+
+
+
+**Annotations**
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Data Replicator
+
+
+
+
+{{/*
+  Chart Values
+*/}}
+{{ template "chart.valuesSection" . }}
+
+
+{{/*
+  Chart Sources
+*/}}
+{{ template "chart.sourcesSection" . }}
+
+{{/*
+  Chart Requirements
+*/}}
+{{ template "chart.requirementsSection" . }}

@@ -70,9 +70,38 @@ Create the name of the service account to use
 {{ $.Values.global.baseLabel | trimAll "." | trimAll "/" }}
 {{- end -}}
 
-{{/* Base Label */}}
+{{/* Replicator Label */}}
 {{- define "kyverno-policies.labels.replicator" -}}
 {{- printf "replicator.%s" (include "kyverno-policies.labels.base" $) -}}
 {{- end -}}
 
+{{/* Kubeconfigs Labels/Annotations */}}
+{{- define "kyverno-policies.kubeconfigs.base" -}}
+{{- printf "kubecfg.%s" (include "kyverno-policies.labels.base" $) -}}
+{{- end -}}
+
+{{/* Label to select kubeconfig usage */}}
+{{- define "kyverno-policies.kubeconfigs.use" -}}
+{{- printf "%s/use" (include "kyverno-policies.kubeconfigs.base" $) -}}
+{{- end -}}
+
+{{/* Label to select kubeconfig type */}}
+{{- define "kyverno-policies.kubeconfigs.type" -}}
+{{- printf "%s/type" (include "kyverno-policies.kubeconfigs.base" $) -}}
+{{- end -}}
+
+{{/* Annotation to select kubeconfig secret name */}}
+{{- define "kyverno-policies.kubeconfigs.name" -}}
+{{- printf "%s/name" (include "kyverno-policies.kubeconfigs.base" $) -}}
+{{- end -}}
+
+{{/* Annotation to select kubeconfig secret namespace */}}
+{{- define "kyverno-policies.kubeconfigs.namespace" -}}
+{{- printf "%s/namespace" (include "kyverno-policies.kubeconfigs.base" $) -}}
+{{- end -}}
+
+{{/* Annotation to select kubeconfig secret key */}}
+{{- define "kyverno-policies.kubeconfigs.key" -}}
+{{- printf "%s/key" (include "kyverno-policies.kubeconfigs.base" $) -}}
+{{- end -}}
 

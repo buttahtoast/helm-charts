@@ -1,8 +1,8 @@
 
 {{- $label := include "kyverno-policies.labels.replicator" $ -}}
 {{- $label_use := printf "request.object.metadata.labels.\"%s/use\"" $label -}}
-{{- $label_name := printf "request.object.metadata.labels.\"%s/name\"" $label -}}
-{{- $label_namespace := printf "request.object.metadata.labels.\"%s/namespace\"" $label -}}
+{{- $label_name := printf "request.object.metadata.annotations.\"%s/name\"" $label -}}
+{{- $label_namespace := printf "request.object.metadata.annotations.\"%s/namespace\"" $label -}}
 {{- with $.Values.policies.replicator -}}
   {{- if .enabled }}
 apiVersion: kyverno.io/v1
@@ -31,7 +31,7 @@ spec:
       any:
       - key: {{ include "kyverno-policies.printTpl" (printf "%s || ''" $label_use) }}
         operator: Equals
-        value: "enabled"
+        value: "{{ $.Values.global.enabledValue }}"
     match:
       any:
       - resources:
