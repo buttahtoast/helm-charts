@@ -46,3 +46,4 @@ package-lock.json
 # Charts
 *.tgz
 Chart.lock
+bin/
