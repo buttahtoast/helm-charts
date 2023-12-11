@@ -219,6 +219,22 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/csgo-0.1.0/csgo-0.1.0.tgz
     version: 0.1.0
+  kubevirt-manager:
+  - apiVersion: v2
+    appVersion: 1.3.1
+    created: "2023-12-11T14:26:07.074127219Z"
+    description: KuberVirt Manager
+    digest: cde5c4898cf2f9ec74394a66dd2759bb00a622ebb388ec8ae024d4c53204bc08
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: kubevirt-manager
+    type: application
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/kubevirt-manager-0.1.1/kubevirt-manager-0.1.1.tgz
+    version: 0.1.1
   library:
   - annotations:
       artifacthub.io/changes: |
@@ -1361,4 +1377,4 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.1.0/tavern-0.1.0.tgz
     version: 0.1.0
-generated: "2022-09-06T14:26:44.096950538Z"
+generated: "2023-12-11T14:26:07.074226564Z"
