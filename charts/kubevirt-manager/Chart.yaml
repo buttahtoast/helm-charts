@@ -2,5 +2,10 @@ apiVersion: v2
 name: kubevirt-manager
 description: KuberVirt Manager
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "1.3.1"
+maintainers:
+  - name: oliverbaehler
+    email: oliverbaehler@hotmail.com
+  - name: chifu1234
+    email: kk@sudo-i.net

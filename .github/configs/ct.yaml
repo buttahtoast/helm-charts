@@ -1,0 +1,10 @@
+## Reference: https://github.com/helm/chart-testing/blob/master/doc/ct_lint-and-install.md
+##
+remote: origin
+chart-dirs:
+  - charts
+validate-chart-schema: false
+validate-maintainers: true
+validate-yaml: false
+excluded-charts:
+  - "library"
