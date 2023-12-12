@@ -1,0 +1,83 @@
+{{- if .Values.operator.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fluo.fullname" . }}
+  labels:
+    {{- include "fluo.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.operator.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "fluo.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "fluo.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "fluo.serviceAccountName" . }}
+      {{- with .Values.operator.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: operator
+          command:
+          - "/bin/update-operator"
+          args:
+          {{- with $.Values.config }}
+            {{- with .before_reboot_annotation }}
+          - "--before-reboot-annotations={{ join "," . }}"
+            {{- end }}
+            {{- with .after_reboot_annotation }}
+          - "--after-reboot-annotations={{ join "," . }}"
+            {{- end }}
+            {{- with .reboot_window.length }}
+          - "--reboot-window-length={{ . }}"
+            {{- end }}
+            {{- with .reboot_window.start }}
+          - "--reboot-window-start={{ . }}"
+            {{- end }}
+          {{- end }}
+          {{- with .Values.operator.extraArgs }}
+            {{- range $key, $value := . }}
+          - --{{ $key | mustRegexFind "^[^_]+" }}
+            {{- end }}
+          {{- end }}
+
+          env:
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          {{- with .Values.operator.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default (printf "v%s" $.Chart.AppVersion) }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.operator.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.operator.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.operator.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.operator.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

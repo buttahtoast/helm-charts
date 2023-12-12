@@ -1,0 +1,152 @@
+{{- if .Values.rbac }}
+  {{- if .Values.operator.enabled }}
+--- 
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    {{- include "fluo.labels" . | nindent 4 }}
+  name: {{ include "fluo.fullname" . }}-update-operator
+rules:
+  # For ConfigMap leases.
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - create
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    resourceNames:
+      - flatcar-linux-update-operator-lock
+    verbs:
+      - get
+      - update
+  # For publishing lease events.
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - watch
+  # For leases.
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - create
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    resourceNames:
+      - flatcar-linux-update-operator-lock
+    verbs:
+      - get
+      - update
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  labels:
+    {{- include "fluo.labels" . | nindent 4 }}
+  name: {{ include "fluo.fullname" . }}-update-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "fluo.fullname" . }}-update-operator
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "fluo.serviceAccountName" . }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    {{- include "fluo.labels" . | nindent 4 }}
+  name: {{ include "fluo.fullname" . }}-update-operator
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  labels:
+    {{- include "fluo.labels" . | nindent 4 }}
+  name: {{ include "fluo.fullname" . }}-update-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "fluo.fullname" . }}-update-operator
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "fluo.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}
+{{- if .Values.agent.enabled }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    {{- include "fluo.labels" . | nindent 4 }}
+  name: {{ include "fluo.fullname" . }}-update-agent
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - pods/eviction
+    verbs:
+      - create
+  - apiGroups:
+      - "apps"
+    resources:
+      - daemonsets
+    verbs:
+      - get
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  labels:
+    {{- include "fluo.labels" . | nindent 4 }}
+  name: {{ include "fluo.fullname" . }}-update-agent
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "fluo.fullname" . }}-update-agent
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "fluo.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+  {{- end }}
+{{- end }}
