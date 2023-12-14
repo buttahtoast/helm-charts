@@ -1,0 +1,26 @@
+apiVersion: v2
+name: manifests
+description: "Manifest chart. Library full of basic kubernetes manifests."
+type: library
+version: 1.0.0
+keywords:
+- Manifests
+- Library
+sources:
+- https://github.com/buttahtoast/helm-charts/tree/master/charts/manifests
+deprecated: false
+maintainers:
+  - name: oliverbaehler
+    email: oliverbaehler@hotmail.com
+  - name: chifu1234
+    email: kk@sudo-i.net
+dependencies:
+- name: "library"
+  version: "~0.3.0"
+  repository: "https://buttahtoast.github.io/helm-charts/"
+annotations:
+  artifacthub.io/containsSecurityUpdates: "false"
+  artifacthub.io/prerelease: "false"
+  artifacthub.io/license: Apache-2.0
+  artifacthub.io/changes: |
+    - "[security]: add deprecation notice"

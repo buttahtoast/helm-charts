@@ -1,0 +1,113 @@
+# Default values for fluo.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# -- Name Override
+nameOverride: ""
+# -- Fullname Override
+fullnameOverride: ""
+
+image:
+  # -- Image Repository
+  repository: ghcr.io/flatcar/flatcar-linux-update-operator # quay.io/kinvolk/flatcar-linux-update-operator
+  # -- Image Tag
+  tag: ""
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+# -- Image pull secrets
+imagePullSecrets: []
+
+config:
+  # -- Configure Reboot-Window
+  reboot_window:
+    start: "Thu 23:00"
+    length: "4h0m"
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# -- Creates RBAC resources
+rbac: true
+
+operator:
+  # -- Enable Update Operator
+  enabled: true
+  # -- Operator replica count
+  replicaCount: 1
+  # -- Operator resources
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  # -- Operator Podsecuritycontext
+  podSecurityContext: {}
+    # fsGroup: 2000
+  # -- Operator securitycontext
+  securityContext:
+    runAsUser: 0
+  # -- Operator nodeSelector
+  nodeSelector: {}
+  # -- Operator tolerations
+  tolerations:
+  - key: node-role.kubernetes.io/master
+    operator: Exists
+    effect: NoSchedule
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
+  # -- Operator affinity
+  affinity: {}
+  # -- Additional arguments for the operator
+  extraArgs: {}
+
+
+agent:
+  # -- Enable Update Agent
+  enabled: true
+  # -- Operator resources
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  # -- Operator Podsecuritycontext
+  podSecurityContext: {}
+  # -- Operator securitycontext
+  securityContext:
+    runAsUser: 0
+  # -- Operator nodeSelector
+  nodeSelector: {}
+  # -- Operator tolerations  
+  tolerations:
+  - key: node-role.kubernetes.io/master
+    operator: Exists
+    effect: NoSchedule
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
+  # -- Operator affinity
+  affinity: {}
+  # -- Additional arguments for the updater
+  extraArgs: {}
+
+
+

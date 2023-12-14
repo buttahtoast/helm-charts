@@ -1,0 +1,12 @@
+apiVersion: v2
+name: fluo
+description: A Helm chart for Kubernetes
+type: application
+version: 0.1.0
+appVersion: "0.10.0-rc1"
+maintainers:
+  - name: oliverbaehler
+    email: oliverbaehler@hotmail.com
+  - name: chifu1234
+    email: kk@sudo-i.net
+home: "https://github.com/flatcar/flatcar-linux-update-operator"
