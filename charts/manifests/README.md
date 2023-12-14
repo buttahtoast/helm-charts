@@ -1,5 +1,4 @@
 # Manifests Library
-> **:exclamation: This Helm Chart is deprecated!**
 
 ![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
 
@@ -16,7 +15,8 @@ We strongly suggest that users of this chart migrate to the [common](https://git
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| SRE | <sre@bedag.ch> |  |
+| oliverbaehler | <oliverbaehler@hotmail.com> |  |
+| chifu1234 | <kk@sudo-i.net> |  |
 
 # Install Chart
 
@@ -27,7 +27,7 @@ The same goes for charts which are hosted in this helm repository. Since the man
 dependencies:
   - name: manifests
     version: "1.0.0"
-    repository: https://bedag.github.io/helm-charts/
+    repository: https://buttahtoast.github.io/helm-charts/
 ```
 
 To develop locally on the manifest chart you can include the dependency locally, note that you have to include all manifests dependencies also.
@@ -52,7 +52,7 @@ Major Changes to functions are documented with the version affected. **Before up
 
 ## Source Code
 
-* <https://github.com/bedag/helm-charts/tree/master/charts/manifests>
+* <https://github.com/buttahtoast/helm-charts/tree/master/charts/manifests>
 
 ## Requirements
 
