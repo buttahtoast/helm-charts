@@ -2,7 +2,7 @@ name: Test charts
 permissions: {}
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "*" ]
 jobs:
   lint:
     runs-on: ubuntu-20.04
