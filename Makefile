@@ -7,6 +7,7 @@ helm-docs: docker
 
 helm-init:
 	helm repo add buttahtoast https://buttahtoast.github.io/helm-charts
+	helm repo add bedag  https://bedag.github.io/helm-charts
 
 helm-lint: ct helm-init
 	@$(CT) lint --config ./.github/configs/ct.yaml --lint-conf ./.github/configs/lintconf.yaml --all --debug
