@@ -1,0 +1,20 @@
+apiVersion: v2
+name: acceleration
+description: Harbor Acceleration Service
+type: application
+version: 0.1.0
+keywords:
+- docker
+- registry
+- harbor
+home: https://github.com/goharbor/acceleration-service
+icon: https://raw.githubusercontent.com/goharbor/website/main/static/img/logos/harbor-icon-color.png
+sources:
+- https://goharbor.io
+- https://github.com/goharbor/harbor
+appVersion: "0.2.13"
+maintainers:
+  - name: oliverbaehler
+    email: oliverbaehler@hotmail.com
+  - name: chifu1234
+    email: kk@sudo-i.net
