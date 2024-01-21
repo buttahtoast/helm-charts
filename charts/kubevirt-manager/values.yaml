@@ -84,6 +84,6 @@ affinity: {}
 
 prometheus:
   # -- Enable Prometheus Integration
-  enabled: true
+  enabled: false
   # -- Backend Service for prometheus instance with kubevirt metrics
-  service: "http://prometheus.monitoring.svc:9090;"
+  service: "http://prometheus.monitoring.svc:9090"
