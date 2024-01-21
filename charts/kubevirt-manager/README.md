@@ -36,8 +36,8 @@ KuberVirt Manager
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
-| prometheus.enabled | bool | `true` | Enable Prometheus Integration |
-| prometheus.service | string | `"http://prometheus.monitoring.svc:9090;"` | Backend Service for prometheus instance with kubevirt metrics |
+| prometheus.enabled | bool | `false` | Enable Prometheus Integration |
+| prometheus.service | string | `"http://prometheus.monitoring.svc:9090"` | Backend Service for prometheus instance with kubevirt metrics |
 | rbac.create | bool | `true` | Create RBAC for kubevirt-manager |
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
