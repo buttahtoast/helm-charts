@@ -5,7 +5,7 @@
 
 config:
   harbor:
-    host: "hub.harbor.com"
+    host: "harbor.company.com"
 
     # -- skip verifying server certs for HTTPS source registry
     insecure: false
@@ -25,11 +25,34 @@ config:
 
   # -- Converter Configuration
   converter:
+    driver: 
+      # -- select which driver to use, `nydus` or `estargz`
+      type: nydus
+    # -- number of worker for executing conversion task
+    worker: 5
+    # -- enable to add harbor specified annotations to converted image for tracking.
+    harbor_annotation: true
     # -- only convert images for specific platforms, leave empty for all platforms (eg. `linux/amd64,linux/arm64`)
     platforms: ""
+    # -- Additional rules
+    rules: 
+      # -- Overwrite rules (overwrite driver preset rules)
+      overwrite: []
+      # -- Additional rules (appened to driver preset rules)
+      additional: []
+      # add suffix to tag of source image reference as target image reference
+      #- tag_suffix: -nydus
+      # set tag of source image reference as remote cache reference, leave empty to disable remote cache.
+      #- cache_tag: nydus-cache
     
+  # -- Custom Configuration (instead of using template). Can be map or multiline string, templating is supported.
+  customConfiguration: {}
+  # server:
+  #   name: API
+  #   host: 0.0.0.0
+  #   port: 2077
 
-  # -- Harbor Configuration Template
+  # -- Configuration Template
   template: |
     # Configuration file of Harbor Acceleration Service
 
@@ -41,12 +64,10 @@ config:
       # port for http
       port: 2077
     
-    {{- if $.Values.metrics.enabled }}
     metric:
       # export metrics on `/metrics` endpoint
       enabled: true
-    {{- end }}
-    
+
     provider:
       source:
         # hostname of harbor service
@@ -73,13 +94,27 @@ config:
       cache_version: v1 
     
     converter:
-      # number of worker for executing conversion task
-      worker: 5
-      # enable to add harbor specified annotations to converted image for tracking.
-      harbor_annotation: true
-      {{- with $.Values.converter.platforms }} 
-      platforms: linux/amd64,linux/arm64
+      worker: {{ $.Values.config.converter.worker }}
+      harbor_annotation: {{ $.Values.config.converter.harbor_annotation }}
+      platforms: {{ $.Values.config.converter.platforms }}
+      rules:
+      {{- if $.Values.config.converter.overwrite }}
+        {{- toYaml $.Values.config.converter.overwrite | nindent 8 }}
+      {{- else }}
+        {{- if (include "acceleration.driver.is.nydus" $) }}
+        # add suffix to tag of source image reference as target image reference
+        - tag_suffix: -nydus
+        # set tag of source image reference as remote cache reference, leave empty to disable remote cache.
+        - cache_tag: nydus-cache
+        {{- end }}
+        {{- if (include "acceleration.driver.is.estargz" $) }}
+         - tag_suffix: -esgz
+        {{- end }}
+        {{- with $.Values.config.converter.rules.additional }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}
+
       driver:
         # accelerator driver type: `nydus`
         type: nydus
@@ -99,12 +134,6 @@ config:
           # the corresponding nydus images. At runtime, nydus snapshotter can also
           # automatically upgrade an OCI image run to nydus image.
           with_referrer: true
-      rules:
-        # add suffix to tag of source image reference as target image reference
-        - tag_suffix: -nydus-oci-ref
-        # set tag of source image reference as remote cache reference, leave empty to disable remote cache.
-        - cache_tag: nydus-cache
-
 
 replicaCount: 1
 
@@ -120,7 +149,7 @@ fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: true
+  create: true 
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.

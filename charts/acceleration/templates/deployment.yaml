@@ -37,22 +37,26 @@ spec:
             - /etc/acceleration/acceleration.yaml
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 2077
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /metrics
               port: http
           readinessProbe:
             httpGet:
-              path: /
+              path: /metrics
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
+            - name: config
+              mountPath: /etc/acceleration/acceleration.yaml
+              subPath: config.yaml
+              readOnly: true
             {{- if $.Values.config.workDir.emptyDir.enabled }}
             - name: work-dir
-              mountPath: {{- if $.Values.config.workDir.path }}
+              mountPath: {{ $.Values.config.workDir.path | quote }}
             {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -72,3 +76,9 @@ spec:
           emptyDir:
             sizeLimit: 500Mi
         {{- end }}
+        - name: config
+          secret:
+            secretName: {{ include "acceleration.fullname" . }}
+            items:
+              - key: config.yaml
+                path: config.yaml

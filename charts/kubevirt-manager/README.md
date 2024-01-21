@@ -25,7 +25,7 @@ KuberVirt Manager
 | image.repository | string | `"kubevirtmanager/kubevirt-manager"` |  |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
-| ingress.annotations | string | `nil` |  |
+| ingress.annotations."nginx.org/location-snippets" | string | `"proxy_set_header Upgrade $http_upgrade;\nproxy_set_header Connection $connection_upgrade;\n"` |  |
 | ingress.className | string | `""` |  |
 | ingress.enabled | bool | `false` |  |
 | ingress.host | string | `"chart-example.local"` |  |
@@ -36,6 +36,8 @@ KuberVirt Manager
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
+| prometheus.enabled | bool | `true` | Enable Prometheus Integration |
+| prometheus.service | string | `"http://prometheus.monitoring.svc:9090;"` | Backend Service for prometheus instance with kubevirt metrics |
 | rbac.create | bool | `true` | Create RBAC for kubevirt-manager |
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
@@ -49,16 +51,6 @@ KuberVirt Manager
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `""` |  |
-| serviceMonitor.annotations | object | `{}` | Assign additional Annotations |
-| serviceMonitor.enabled | bool | `false` | Enable ServiceMonitor |
-| serviceMonitor.endpoint.interval | string | `"15s"` | Set the scrape interval for the endpoint of the serviceMonitor |
-| serviceMonitor.endpoint.metricRelabelings | list | `[]` | Set metricRelabelings for the endpoint of the serviceMonitor |
-| serviceMonitor.endpoint.relabelings | list | `[]` | Set relabelings for the endpoint of the serviceMonitor |
-| serviceMonitor.endpoint.scrapeTimeout | string | `""` | Set the scrape timeout for the endpoint of the serviceMonitor |
-| serviceMonitor.labels | object | `{}` | Assign additional labels according to Prometheus' serviceMonitorSelector matching labels |
-| serviceMonitor.matchLabels | object | `{}` | Change matching labels |
-| serviceMonitor.namespace | string | `""` | Install the ServiceMonitor into a different Namespace, as the monitoring stack one (default: the release one) |
-| serviceMonitor.targetLabels | list | `[]` | Set targetLabels for the serviceMonitor |
 | tolerations | list | `[]` |  |
 
 ----------------------------------------------

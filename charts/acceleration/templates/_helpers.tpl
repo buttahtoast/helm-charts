@@ -60,3 +60,42 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Used Driver
+*/}}
+{{- define "acceleration.driver" -}}
+{{- $driver := $.Values.config.converter.driver.type -}}
+{{- if or (eq $driver "estargz") (eq $driver "nydus") -}}
+{{- printf "%s" $driver -}}
+{{- else -}}
+{{- fail "invalid driver" -}}
+{{- end -}}
+{{- end }}
+
+
+{{/*
+ Driver Check
+*/}}
+{{- define "acceleration.driver.is" -}}
+  {{- $driver := $.ctx.Values.config.converter.driver.type -}}
+  {{- if eq $.driver $driver -}}
+    {{- true -}}
+  {{- end -}}
+{{- end }}
+
+{{- define "acceleration.driver.is.nydus" -}}
+  {{- $driver := "nydus" -}}
+  {{- if (include "acceleration.driver.is" (dict "driver" $driver "ctx" $)) -}}
+    {{- true -}}
+  {{- end -}}
+{{- end }}
+
+{{- define "acceleration.driver.is.estargz" -}}
+  {{- $driver := "estargz" -}}
+  {{- if (include "acceleration.driver.is" (dict "driver" $driver "ctx" $)) -}}
+    {{- true -}}
+  {{- end -}}
+{{- end }}
+
+

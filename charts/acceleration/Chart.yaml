@@ -18,3 +18,7 @@ maintainers:
     email: oliverbaehler@hotmail.com
   - name: chifu1234
     email: kk@sudo-i.net
+dependencies:
+  - name: library
+    version: "3.0.0-rc.3"
+    repository: https://buttahtoast.github.io/helm-charts/
