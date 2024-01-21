@@ -1,0 +1,301 @@
+# Default values for acceleration.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+config:
+  harbor:
+    host: "harbor.company.com"
+
+    # -- skip verifying server certs for HTTPS source registry
+    insecure: false
+    # -- Authentication Token
+    auth: ""
+
+  # -- Working Directory (EmptyDir)
+  workDir:
+    emptyDir:
+      # -- Enable EmptyDir for working directory
+      enabled: true
+      # -- EmptyDir medium
+      medium: ""
+      # -- EmptyDir size limit
+      sizeLimit: ""
+    path: /tmp
+
+  # -- Converter Configuration
+  converter:
+    driver: 
+      # -- select which driver to use, `nydus` or `estargz`
+      type: nydus
+      # -- driver configuration
+      config:
+        # `nydus-image` binary path, download it from:
+        # https://github.com/dragonflyoss/image-service/releases (require v2.0.0 or higher)
+        # builder: nydus-image
+  
+        # convert to OCI-referenced nydus zran image.
+        # oci_ref: false
+  
+        # with this option, we can track all nydus images associated with
+        # an OCI image. For example, in Harbor we can cascade to show nydus
+        # images linked to an OCI image, deleting the OCI image can also delete
+        # the corresponding nydus images. At runtime, nydus snapshotter can also
+        # automatically upgrade an OCI image run to nydus image.
+        with_referrer: true
+  
+        # specify nydus format version, possible values: `5`, `6` (EROFS-compatible), default is `6`
+        # fs_version: 6
+  
+        # specify nydus blob compression algorithm, possible values: `none`, `lz4_block`, `gzip`, `zstd`, default is `zstd`
+        # compressor: zstd
+  
+        # ensure that both OCIv1 manifest and nydus manifest are present as manifest index in the target image.
+        # it's used for containerd to support running OCIv1 image or nydus image simultaneously with a single image reference.
+        # note: please ensure that OCIv1 manifest already exists in target image reference.
+        # merge_manifest: true
+  
+        # nydus chunk dict image reference, used for chunk-leveled data deduplication.
+        # chunk_dict_ref: localhost/chunk_dict/image:latest
+  
+        # enable to convert Docker media types into OCI ones.
+        # docker2oci: false
+  
+        # enable to align uncompressed data chunks to 4K, only for fs version 5.
+        # fs_align_chunk: false
+  
+        # set the size of data chunks, must be power of two and between 0x1000-0x1000000.
+        # fs_chunk_size: 0x100000
+  
+        # file path pattern list (split by new line) want to prefetch.
+        # prefetch_patterns: /
+  
+        # force to push blobs even if they already exist in storage backend.
+        # backend_force_push: false
+  
+        # specify a storage backend for storing nydus blob, optional, possible values: oss, localfs, s3
+        # backend_type: oss
+        # backend_config: '{"endpoint":"","access_key_id":"","access_key_secret":"","bucket_name":""}'
+  
+        # backend_type: localfs
+        # backend_config: '{"dir":"/path/to/dir"}'
+  
+        # backend_type: s3
+        # backend_config: '{"scheme":"","endpoint":"","region":"","bucket_name":"","access_key_id":"","access_key_secret":"","object_prefix":""}'
+    
+    # -- number of worker for executing conversion task
+    worker: 5
+    # -- enable to add harbor specified annotations to converted image for tracking.
+    harbor_annotation: true
+    # -- only convert images for specific platforms, leave empty for all platforms (eg. `linux/amd64,linux/arm64`)
+    platforms: ""
+    # -- Additional rules
+    rules: 
+      # -- Overwrite rules (overwrite driver preset rules)
+      overwrite: []
+      # -- Additional rules (appened to driver preset rules)
+      additional: []
+      # add suffix to tag of source image reference as target image reference
+      #- tag_suffix: -nydus
+      # set tag of source image reference as remote cache reference, leave empty to disable remote cache.
+      #- cache_tag: nydus-cache
+    
+  # -- Custom Configuration (instead of using template). Can be map or multiline string, templating is supported.
+  customConfiguration: {}
+  # server:
+  #   name: API
+  #   host: 0.0.0.0
+  #   port: 2077
+
+  # -- Configuration Template
+  template: |
+    # Configuration file of Harbor Acceleration Service
+
+    # http related config
+    server:
+      name: API
+      # listened host for http
+      host: 0.0.0.0
+      # port for http
+      port: 2077
+    
+    metric:
+      # export metrics on `/metrics` endpoint
+      enabled: true
+
+    provider:
+      source:
+        # hostname of harbor service
+        {{ $.Values.config.harbor.host }}:
+          # base64 encoded `<robot-name>:<robot-secret>` for robot
+          # account created in harbor
+          # auth: YTpiCg==
+          # skip verifying server certs for HTTPS source registry
+          insecure: {{ $.Values.config.harbor.insecure }}
+          webhook:
+            # webhook request auth header configured in harbor
+            auth_header: header
+        localhost:
+          # If auth is not provided, it will attempt to read from docker config
+          # auth: YWRtaW46SGFyYm9yMTIzNDU=
+      # work directory of acceld
+      work_dir: {{ $.Values.config.workDir.path }}
+      gcpolicy:
+          # size threshold that triggers GC, the oldest used blobs will be reclaimed if exceeds the size.
+          threshold: 1000MB
+      # remote cache record capacity of converted layers, default is 200.
+      cache_size: 200
+      # remote cache version, cache in remote must match the specified version, or discard cache.
+      cache_version: v1 
+    
+    converter:
+      worker: {{ $.Values.config.converter.worker }}
+      harbor_annotation: {{ $.Values.config.converter.harbor_annotation }}
+      platforms: {{ $.Values.config.converter.platforms }}
+      rules:
+      {{- if $.Values.config.converter.overwrite }}
+        {{- toYaml $.Values.config.converter.overwrite | nindent 8 }}
+      {{- else }}
+        {{- if (include "acceleration.driver.is.nydus" $) }}
+        # add suffix to tag of source image reference as target image reference
+        - tag_suffix: -nydus
+        # set tag of source image reference as remote cache reference, leave empty to disable remote cache.
+        - cache_tag: nydus-cache
+        {{- end }}
+        {{- if (include "acceleration.driver.is.estargz" $) }}
+         - tag_suffix: -esgz
+        {{- end }}
+        {{- with $.Values.config.converter.rules.additional }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+
+      driver:
+        # accelerator driver type: `nydus`
+        {{- if (include "acceleration.driver.is.nydus" $) }}
+        type: nydus
+        {{- end }}
+        {{- if (include "acceleration.driver.is.estargz" $) }}
+        type: estargz
+        {{- end }}
+        config:
+          work_dir: {{ $.Values.config.workDir.path }}
+          {{- if (include "acceleration.driver.is.estargz" $) }}
+          docker2oci: true
+          {{- end }}
+          {{- if (include "acceleration.driver.is.nydus" $) }}
+          with_referrer: true
+          {{- end }}
+          {{- with $.Values.config.converter.driver.config }}
+            {{- toYaml . | nindent 6 }}
+          {{- end }}
+
+replicaCount: 1
+
+image:
+  repository: goharbor/harbor-acceld
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true 
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  annotations: {}
+  labels: {}
+  type: ClusterIP
+  port: 80
+  clusterIP: ""
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
+
+ingress:
+  enabled: false
+  ingressClassName: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# ServiceMonitor
+serviceMonitor:
+  # -- Enable ServiceMonitor
+  enabled: false
+  # -- Install the ServiceMonitor into a different Namespace, as the monitoring stack one (default: the release one)
+  namespace: ''
+  # -- Assign additional labels according to Prometheus' serviceMonitorSelector matching labels
+  labels: {}
+  # -- Assign additional Annotations
+  annotations: {}
+  # -- Change matching labels
+  matchLabels: {}
+  # -- Set targetLabels for the serviceMonitor
+  targetLabels: []
+  # -- Set JobLabel for the serviceMonitor
+  jobLabel: "app.kubernetes.io/name"
+  endpoint:
+    # -- Set the scrape interval for the endpoint of the serviceMonitor
+    interval: "15s"
+    # -- Set the scrape timeout for the endpoint of the serviceMonitor
+    scrapeTimeout: ""
+    # -- Set metricRelabelings for the endpoint of the serviceMonitor
+    metricRelabelings: []
+    # -- Set relabelings for the endpoint of the serviceMonitor
+    relabelings: []

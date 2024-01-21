@@ -2,11 +2,10 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "kubevirt-manager.fullname" . }}-monitor
+  name: {{ include "acceleration.fullname" . }}
   namespace: {{ .Values.serviceMonitor.namespace | default .Release.Namespace }}
   labels:
-    prometheus.kubevirt.io: "true"
-    {{- include "kubevirt-manager.labels" . | nindent 4 }}
+    {{- include "acceleration.labels" . | nindent 4 }}
     {{- with .Values.serviceMonitor.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -18,9 +17,8 @@ spec:
   endpoints:
   {{- with .Values.serviceMonitor.endpoint }}
   - interval: {{ .interval }}
-    port: metrics
+    port: http
     path: /metrics
-    scheme: https
     {{- with .scrapeTimeout }}
     scrapeTimeout: {{ . }}
     {{- end }}
@@ -30,10 +28,10 @@ spec:
     {{- with .relabelings }}
     relabelings: {{- toYaml . | nindent 6 }}
     {{- end }}
-    tlsConfig:
-      insecureSkipVerify: true
-  {{- end }}  
-  jobLabel: prometheus.kubevirt.io
+  {{- end }}
+  {{- with .Values.serviceMonitor.jobLabel }}
+  targetLabels: {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- with .Values.serviceMonitor.targetLabels }}
   targetLabels: {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -42,7 +40,7 @@ spec:
     {{- if .Values.serviceMonitor.matchLabels }}
       {{- toYaml .Values.serviceMonitor.matchLabels | nindent 6 }}
     {{- else }}
-      prometheus.kubevirt.io: "true"
+      {{- include "acceleration.labels" . | nindent 6 }}
     {{- end }}
   namespaceSelector:
     matchNames:

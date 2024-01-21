@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "kubevirt-manager.fullname" . }}
+  name: {{ include "acceleration.fullname" . }}
   labels:
-    {{- include "kubevirt-manager.labels" . | nindent 4 }}
+    {{- include "acceleration.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "kubevirt-manager.selectorLabels" . | nindent 6 }}
+      {{- include "acceleration.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,13 +18,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "kubevirt-manager.selectorLabels" . | nindent 8 }}
+        {{- include "acceleration.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "kubevirt-manager.serviceAccountName" . }}
+      serviceAccountName: {{ include "acceleration.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -33,29 +33,31 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - /etc/acceleration/acceleration.yaml
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 2077
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /metrics
               port: http
           readinessProbe:
             httpGet:
-              path: /
+              path: /metrics
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-          - name: cache-volume
-            mountPath: /var/cache/nginx
-          - name: run-volume
-            mountPath: /var/run
-          {{- if and $.Values.prometheus.enabled $.Values.prometheus.service }}
-          - name: prometheus-config
-            mountPath: /etc/nginx/location.d/
-          {{- end }}
+            - name: config
+              mountPath: /etc/acceleration/acceleration.yaml
+              subPath: config.yaml
+              readOnly: true
+            {{- if $.Values.config.workDir.emptyDir.enabled }}
+            - name: work-dir
+              mountPath: {{ $.Values.config.workDir.path | quote }}
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -69,13 +71,14 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-        - name: cache-volume
-          emptyDir: {}
-        - name: run-volume
-          emptyDir: {}
-        {{- if and $.Values.prometheus.enabled $.Values.prometheus.service }}
-        - name: prometheus-config
-          configMap:
-            name: {{ include "kubevirt-manager.fullname" $ }}-config
-            optional: false
+        {{- if $.Values.config.workDir.emptyDir.enabled }}
+        - name: work-dir
+          emptyDir:
+            sizeLimit: 500Mi
         {{- end }}
+        - name: config
+          secret:
+            secretName: {{ include "acceleration.fullname" . }}
+            items:
+              - key: config.yaml
+                path: config.yaml

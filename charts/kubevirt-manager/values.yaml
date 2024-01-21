@@ -49,9 +49,9 @@ ingress:
   enabled: false
   className: ""
   annotations:
-
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+    nginx.org/location-snippets: |
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection $connection_upgrade;
   path: "/"
   pathType: ImplementationSpecific
   host: chart-example.local
@@ -82,26 +82,8 @@ tolerations: []
 
 affinity: {}
 
-# ServiceMonitor
-serviceMonitor:
-  # -- Enable ServiceMonitor
+prometheus:
+  # -- Enable Prometheus Integration
   enabled: false
-  # -- Install the ServiceMonitor into a different Namespace, as the monitoring stack one (default: the release one)
-  namespace: ''
-  # -- Assign additional labels according to Prometheus' serviceMonitorSelector matching labels
-  labels: {}
-  # -- Assign additional Annotations
-  annotations: {}
-  # -- Change matching labels
-  matchLabels: {}
-  # -- Set targetLabels for the serviceMonitor
-  targetLabels: []
-  endpoint:
-    # -- Set the scrape interval for the endpoint of the serviceMonitor
-    interval: "15s"
-    # -- Set the scrape timeout for the endpoint of the serviceMonitor
-    scrapeTimeout: ""
-    # -- Set metricRelabelings for the endpoint of the serviceMonitor
-    metricRelabelings: []
-    # -- Set relabelings for the endpoint of the serviceMonitor
-    relabelings: []
+  # -- Backend Service for prometheus instance with kubevirt metrics
+  service: "http://prometheus.monitoring.svc:9090"
