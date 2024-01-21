@@ -1,5 +1,34 @@
 apiVersion: v1
 entries:
+  acceleration:
+  - apiVersion: v2
+    appVersion: 0.2.13
+    created: "2024-01-21T16:08:23.85967188Z"
+    dependencies:
+    - name: library
+      repository: https://buttahtoast.github.io/helm-charts/
+      version: 3.0.0-rc.3
+    description: Harbor Acceleration Service
+    digest: d75bcce7654462f494dc5989b3bee5dfd554cb57fcf613c4fa1932849ec74894
+    home: https://github.com/goharbor/acceleration-service
+    icon: https://raw.githubusercontent.com/goharbor/website/main/static/img/logos/harbor-icon-color.png
+    keywords:
+    - docker
+    - registry
+    - harbor
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: acceleration
+    sources:
+    - https://goharbor.io
+    - https://github.com/goharbor/harbor
+    type: application
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/acceleration-0.1.0/acceleration-0.1.0.tgz
+    version: 0.1.0
   csgo:
   - annotations:
       artifacthub.io/changes: |
@@ -237,6 +266,21 @@ entries:
     - https://github.com/buttahtoast/helm-charts/releases/download/fluo-0.1.0/fluo-0.1.0.tgz
     version: 0.1.0
   kubevirt-manager:
+  - apiVersion: v2
+    appVersion: 1.3.1
+    created: "2024-01-21T16:08:24.060408334Z"
+    description: KuberVirt Manager
+    digest: 81c400b80ff4bc2651a5927174c9e0e07b8369aa33bf0aef2cbd38561a501fbb
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: kubevirt-manager
+    type: application
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/kubevirt-manager-0.1.2/kubevirt-manager-0.1.2.tgz
+    version: 0.1.2
   - apiVersion: v2
     appVersion: 1.3.1
     created: "2023-12-11T14:26:07.074127219Z"
@@ -1424,4 +1468,4 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.1.0/tavern-0.1.0.tgz
     version: 0.1.0
-generated: "2023-12-14T09:58:30.769122628Z"
+generated: "2024-01-21T16:08:24.060523105Z"
