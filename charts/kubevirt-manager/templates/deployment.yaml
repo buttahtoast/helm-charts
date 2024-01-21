@@ -52,7 +52,7 @@ spec:
             mountPath: /var/cache/nginx
           - name: run-volume
             mountPath: /var/run
-          {{- if $.Values.prometheus.enabled }}
+          {{- if and $.Values.prometheus.enabled $.Values.prometheus.service }}
           - name: prometheus-config
             mountPath: /etc/nginx/location.d/
           {{- end }}
@@ -73,7 +73,7 @@ spec:
           emptyDir: {}
         - name: run-volume
           emptyDir: {}
-        {{- if $.Values.prometheus.enabled }}
+        {{- if and $.Values.prometheus.enabled $.Values.prometheus.service }}
         - name: prometheus-config
           configMap:
             name: {{ include "kubevirt-manager.fullname" $ }}-config
