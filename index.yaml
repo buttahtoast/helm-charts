@@ -265,6 +265,26 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/fluo-0.1.0/fluo-0.1.0.tgz
     version: 0.1.0
+  kubermatic-operator:
+  - apiVersion: v1
+    appVersion: v2.24.5
+    created: "2024-03-28T11:39:34.781002808Z"
+    description: Helm chart to install the Kubermatic Operator
+    digest: 74d4251a2c64358c3dfc3110a36c25eb33c05f868bce6d5561363ad185eb51b6
+    home: https://www.kubermatic.com/
+    keywords:
+    - kubermatic
+    maintainers:
+    - email: oliverbaehler@hotmail.com
+      name: oliverbaehler
+    - email: kk@sudo-i.net
+      name: chifu1234
+    name: kubermatic-operator
+    sources:
+    - https://github.com/kubermatic/kubermatic
+    urls:
+    - https://github.com/buttahtoast/helm-charts/releases/download/kubermatic-operator-v2.24.5/kubermatic-operator-v2.24.5.tgz
+    version: v2.24.5
   kubevirt-manager:
   - apiVersion: v2
     appVersion: 1.3.1
@@ -1468,4 +1488,4 @@ entries:
     urls:
     - https://github.com/buttahtoast/helm-charts/releases/download/tavern-0.1.0/tavern-0.1.0.tgz
     version: 0.1.0
-generated: "2024-01-21T16:08:24.060523105Z"
+generated: "2024-03-28T11:39:34.781109876Z"
