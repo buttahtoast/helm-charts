@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm.fullname" . }}
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.kubermaticOperator.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "helm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.kubermaticOperator.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "helm.labels" . | nindent 8 }}
+        {{- with .Values.kubermaticOperator.podLabels }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ include "helm.serviceAccountName" $ }}
+      {{- with .Values.kubermaticOperator.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.kubermaticOperator.podSecurityContext.enabled }}
+      securityContext:
+        {{- toYaml (omit .Values.kubermaticOperator.podSecurityContext "enabled") | nindent 8 }}
+      {{- end }}
+      {{- with .Values.kubermaticOperator.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.kubermaticOperator.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.kubermaticOperator.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: operator
+        {{- if .Values.kubermaticOperator.securityContext.enabled }}
+        securityContext:
+          {{- toYaml (omit .Values.kubermaticOperator.securityContext "enabled") | nindent 10 }}
+        {{- end }}
+        image: "{{ .Values.kubermaticOperator.image.registry | trimSuffix "/" }}/{{ .Values.kubermaticOperator.image.repository }}:{{ .Values.kubermaticOperator.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.kubermaticOperator.image.pullPolicy }}
+        command: 
+          {{- toYaml .Values.kubermaticOperator.command | nindent 10 }}
+        args:
+        - -internal-address=0.0.0.0:8085
+        - -namespace=$(POD_NAMESPACE)
+        {{- with .Values.kubermaticOperator.workerName }}
+        - -worker-name={{ . }}
+        {{- end }}
+        - -log-format=json
+        {{- if .Values.kubermaticOperator.debug }}
+        - -log-debug=true
+        - -v=8
+        {{- end }}
+        {{- if .Values.kubermaticOperator.leaderElection }}
+        - -enable-leader-election
+        {{- end }}
+        {{- range $key, $value := .Values.kubermaticOperator.args }}
+            {{- if not (kindIs "invalid" $value) }}
+        - -{{ $key | mustRegexFind "^[^_]+" }}={{ include "helm.utils.template" (dict "tpl" $value "ctx" $.ctx) }}
+            {{- else }}
+        - -{{ $key | mustRegexFind "^[^_]+" }}
+            {{- end }}
+        {{- end }}
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        ports:
+        - name: metrics
+          containerPort: 8085
+          protocol: TCP
+        resources:
+          {{ .Values.kubermaticOperator.resources | toYaml | nindent 10 }}
+        {{- if .Values.kubermaticOperator.livenessProbe.enabled }}
+        livenessProbe:
+          {{- toYaml (omit .Values.kubermaticOperator.livenessProbe "enabled") | nindent 10 }}
+        {{- end }}
+        {{- if .Values.kubermaticOperator.readinessProbe.enabled }}
+        readinessProbe:
+          {{- toYaml (omit .Values.kubermaticOperator.readinessProbe "enabled") | nindent 10 }}
+        {{- end }}

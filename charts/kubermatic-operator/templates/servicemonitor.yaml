@@ -1,0 +1,48 @@
+{{- if .Values.kubermaticOperator.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "helm.fullname" . }}
+  namespace: {{ .Values.kubermaticOperator.serviceMonitor.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+    {{- with .Values.kubermaticOperator.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.kubermaticOperator.serviceMonitor.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  endpoints:
+  {{- with .Values.kubermaticOperator.serviceMonitor.endpoint }}
+  - interval: {{ .interval }}
+    port: metrics
+    path: /metrics
+    {{- with .scrapeTimeout }}
+    scrapeTimeout: {{ . }}
+    {{- end }}
+    {{- with .metricRelabelings }}
+    metricRelabelings: {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .relabelings }}
+    relabelings: {{- toYaml . | nindent 6 }}
+    {{- end }}
+  {{- end }}
+  {{- with .Values.kubermaticOperator.serviceMonitor.jobLabel }}
+  targetLabels: {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.kubermaticOperator.serviceMonitor.targetLabels }}
+  targetLabels: {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+    {{- if .Values.kubermaticOperator.serviceMonitor.matchLabels }}
+      {{- toYaml .Values.kubermaticOperator.serviceMonitor.matchLabels | nindent 6 }}
+    {{- else }}
+      {{- include "helm.selectorLabels" . | nindent 6 }}
+    {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+{{- end }}

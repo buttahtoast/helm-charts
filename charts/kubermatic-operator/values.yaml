@@ -1,0 +1,146 @@
+# Copyright 2020 The Kubermatic Kubernetes Platform contributors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+kubermaticOperator:
+
+  # -- Manage CRD Lifecycle
+  crds:
+    # -- Install the CustomResourceDefinitions (This also manages the lifecycle of the CRDs for update operations)
+    install: true
+    # -- Keep the CustomResourceDefinitions (when the chart is deleted)
+    keep: true
+
+  image:
+    # -- Image Registry
+    registry: quay.io
+    # -- Image Repository
+    repository: kubermatic/kubermatic
+    # -- Image Tag
+    tag: ""
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+
+
+  # -- Amount of replicas
+  replicaCount: 1
+
+  # -- Resources for the Operator
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  # -- ImagePullSecrets
+  imagePullSecret: []
+
+  # -- Command execute for Container
+  command:
+  - kubermatic-operator
+
+  # -- Arguments for Container
+  args: {}
+
+  # -- Additional Pod Labels
+  podLabels: {}
+
+  # -- Additional Pod Annotations
+  podAnnotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '8085'
+    fluentbit.io/parser: json_iso
+
+  # -- SecurityContext for Pod
+  podSecurityContext:
+    enabled: true
+    seccompProfile:
+      type: RuntimeDefault
+    
+  # -- SecurityContext for Container
+  securityContext:
+    enabled: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 65534
+  
+  # -- Configure the liveness probe using Deployment probe spec
+  livenessProbe:
+    enabled: false
+    initialDelaySeconds: 60
+    httpGet:
+      path: /healthz
+      port: 10080
+  
+  # -- Configure the readiness probe using Deployment probe spec
+  readinessProbe:
+    enabled: false
+    initialDelaySeconds: 60
+    httpGet:
+      path: /readyz
+      port: 10080
+
+  # -- Operator nodeSelector
+  nodeSelector: {}
+  # -- Operator tolerations
+  tolerations: []
+  # -- Operator affinity
+  affinity: {}
+  
+  rbac:
+    # -- Create RBAC for Controller
+    create: true
+
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    # Annotations to add to the service account
+    annotations: {}
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  # -- Additional arguments for the operator
+  debug: false
+  leaderElection: true
+
+  # ServiceMonitor
+  serviceMonitor:
+    # -- Enable ServiceMonitor
+    enabled: false
+    # -- Install the ServiceMonitor into a different Namespace, as the monitoring stack one (default: the release one)
+    namespace: ''
+    # -- Assign additional labels according to Prometheus' serviceMonitorSelector matching labels
+    labels: {}
+    # -- Assign additional Annotations
+    annotations: {}
+    # -- Change matching labels
+    matchLabels: {}
+    # -- Set targetLabels for the serviceMonitor
+    targetLabels: []
+    # -- Set JobLabel for the serviceMonitor
+    jobLabel: "app.kubernetes.io/name"
+    endpoint:
+      # -- Set the scrape interval for the endpoint of the serviceMonitor
+      interval: "15s"
+      # -- Set the scrape timeout for the endpoint of the serviceMonitor
+      scrapeTimeout: ""
+      # -- Set metricRelabelings for the endpoint of the serviceMonitor
+      metricRelabelings: []
+      # -- Set relabelings for the endpoint of the serviceMonitor
+      relabelings: []
