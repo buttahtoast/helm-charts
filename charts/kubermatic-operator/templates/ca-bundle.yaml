@@ -11,18 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 apiVersion: v1
-name: kubermatic-operator
-version: 2.24.5
-appVersion: v2.24.5
-description: Helm chart to install the Kubermatic Operator
-keywords:
-  - kubermatic
-home: https://www.kubermatic.com/
-sources:
-  - https://github.com/kubermatic/kubermatic
-maintainers:
-  - name: oliverbaehler
-    email: oliverbaehler@hotmail.com
-  - name: chifu1234
-    email: kk@sudo-i.net
+kind: ConfigMap
+metadata:
+  name: ca-bundle
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+data:
+  ca-bundle.pem: |
+{{ .Files.Get "static/ca-bundle.pem" | indent 4 }}
