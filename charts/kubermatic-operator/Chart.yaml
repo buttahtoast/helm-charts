@@ -13,7 +13,7 @@
 # limitations under the License.
 apiVersion: v1
 name: kubermatic-operator
-version: v2.24.5
+version: 2.24.5
 appVersion: v2.24.5
 description: Helm chart to install the Kubermatic Operator
 keywords:
