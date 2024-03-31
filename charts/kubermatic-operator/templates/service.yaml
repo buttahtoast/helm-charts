@@ -4,6 +4,7 @@ metadata:
   name: {{ include "helm.fullname" . }}-metrics
   labels:
     {{- include "helm.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
 spec:
   type: ClusterIP
   ports:
