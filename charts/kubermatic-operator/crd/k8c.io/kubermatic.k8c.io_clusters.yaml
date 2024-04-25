@@ -5,7 +5,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
     kubermatic.k8c.io/location: master,seed
-    app.kubernetes.io/version: v2.24.5
+    app.kubernetes.io/version: v2.25.1
   name: clusters.kubermatic.k8c.io
 spec:
   group: kubermatic.k8c.io
@@ -158,6 +158,18 @@ spec:
                               type: object
                           type: object
                       type: object
+                  type: object
+                backupConfig:
+                  description: 'Optional: BackupConfig contains the configuration options for managing the Cluster Backup Velero integration feature.'
+                  properties:
+                    backupStorageLocation:
+                      description: LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace.
+                      properties:
+                        name:
+                          description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names TODO: Add other useful fields. apiVersion, kind, uid?'
+                          type: string
+                      type: object
+                      x-kubernetes-map-type: atomic
                   type: object
                 cloud:
                   description: Cloud contains information regarding the cloud provider that is responsible for hosting the cluster's workload.
@@ -448,6 +460,9 @@ spec:
                         token:
                           description: Token is used to authenticate with the DigitalOcean API.
                           type: string
+                      type: object
+                    edge:
+                      description: Edge defines the configuration data for an edge cluster.
                       type: object
                     fake:
                       description: Fake is a dummy cloud provider that is only used for testing purposes. Do not try to actually use it.
@@ -901,8 +916,13 @@ spec:
                           description: The name of organization to use.
                           type: string
                         ovdcNetwork:
-                          description: The name of organizational virtual data center network that will be associated with the VMs and vApp.
+                          description: 'The name of organizational virtual data center network that will be associated with the VMs and vApp. Deprecated: OVDCNetwork has been deprecated starting with KKP 2.25 and will be removed in KKP 2.27+. It is recommended to use OVDCNetworks instead.'
                           type: string
+                        ovdcNetworks:
+                          description: OVDCNetworks is the list of organizational virtual data center networks that will be attached to the vApp and can be consumed the VMs.
+                          items:
+                            type: string
+                          type: array
                         password:
                           description: The VMware Cloud Director user password.
                           type: string
@@ -917,7 +937,6 @@ spec:
                           type: string
                       required:
                         - csi
-                        - ovdcNetwork
                       type: object
                     vsphere:
                       description: VSphere defines the configuration data of the vSphere.
@@ -1281,6 +1300,11 @@ spec:
                             - preferred
                             - required
                           type: string
+                        nodeSelector:
+                          additionalProperties:
+                            type: string
+                          description: NodeSelector is a selector which restricts the set of nodes where etcd Pods can run.
+                          type: object
                         resources:
                           description: Resources allows to override the resource requirements for etcd Pods.
                           properties:
@@ -1439,6 +1463,87 @@ spec:
                               description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. Requests cannot exceed Limits. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
                               type: object
                           type: object
+                      type: object
+                    operatingSystemManager:
+                      description: OperatingSystemManager configures operating-system-manager (the component generating node bootstrap scripts for machine-controller).
+                      properties:
+                        leaderElection:
+                          properties:
+                            leaseDurationSeconds:
+                              description: LeaseDurationSeconds is the duration in seconds that non-leader candidates will wait to force acquire leadership. This is measured against time of last observed ack.
+                              format: int32
+                              type: integer
+                            renewDeadlineSeconds:
+                              description: RenewDeadlineSeconds is the duration in seconds that the acting controlplane will retry refreshing leadership before giving up.
+                              format: int32
+                              type: integer
+                            retryPeriodSeconds:
+                              description: RetryPeriodSeconds is the duration in seconds the LeaderElector clients should wait between tries of actions.
+                              format: int32
+                              type: integer
+                          type: object
+                        replicas:
+                          format: int32
+                          type: integer
+                        resources:
+                          description: ResourceRequirements describes the compute resource requirements.
+                          properties:
+                            claims:
+                              description: "Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container. \n This is an alpha field and requires enabling the DynamicResourceAllocation feature gate. \n This field is immutable. It can only be set for containers."
+                              items:
+                                description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+                                properties:
+                                  name:
+                                    description: Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+                                    type: string
+                                required:
+                                  - name
+                                type: object
+                              type: array
+                              x-kubernetes-list-map-keys:
+                                - name
+                              x-kubernetes-list-type: map
+                            limits:
+                              additionalProperties:
+                                anyOf:
+                                  - type: integer
+                                  - type: string
+                                pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                x-kubernetes-int-or-string: true
+                              description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                              type: object
+                            requests:
+                              additionalProperties:
+                                anyOf:
+                                  - type: integer
+                                  - type: string
+                                pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                x-kubernetes-int-or-string: true
+                              description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. Requests cannot exceed Limits. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                              type: object
+                          type: object
+                        tolerations:
+                          items:
+                            description: The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.
+                            properties:
+                              effect:
+                                description: Effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+                                type: string
+                              key:
+                                description: Key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+                                type: string
+                              operator:
+                                description: Operator represents a key's relationship to the value. Valid operators are Exists and Equal. Defaults to Equal. Exists is equivalent to wildcard for value, so that a pod can tolerate all taints of a particular category.
+                                type: string
+                              tolerationSeconds:
+                                description: TolerationSeconds represents the period of time the toleration (which must be of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default, it is not set, which means tolerate the taint forever (do not evict). Zero and negative values will be treated as 0 (evict immediately) by the system.
+                                format: int64
+                                type: integer
+                              value:
+                                description: Value is the taint value the toleration matches to. If the operator is Exists, the value should be empty, otherwise just a regular string.
+                                type: string
+                            type: object
+                          type: array
                       type: object
                     prometheus:
                       description: Prometheus configures the Prometheus instance deployed into the cluster control plane.

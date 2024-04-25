@@ -5,7 +5,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
     kubermatic.k8c.io/location: master
-    app.kubernetes.io/version: v2.24.5
+    app.kubernetes.io/version: v2.25.1
   name: kubermaticsettings.kubermatic.k8c.io
 spec:
   group: kubermatic.k8c.io
@@ -116,6 +116,9 @@ spec:
                 displayTermsOfService:
                   description: DisplayDemoInfo controls whether a a link to TOS is shown in the footer.
                   type: boolean
+                enableClusterBackup:
+                  description: EnableClusterBackup enables the Cluster Backup feature in the dashboard.
+                  type: boolean
                 enableDashboard:
                   description: EnableDashboard enables the link to the Kubernetes dashboard for a user cluster.
                   type: boolean
@@ -214,6 +217,18 @@ spec:
                         enforceCustomDisk:
                           description: EnforceCustomDisk will enforce the custom disk option for machines for the dashboard.
                           type: boolean
+                      type: object
+                    vmwareCloudDirector:
+                      description: VMwareCloudDirector are the configurations for VMware Cloud Director provider.
+                      properties:
+                        ipAllocationModes:
+                          description: IPAllocationModes are the allowed IP allocation modes for the VMware Cloud Director provider. If not set, all modes are allowed.
+                          items:
+                            enum:
+                              - DHCP
+                              - POOL
+                            type: string
+                          type: array
                       type: object
                   type: object
                 restrictProjectCreation:

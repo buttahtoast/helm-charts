@@ -5,7 +5,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.9.2
     kubermatic.k8c.io/location: "master,seed"
-    app.kubernetes.io/version: v2.24.5
+    app.kubernetes.io/version: v2.25.1
   creationTimestamp: null
   name: customoperatingsystemprofiles.operatingsystemmanager.k8c.io
 spec:
@@ -25,10 +25,10 @@ spec:
           description: OperatingSystemProfile is the object that represents the OperatingSystemProfile
           properties:
             apiVersion:
-              description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+              description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources"
               type: string
             kind:
-              description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+              description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds"
               type: string
             metadata:
               type: object
@@ -91,7 +91,7 @@ spec:
                             type: string
                           type: array
                         yum_repo_dir:
-                          description: 'YumRepoDir the repo parts directory where individual yum repo config files will be written. Default: /etc/yum.repos.d'
+                          description: "YumRepoDir the repo parts directory where individual yum repo config files will be written. Default: /etc/yum.repos.d"
                           type: string
                         yum_repos:
                           additionalProperties:
@@ -102,7 +102,7 @@ spec:
                           type: object
                       type: object
                     supportedContainerRuntimes:
-                      description: SupportedContainerRuntimes represents the container runtimes supported by the given OS
+                      description: SupportedContainerRuntimes represents the container runtimes supported by the given OS. Docker has been deprecated and is no-op.
                       items:
                         description: ContainerRuntimeSpec aggregates information about a specific container runtime
                         properties:
@@ -200,7 +200,7 @@ spec:
                       type: array
                   type: object
                 osName:
-                  description: 'OSType represent the operating system name e.g: ubuntu'
+                  description: "OSType represent the operating system name e.g: ubuntu"
                   enum:
                     - flatcar
                     - rhel
@@ -268,7 +268,7 @@ spec:
                             type: string
                           type: array
                         yum_repo_dir:
-                          description: 'YumRepoDir the repo parts directory where individual yum repo config files will be written. Default: /etc/yum.repos.d'
+                          description: "YumRepoDir the repo parts directory where individual yum repo config files will be written. Default: /etc/yum.repos.d"
                           type: string
                         yum_repos:
                           additionalProperties:
@@ -279,7 +279,7 @@ spec:
                           type: object
                       type: object
                     supportedContainerRuntimes:
-                      description: SupportedContainerRuntimes represents the container runtimes supported by the given OS
+                      description: SupportedContainerRuntimes represents the container runtimes supported by the given OS. Docker has been deprecated and is no-op.
                       items:
                         description: ContainerRuntimeSpec aggregates information about a specific container runtime
                         properties:
@@ -394,6 +394,7 @@ spec:
                           - aws
                           - azure
                           - digitalocean
+                          - edge
                           - gce
                           - hetzner
                           - kubevirt
