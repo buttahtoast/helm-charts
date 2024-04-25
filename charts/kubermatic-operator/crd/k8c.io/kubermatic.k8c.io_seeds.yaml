@@ -5,7 +5,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
     kubermatic.k8c.io/location: master,seed
-    app.kubernetes.io/version: v2.24.5
+    app.kubernetes.io/version: v2.25.1
   name: seeds.kubermatic.k8c.io
 spec:
   group: kubermatic.k8c.io
@@ -161,6 +161,9 @@ spec:
                           disableCsiDriver:
                             description: 'Optional: DisableCSIDriver disables the installation of CSI driver on every clusters within the DC If true it can''t be over-written in the cluster configuration'
                             type: boolean
+                          edge:
+                            description: Edge contains settings for clusters using manually created nodes in edge envs.
+                            type: object
                           enforceAuditLogging:
                             description: 'Optional: EnforceAuditLogging enforces audit logging on every cluster within the DC, ignoring cluster-specific settings.'
                             type: boolean
@@ -1002,6 +1005,11 @@ spec:
                             - preferred
                             - required
                           type: string
+                        nodeSelector:
+                          additionalProperties:
+                            type: string
+                          description: NodeSelector is a selector which restricts the set of nodes where etcd Pods can run.
+                          type: object
                         resources:
                           description: Resources allows to override the resource requirements for etcd Pods.
                           properties:
@@ -1160,6 +1168,87 @@ spec:
                               description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. Requests cannot exceed Limits. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
                               type: object
                           type: object
+                      type: object
+                    operatingSystemManager:
+                      description: OperatingSystemManager configures operating-system-manager (the component generating node bootstrap scripts for machine-controller).
+                      properties:
+                        leaderElection:
+                          properties:
+                            leaseDurationSeconds:
+                              description: LeaseDurationSeconds is the duration in seconds that non-leader candidates will wait to force acquire leadership. This is measured against time of last observed ack.
+                              format: int32
+                              type: integer
+                            renewDeadlineSeconds:
+                              description: RenewDeadlineSeconds is the duration in seconds that the acting controlplane will retry refreshing leadership before giving up.
+                              format: int32
+                              type: integer
+                            retryPeriodSeconds:
+                              description: RetryPeriodSeconds is the duration in seconds the LeaderElector clients should wait between tries of actions.
+                              format: int32
+                              type: integer
+                          type: object
+                        replicas:
+                          format: int32
+                          type: integer
+                        resources:
+                          description: ResourceRequirements describes the compute resource requirements.
+                          properties:
+                            claims:
+                              description: "Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container. \n This is an alpha field and requires enabling the DynamicResourceAllocation feature gate. \n This field is immutable. It can only be set for containers."
+                              items:
+                                description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+                                properties:
+                                  name:
+                                    description: Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+                                    type: string
+                                required:
+                                  - name
+                                type: object
+                              type: array
+                              x-kubernetes-list-map-keys:
+                                - name
+                              x-kubernetes-list-type: map
+                            limits:
+                              additionalProperties:
+                                anyOf:
+                                  - type: integer
+                                  - type: string
+                                pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                x-kubernetes-int-or-string: true
+                              description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                              type: object
+                            requests:
+                              additionalProperties:
+                                anyOf:
+                                  - type: integer
+                                  - type: string
+                                pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                x-kubernetes-int-or-string: true
+                              description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. Requests cannot exceed Limits. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                              type: object
+                          type: object
+                        tolerations:
+                          items:
+                            description: The pod this Toleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>.
+                            properties:
+                              effect:
+                                description: Effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+                                type: string
+                              key:
+                                description: Key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+                                type: string
+                              operator:
+                                description: Operator represents a key's relationship to the value. Valid operators are Exists and Equal. Defaults to Equal. Exists is equivalent to wildcard for value, so that a pod can tolerate all taints of a particular category.
+                                type: string
+                              tolerationSeconds:
+                                description: TolerationSeconds represents the period of time the toleration (which must be of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default, it is not set, which means tolerate the taint forever (do not evict). Zero and negative values will be treated as 0 (evict immediately) by the system.
+                                format: int64
+                                type: integer
+                              value:
+                                description: Value is the taint value the toleration matches to. If the operator is Exists, the value should be empty, otherwise just a regular string.
+                                type: string
+                            type: object
+                          type: array
                       type: object
                     prometheus:
                       description: Prometheus configures the Prometheus instance deployed into the cluster control plane.
@@ -1482,6 +1571,13 @@ spec:
                     reports:
                       additionalProperties:
                         properties:
+                          format:
+                            default: csv
+                            description: Format is the file format of the generated report, one of "csv" or "json" (defaults to "csv").
+                            enum:
+                              - csv
+                              - json
+                            type: string
                           interval:
                             default: 7
                             description: Interval defines the number of days consulted in the metering report. Ignored when `Monthly` is set to true
@@ -1515,16 +1611,18 @@ spec:
                           schedule: 0 1 * * 6
                       description: ReportConfigurations is a map of report configuration definitions.
                       type: object
+                    retentionDays:
+                      description: RetentionDays is the number of days for which data should be kept in Prometheus. Default value is 90.
+                      type: integer
                     storageClassName:
-                      description: StorageClassName is the name of the storage class that the metering prometheus instance uses to store metric data for reporting.
+                      description: StorageClassName is the name of the storage class that the metering Prometheus instance uses to store metric data for reporting.
                       type: string
                     storageSize:
-                      description: StorageSize is the size of the storage class. Default value is 100Gi.
+                      description: StorageSize is the size of the storage class. Default value is 100Gi. Changing this value requires manual deletion of the existing Prometheus PVC (and thereby removing all metering data).
                       type: string
                   required:
                     - enabled
                     - storageClassName
-                    - storageSize
                   type: object
                 mla:
                   description: 'Optional: MLA allows configuring seed level MLA (Monitoring, Logging & Alerting) stack settings.'

@@ -5,7 +5,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
     kubermatic.k8c.io/location: usercluster
-    app.kubernetes.io/version: v2.24.5
+    app.kubernetes.io/version: v2.25.1
   name: applicationinstallations.apps.kubermatic.k8c.io
 spec:
   group: apps.kubermatic.k8c.io
@@ -99,9 +99,12 @@ spec:
                   description: "ReconciliationInterval is the interval at which to force the reconciliation of the application. By default, Applications are only reconciled on changes on spec, annotations, or the parent application definition. Meaning that if the user manually deletes the workload deployed by the application, nothing will happen until the application CR change. \n Setting a value greater than zero force reconciliation even if no changes occurred on application CR. Setting a value equal to 0 disables the force reconciliation of the application (default behavior). Setting this too low can cause a heavy load and may disrupt your application workload depending on the template method."
                   type: string
                 values:
-                  description: Values describe overrides for manifest-rendering. It's a free yaml field.
+                  description: 'Values specify values overrides that are passed to helm templating. Comments are not preserved. Deprecated: Use ValuesBlock instead.'
                   type: object
                   x-kubernetes-preserve-unknown-fields: true
+                valuesBlock:
+                  description: ValuesBlock specifies values overrides that are passed to helm templating. Comments are preserved.
+                  type: string
               required:
                 - applicationRef
                 - namespace

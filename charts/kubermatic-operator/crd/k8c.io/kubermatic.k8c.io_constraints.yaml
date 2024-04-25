@@ -5,7 +5,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
     kubermatic.k8c.io/location: master,seed
-    app.kubernetes.io/version: v2.24.5
+    app.kubernetes.io/version: v2.25.1
   name: constraints.kubermatic.k8c.io
 spec:
   group: kubermatic.k8c.io
@@ -138,7 +138,7 @@ spec:
                         type: string
                       type: array
                     scope:
-                      description: Scope accepts *, Cluster, or Namespaced which determines if cluster-scoped and/or namesapced-scoped resources are selected. (defaults to *)
+                      description: Scope accepts *, Cluster, or Namespaced which determines if cluster-scoped and/or namespace-scoped resources are selected. (defaults to *)
                       type: string
                   type: object
                 parameters:

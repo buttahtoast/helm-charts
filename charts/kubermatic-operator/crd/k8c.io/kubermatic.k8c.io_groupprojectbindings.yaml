@@ -5,7 +5,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
     kubermatic.k8c.io/location: master,seed
-    app.kubernetes.io/version: v2.24.5
+    app.kubernetes.io/version: v2.25.1
   name: groupprojectbindings.kubermatic.k8c.io
 spec:
   group: kubermatic.k8c.io
