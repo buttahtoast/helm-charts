@@ -32,6 +32,10 @@ podAnnotations: {}
 podSecurityContext: {}
   # fsGroup: 2000
 
+# -- Extra environment variables (`key: value` style, allows templating)
+envs: {}
+# EXTRA: "value"
+
 securityContext:
   capabilities:
     drop:
@@ -53,7 +57,7 @@ ingress:
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection $connection_upgrade;
   path: "/"
-  pathType: ImplementationSpecific
+  pathType: Prefix
   host: chart-example.local
   tls: false
 
@@ -69,18 +73,23 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
+# -- Set the node selector
+nodeSelector: {}
+# -- Set list of tolerations
+tolerations: []
+# -- Set affinity rules
+affinity: {}
+# -- Set Topology Spread Constraints
+topologySpreadConstraints: []
+# -- Set a pod priorityClassName
+priorityClassName: ""
+
 autoscaling:
   enabled: false
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
 
 prometheus:
   # -- Enable Prometheus Integration

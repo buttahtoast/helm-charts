@@ -33,6 +33,18 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+          {{- range $key, $value := .Values.args }}
+              {{- if not (kindIs "invalid" $value) }}
+          - -{{ $key | mustRegexFind "^[^_]+" }}={{ include "helm.utils.template" (dict "tpl" $value "ctx" $.ctx) }}
+              {{- else }}
+          - -{{ $key | mustRegexFind "^[^_]+" }}
+              {{- end }}
+          {{- end }}
+          {{- with .envs }}
+          env:
+            {{- include "helm.utils.envs" (dict "envs" . "ctx" $) | nindent 12 }}
+          {{- end }}
           ports:
             - name: http
               containerPort: 8080

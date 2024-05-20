@@ -61,3 +61,21 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "helm.utils.template" -}}
+  {{- if $.ctx }}
+    {{- if typeIs "string" $.tpl }}
+      {{- tpl  $.tpl $.ctx  | replace "+|" "\n" }}
+    {{- else }}
+      {{- tpl ($.tpl | toYaml) $.ctx | replace "+|" "\n" }}
+    {{- end }}
+  {{- end }}
+{{- end -}}
+
+{{- define "helm.utils.envs" -}}
+  {{- range $key, $value := $.envs }}
+- name: {{ $key }}
+  value: {{ include "helm.utils.template" (dict "tpl" $value "ctx" $.ctx) }} 
+  {{- end }}
+{{- end -}}
+
