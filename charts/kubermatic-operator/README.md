@@ -1,6 +1,6 @@
 # kubermatic-operator
 
-![Version: 1.1.0](https://img.shields.io/badge/Version-1.1.0-informational?style=flat-square) ![AppVersion: v2.25.1](https://img.shields.io/badge/AppVersion-v2.25.1-informational?style=flat-square)
+![Version: 1.1.1](https://img.shields.io/badge/Version-1.1.1-informational?style=flat-square) ![AppVersion: v2.25.1](https://img.shields.io/badge/AppVersion-v2.25.1-informational?style=flat-square)
 
 Helm chart to install the Kubermatic Operator
 
