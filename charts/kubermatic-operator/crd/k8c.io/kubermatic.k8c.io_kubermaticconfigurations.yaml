@@ -5,7 +5,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
     kubermatic.k8c.io/location: master,seed
-    app.kubernetes.io/version: v2.25.1
+    app.kubernetes.io/version: v2.25.4
   name: kubermaticconfigurations.kubermatic.k8c.io
 spec:
   group: kubermatic.k8c.io
@@ -1500,7 +1500,7 @@ spec:
                           type: object
                           x-kubernetes-map-type: atomic
                         helmRepository:
-                          description: HelmRepository specifies OCI repository containing Helm charts of system Applications.
+                          description: HelmRepository specifies OCI repository containing Helm charts of system Applications e.g. oci://localhost:5000/myrepo.
                           type: string
                       type: object
                   type: object
