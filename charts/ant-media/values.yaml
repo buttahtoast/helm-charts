@@ -1,0 +1,433 @@
+# Default values for ant-media.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+global: {}
+
+# Redis Dependency
+redis:
+  architecture: "replication"
+  auth:
+    enabled: true
+  tls:
+    enabled: false
+    existingSecret: "{{$.Release.Name}}-tls-secret"
+    certFilename: "cert.pem"
+    certKeyFilename: "cert.key"
+    certCAFilename: "ca.pem"
+  metrics: 
+    enabled: true
+    extraArgs:
+      skip-tls-verification: true
+  sentinel:
+    enabled: true
+    masterSet: antmedia
+  # Custom Configuration for this Chart
+  custom:
+    # -- Redis Database-Key
+    database: 0
+    # -- Custom Redisson Configuration ([Reference](https://github.com/redisson/redisson/wiki/2.-Configuration/))
+    config: {}
+    
+    # Helper Configuration
+    helper:
+     # Image Configuration
+      image:
+        # -- Image Registry
+        registry: docker.io
+        # -- Image Repository
+        repository: bitnami/redis-sentinel
+        # -- Image Tag
+        tag: "7.2.5-debian-12-r0"
+        # -- Image pull policy
+        pullPolicy: IfNotPresent
+      # -- SecurityContext for Pod
+      podSecurityContext:
+        enabled: true
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      # -- SecurityContext for Container
+      securityContext:
+        enabled: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 1001
+
+    # Redis Backup
+    backup:
+      # -- Enable Backup Job
+      enabled: true
+      # -- Schedule For Backup Job
+      schedule: "* * * * *"
+      # -- Retention in Revisions for the backup
+      retentionDays: 7
+      # -- Persistence Configuration
+      persistence:
+        # -- Enable Persistence
+        enabled: true
+        # -- Labels for the persistence
+        labels: {}
+        # -- Annotations for the persistence
+        annotations:
+          helm.sh/resource-policy: keep
+        # -- StorageClass
+        storageClass: ""
+        # -- Access Modes
+        accessModes:
+          - "ReadWriteOnce"
+        # -- Path for the persistence
+        size: "3Gi"
+      # -- RestartPolicy
+      restartPolicy: "OnFailure"
+      # -- Time to live for the job
+      ttlSecondsAfterFinished: 60
+      # -- Concurrency Policy
+      concurrencyPolicy: ""
+      # -- Successful Jobs History Limit
+      successfulJobsHistoryLimit: 1
+      # -- Failed Jobs History Limit
+      failedJobsHistoryLimit: 3
+
+# [JSON Exporter (Prometheus Metrics)](https://artifacthub.io/packages/helm/prometheus-community/prometheus-json-exporter)
+exporter:
+  # -- Enable Prometheus Exporter
+  enabled: true
+  configuration:
+    config: |
+      ---
+      metrics:
+      - name: antmedia
+        type: object
+        help: AntMedia Server broadcast statistics
+        path: $[*]
+        labels:
+          streamId: $.streamId
+          name: $.name
+          status: $.status
+          type: $.type
+        values:
+          speed: $.speed
+          bitrate: $.bitrate
+          hlsViewerCount: $.hlsViewerCount
+          webRTCViewerCount: $.webRTCViewerCount
+          rtmpViewerCount: $.rtmpViewerCount
+          mp4Enabled: $.mp4Enabled
+          webMEnabled: $.webMEnabled
+
+# -- Kafka Dependency (Untested)
+kafka:
+  enabled: false
+  architecture: "replicaset"
+  auth:
+    enabled: true
+  tls:
+    enabled: false
+  metrics: 
+    enabled: true
+
+
+
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Image Configuration
+image:
+  # -- Image Registry
+  registry: docker.io
+  # -- Image Repository
+  repository: oliverbaehler/dev
+  # -- Image Tag
+  tag: "antmedia"
+  # -- Image pull policy
+  pullPolicy: Always
+
+# -- Image PullSecrets
+imagePullSecrets: []
+
+config:
+  # -- Server mode. It can be standalone or cluster. If cluster mode is specified then mongodb host, username and password should also be provided.
+  mode: "standalone"
+  # -- License Key
+  license: ""
+  # -- JVM Memory Options(-Xms1g -Xmx4g): Set the Java heap size.
+  java: "-Xms1g"
+  limits:
+    # -- Set the CPU limit percentage that server does not exceed. If CPU is more than this value, server reports highResourceUsage and does not allow publish or play.
+    cpu: 75
+    # -- Set the Memory Limit percentage that server does not exceed. If Memory usage is more than this value, server reports highResourceUsage and does not allow publish or play
+    memory: 75
+
+  # Redisson Configuration
+  redis:
+    # -- Redis Database-Key
+    database: 0
+    # -- Custom Redison Configuration
+    config: 
+
+# Origin
+origin:
+  # -- Amount of replicas
+  replicaCount: 1
+  # -- Deployment Strategy
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  # -- Additional Pod Labels
+  podLabels: {}
+  # -- Additional Pod Annotations
+  podAnnotations: {}
+  # -- SecurityContext for Pod
+  podSecurityContext:
+    enabled: true
+    seccompProfile:
+      type: RuntimeDefault
+  # -- SecurityContext for Container
+  securityContext:
+    enabled: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: true
+    runAsUser: 999
+  # -- Set DNS Policy
+  dnsPolicy: ClusterFirstWithHostNet
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  # -- Executed command
+  cmd:
+  #  - sh
+  #  - -c
+  #  - "sleep infinity"
+  # -- Set the node selector
+  nodeSelector: {}
+  # -- Set list of tolerations
+  tolerations: []
+  # -- Set affinity rules
+  affinity: {}
+  # -- Set Topology Spread Constraints
+  topologySpreadConstraints: []
+  # -- Set a pod priorityClassName
+  priorityClassName: ""
+  # -- Liveness Probe
+  livenessProbe:
+    enabled: false
+    httpGet:
+      path: / 
+      port: 5080
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  # -- Readiness Probe
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: / 
+      port: 5080
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  # -- Extra environment variables (`key: value` style, allows templating)
+  envs: {}
+  # EXTRA: "value"
+  # -- Additional volumes on the output Deployment definition.
+  volumes: []
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+  # -- Additional volumeMounts on the output Deployment definition.
+  volumeMounts: []
+  # - name: foo
+  #   mountPath: "/etc/foo"
+  #   readOnly: true
+
+
+  # PodDisruptionBudget
+  pdb:
+    enabled: false
+    minAvailable: 1
+    maxUnavailable: 0
+
+  # AutoScaler 
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+  # Ingress
+  ingress:
+    enabled: true
+    className: "cilium"
+    path: "/"
+    pathType: "Prefix"
+    annotations:
+      cert-manager.io/cluster-issuer: cloudflare
+      ingress.cilium.io/loadbalancer-mode: shared
+    hosts: 
+     - "streams.sandbox.xmodel.fans"
+    tls: true
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+instances:
+  - name: ""
+
+# Origin
+coturn:
+  # -- Enable CoTurn Server
+  enabled: true
+
+  # Image Configuration
+  image:
+    # -- Image Registry
+    registry: docker.io
+    # -- Image Repository
+    repository: coturn/coturn
+    # -- Image Tag
+    tag: ""
+    # -- Image pull policy
+    pullPolicy: Always
+
+  # -- Amount of replicas
+  replicaCount: 1
+  # -- Deployment Strategy
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  # -- Additional Pod Labels
+  podLabels: {}
+  # -- Additional Pod Annotations
+  podAnnotations: {}
+  # -- SecurityContext for Pod
+  podSecurityContext:
+    enabled: true
+    seccompProfile:
+      type: RuntimeDefault
+  # -- SecurityContext for Container
+  securityContext:
+    enabled: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: true
+    runAsUser: 999
+  # -- Set DNS Policy
+  dnsPolicy: ClusterFirstWithHostNet
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  # -- Executed command
+  cmd:
+  #  - sh
+  #  - -c
+  #  - "sleep infinity"
+  # -- Set the node selector
+  nodeSelector: {}
+  # -- Set list of tolerations
+  tolerations: []
+  # -- Set affinity rules
+  affinity: {}
+  # -- Set Topology Spread Constraints
+  topologySpreadConstraints: []
+  # -- Set a pod priorityClassName
+  priorityClassName: ""
+  # -- Liveness Probe
+  livenessProbe:
+    enabled: false
+    httpGet:
+      path: / 
+      port: 5080
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  # -- Readiness Probe
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: / 
+      port: 5080
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  # -- Extra environment variables (`key: value` style, allows templating)
+  envs: {}
+  # EXTRA: "value"
+  # -- Additional volumes on the output Deployment definition.
+  volumes: []
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+  # -- Additional volumeMounts on the output Deployment definition.
+  volumeMounts: []
+  # - name: foo
+  #   mountPath: "/etc/foo"
+  #   readOnly: true
+
+
+  # PodDisruptionBudget
+  pdb:
+    enabled: false
+    minAvailable: 1
+    maxUnavailable: 0
+
+  # AutoScaler 
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+  # Ingress
+  ingress:
+    enabled: true
+    className: "cilium"
+    path: "/"
+    pathType: "Prefix"
+    annotations:
+      cert-manager.io/cluster-issuer: cloudflare
+      ingress.cilium.io/loadbalancer-mode: shared
+    host: "origin.ant.buttah.cloud"
+    tls: true
+
+netpol:
+  enabled: false
+  ingress:
+    from:
+      - namespaceSelector: {}

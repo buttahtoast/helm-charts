@@ -1,0 +1,33 @@
+{{- if .Values.origin.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "ant-media.fullname" . }}-origin
+  labels:
+    {{- include "ant-media.labels" . | nindent 4 }}
+    "app.kubernetes.io/component": "origin"
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "ant-media.fullname" . }}-origin
+  minReplicas: {{ .Values.origin.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.origin.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.oirigin.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.origin.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.origin.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.origin.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

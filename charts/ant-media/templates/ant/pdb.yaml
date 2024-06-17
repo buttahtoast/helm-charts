@@ -1,0 +1,20 @@
+{{- if $.Values.origin.pdb.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "ant-media.fullname" . }}-origin
+  labels:
+    {{- include "ant-media.labels" . | nindent 4 }}
+    "app.kubernetes.io/component": "origin"
+spec:
+  {{- with .Values.origin.pdb.maxUnavailable }}
+  maxUnavailable: {{ . }}
+  {{- end }}
+  {{- with .Values.origin.pdb.minAvailable }}
+  minAvailable: {{ . }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "ant-media.selectorLabels" . | nindent 6 }}
+      "app.kubernetes.io/component": "origin"
+{{- end }}

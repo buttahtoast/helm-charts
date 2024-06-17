@@ -1,0 +1,131 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ant-media.fullname" . }}-origin
+  labels:
+    {{- include "ant-media.labels" . | nindent 4 }}
+    "app.kubernetes.io/component": "origin"
+spec:
+  {{- if not .Values.origin.autoscaling.enabled }}
+  replicas: {{ .Values.origin.replicaCount }}
+  {{- end }}
+  {{- with .Values.origin.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      "app.kubernetes.io/component": "origin"
+      {{- include "ant-media.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        "app.kubernetes.io/component": "origin"
+        {{- include "ant-media.labels" $ | nindent 8 }} 
+    spec:
+      serviceAccountName: {{ include "ant-media.serviceAccountName" $ }}
+      volumes:
+        - name: redis-scripts
+          configMap:
+            defaultMode: 0777
+            name: {{ $.Release.Name }}-redis-ready
+        - name: redis
+          configMap:
+            name: {{ include "ant-media.fullname" . }}-redisson
+        {{- with .Values.origin.volumes }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.origin.podSecurityContext.enabled }}
+      securityContext:
+        {{- toYaml (omit .Values.origin.podSecurityContext "enabled") | nindent 8 }}
+      {{- end }}
+      {{- with .Values.origin.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.origin.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.origin.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.origin.dnsPolicy }}
+      dnsPolicy: {{ . }}
+      {{- end }}
+      initContainers:
+      - name: redis-ready
+        image: "{{ $.Values.redis.custom.helper.image.repository }}:{{ $.Values.redis.custom.helper.image.tag | }}"
+        imagePullPolicy: {{ $.Values.redis.custom.helper.image.pullPolicy }}
+        {{- if $.Values.redis.custom.helper.securityContext.enabled }}
+        securityContext:
+          {{- toYaml (omit $.Values.redis.custom.helper.securityContext "enabled") | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: redis-scripts
+          mountPath: /scripts
+        command:
+        - /bin/bash
+        - -c
+        - /scripts/ready.sh
+        env:
+          {{- include "ant-media.common.env" $ | nindent 10 }}
+          {{- with $.Values.redis.custom.helper.env }}
+            {{- include "helm.utils.envs" (dict "envs" . "ctx" $) | nindent 10 }}
+          {{- end }}
+      containers:
+      - name: ant-media-server
+        {{- if .Values.origin.securityContext.enabled }}
+        securityContext:
+          {{- toYaml (omit .Values.origin.securityContext "enabled") | nindent 10 }}
+        {{- end }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- with .Values.origin.cmd }}
+        command:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        args:
+        {{- include "ant-media.common.args"  $ | nindent 8 }}
+        {{- range $key, $value := .Values.origin.args }}
+            {{- if not (kindIs "invalid" $value) }}
+        - -{{ $key | mustRegexFind "^[^_]+" }}={{ include "helm.utils.template" (dict "tpl" $value "ctx" $.ctx) }}
+            {{- else }}
+        - -{{ $key | mustRegexFind "^[^_]+" }}
+            {{- end }}
+        {{- end }}
+        env:
+          {{- include "ant-media.common.env"  $ | nindent 8 }}
+          {{- with .envs }}
+            {{- include "helm.utils.envs" (dict "envs" . "ctx" $) | nindent 8 }}
+          {{- end }}
+        {{- with .Values.origin.resources }}  
+        resources:
+          {{ .| toYaml | nindent 10 }}
+        {{- end }}
+        {{- if .Values.origin.livenessProbe.enabled }}
+        livenessProbe:
+          {{- toYaml (omit .Values.origin.livenessProbe "enabled") | nindent 10 }}
+        {{- end }}
+        {{- if .Values.origin.readinessProbe.enabled }}
+        readinessProbe:
+          {{- toYaml (omit .Values.origin.readinessProbe "enabled") | nindent 10 }}
+        {{- end }}
+        ports:
+        - name: http
+          containerPort: 5080
+          protocol: TCP
+        volumeMounts:
+        - name: redis
+          mountPath: /usr/local/antmedia/redis.yaml
+          subPath: redis.yaml
+        {{- with .Values.origin.volumeMounts }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+

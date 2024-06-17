@@ -1,0 +1,61 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ include "ant-media.fullname" . }}-coturn
+  labels:
+    {{- include "ant-media.labels" . | nindent 4 }}
+    "app.kubernetes.io/component": "coturn"
+data:
+  base.conf: |-
+    {{- if or .Values.coturn.config.staticSecret.secretName .Values.coturn.config.staticSecret.value }}
+    use-auth-secret
+    {{- else if or .Values.coturn.config.staticUsers.secretName .Values.coturn.config.staticUsers.users }}
+    lt-cred-mech
+    {{- else }}
+    {{- fail "Either static users or a static secret is required!" }}
+    {{- end }}
+    realm={{ .Values.coturn.config.realm }}
+    listening-port={{ .Values.coturn.config.ports.listening }}
+    {{- with .Values.coturn.config.externalIp }}
+    external-ip={{ . }}
+    {{- end }}
+    {{- if .Values.coturn.config.tls.secretName }}
+    no-tlsv1
+    no-tlsv1_1
+    no-tlsv1_2
+    tls-listening-port={{ .Values.coturn.config.ports.tlsListening }}
+    pkey=/tls/tls.key
+    cert=/tls/tls.crt
+    {{- else }}
+    no-tls
+    no-dtls
+    {{- end }}
+    min-port={{ .Values.coturn.config.ports.relay.min }}
+    max-port={{ .Values.coturn.config.ports.relay.max }}
+    {{- if .Values.coturn.config.mobility }}
+    mobility
+    {{- end }}
+    log-file=stdout
+    pidfile=/tmp/turnserver.pid
+    prometheus
+    {{- if .Values.coturn.config.cliPasswordHash }}
+    cli-ip=127.0.0.1
+    cli-port=5766
+    cli-password={{ .Values.coturn.config.cliPasswordHash }}
+    {{- else }}
+    no-cli
+    {{- end }}
+    {{- if .Values.coturn.config.logging.verbose }}
+    {{- if .Values.coturn.config.logging.veryVerbose }}
+    Verbose
+    {{- else }}
+    verbose
+    {{- end }}
+    {{- if .Values.coturn.config.logging.logBinding }}
+    log-binding
+    {{- end }}
+    {{- end }}
+  {{- with .Values.coturn.config.extraConfig }}
+  extra.conf: {{ tpl . $ | quote }}
+  {{- end }}
+  entrypoint.sh: {{ $.Files.Get "src/entrypoint.sh" | quote }}
