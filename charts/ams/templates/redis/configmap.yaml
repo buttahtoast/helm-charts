@@ -1,0 +1,198 @@
+{{- $Values := $.Values.redis.custom.backup -}}
+{{- $sentinel := (printf "%s-redis-headless" $.Release.Name) -}}
+{{- $sentinel_port := "26379" -}}
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ $.Release.Name }}-redisson
+  labels:
+    {{- include "ant-media.labels" . | nindent 4 }}
+    "app.kubernetes.io/component": "redis"
+data:
+  redis.yaml: |
+    sentinelServersConfig:
+      masterName: {{ $.Values.redis.sentinel.masterSet }}
+      sentinelAddresses:
+        - "redis://{{ $sentinel }}:26379"
+      password: "${REDISCLI_AUTH}"
+      database: "{{ $.Values.redis.custom.database }}"
+      {{- if $.Values.redis.tls.enabled }}
+    "sslEnableEndpointIdentification": true,
+    "sslTruststore": "/path/to/your/truststore.jks",
+    "sslTruststorePassword": "yourTruststorePassword"
+      {{- end }}
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ $.Release.Name }}-redis-ready
+  labels:
+    {{- include "ant-media.labels" . | nindent 4 }}
+    "app.kubernetes.io/component": "redis"
+data:
+  ready.sh: |
+    #!/bin/bash
+    
+    # Configuration variables
+    SENTINEL_ADDRESSES=("{{ $sentinel }}:{{ $sentinel_port}}")
+    MASTER_NAME="{{ $.Values.redis.sentinel.masterSet }}"
+    RETRY_INTERVAL=5
+    MAX_RETRIES=30
+    
+    # Function to check if Sentinel is ready
+    check_sentinel_ready() {
+      for SENTINEL_ADDRESS in "${SENTINEL_ADDRESSES[@]}"; do
+        echo "Checking Sentinel at $SENTINEL_ADDRESS..."
+        redis-cli -h $(echo $SENTINEL_ADDRESS | cut -d: -f1) -p $(echo $SENTINEL_ADDRESS | cut -d: -f2) sentinel get-master-addr-by-name $MASTER_NAME
+        if [ $? -eq 0 ]; then
+          echo "Sentinel at $SENTINEL_ADDRESS is ready."
+          return 0
+        else
+          echo "Sentinel at $SENTINEL_ADDRESS is not ready yet."
+        fi
+      done
+      return 1
+    }
+    
+    # Main loop to wait for Sentinel readiness
+    RETRIES=0
+    while [ $RETRIES -lt $MAX_RETRIES ]; do
+      if check_sentinel_ready; then
+        echo "Sentinel cluster is ready to accept connections."
+        exit 0
+      fi
+      echo "Retrying in $RETRY_INTERVAL seconds..."
+      sleep $RETRY_INTERVAL
+      RETRIES=$((RETRIES + 1))
+    done
+    
+    echo "Sentinel cluster is not ready after $MAX_RETRIES attempts."
+    exit 1
+
+
+
+
+{{- if $.Values.redis.custom.backup.enabled }}
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ $.Release.Name }}-redis-backup
+  labels:
+    {{- include "ant-media.labels" . | nindent 4 }}
+    "app.kubernetes.io/component": "redis"
+data:
+  backup.sh: |
+    #!/bin/bash
+    
+    # Configuration variables (can be passed as environment variables)
+    MASTER_NAME="{{ $.Values.redis.sentinel.masterSet }}"
+    SENTINEL_ADDRESS="{{ $sentinel }}"
+    PASSWORD="${REDIS_PASSWORD:-}"
+    DATABASE="{{ $.Values.redis.custom.database }}"
+    BACKUP_DIR="${BACKUP_DIR:-/backups}"
+    RETENTION_DAYS="{{ $.Values.redis.custom.backup.retentionDays }}"
+    
+    # Function to get the current master address from Sentinel
+    get_master_address() {
+      MASTER_INFO=$(redis-cli -p 26379 -h $SENTINEL_ADDRESS sentinel get-master-addr-by-name $MASTER_NAME)
+      
+      if [ $? -ne 0 ]; then
+        echo "Failed to get master address from Sentinel"
+        exit 1
+      fi
+    
+      MASTER_HOST=$(echo $MASTER_INFO | awk '{print $1}')
+      MASTER_PORT=$(echo $MASTER_INFO | awk '{print $2}')
+    
+      if [ -z "$MASTER_HOST" ] || [ -z "$MASTER_PORT" ]; then
+        echo "Failed to parse master address"
+        exit 1
+      fi
+    
+      echo "$MASTER_HOST $MASTER_PORT"
+    }
+    
+    # Function to create a Redis backup
+    create_backup() {
+      TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+      BACKUP_FILE="${BACKUP_DIR}/redis-backup-${TIMESTAMP}.rdb"
+    
+      MASTER_ADDR=$(get_master_address)
+      MASTER_HOST=$(echo $MASTER_ADDR | awk '{print $1}')
+      MASTER_PORT=$(echo $MASTER_ADDR | awk '{print $2}')
+      
+      # Connect to Redis master and create a backup
+      if [ -n "$PASSWORD" ]; then
+        redis-cli -h $MASTER_HOST -p $MASTER_PORT -a $PASSWORD --rdb $BACKUP_FILE
+      else
+        redis-cli -h $MASTER_HOST -p $MASTER_PORT --rdb $BACKUP_FILE
+      fi
+    
+      if [ $? -ne 0 ]; then
+        echo "Failed to create backup"
+        exit 1
+      fi
+    
+      echo "Backup created at ${BACKUP_FILE}"
+    }
+    
+    # Function to manage backup retention
+    manage_retention() {
+      find $BACKUP_DIR -name "redis-backup-*.rdb" -type f -mtime +$RETENTION_DAYS -exec rm -f {} \;
+    
+      if [ $? -ne 0 ]; then
+        echo "Failed to delete old backups"
+        exit 1
+      fi
+    
+      echo "Old backups deleted, keeping only the last ${RETENTION_DAYS} days"
+    }
+    
+    # Main execution
+    create_backup
+    manage_retention
+  restore.yaml: |
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: {{ $.Release.Name }}-restore
+      labels:
+        {{- include "ant-media.labels" . | nindent 8 }}
+        "app.kubernetes.io/component": "redis"
+      namespace: {{ $.Release.Namespace }}
+    spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $.Values.redis.custom.helper.podSecurityContext.enabled }}
+      securityContext:
+        {{- toYaml (omit $.Values.redis.custom.helper.podSecurityContext "enabled") | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: backup
+        image: "{{ $.Values.redis.custom.helper.image.repository }}:{{ $.Values.redis.custom.helper.image.tag | }}"
+        imagePullPolicy: {{ $.Values.redis.custom.helper.image.pullPolicy }}
+        {{- if $.Values.redis.custom.helper.securityContext.enabled }}
+        securityContext:
+          {{- toYaml (omit $.Values.redis.custom.helper.securityContext "enabled") | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: backup-dir
+          mountPath: /backups
+        command:
+        - /bin/bash
+        - -c
+        - sleep infinity
+        env:
+          {{- include "ant-media.common.env" $ | nindent 10 }}
+          {{- with $Values.envs }}
+            {{- include "helm.utils.envs" (dict "envs" . "ctx" $) | nindent 10 }}
+          {{- end }}
+      volumes:
+      - name: backup-dir
+        persistentVolumeClaim:
+          claimName: {{ $.Release.Name }}-redis-backup
+{{- end }}

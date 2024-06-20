@@ -1,0 +1,69 @@
+{{- $Values := $.Values.redis.custom.backup -}}
+{{- if $Values.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ $.Release.Name }}-redis-backup
+  labels:
+    {{- include "ant-media.labels" . | nindent 4 }}
+    "app.kubernetes.io/component": "redis"
+spec:
+  schedule: {{ $Values.schedule | quote}}
+  {{- with $Values.concurrencyPolicy }}
+  concurrencyPolicy: {{ . }}
+  {{- end }}
+  {{- with $Values.successfulJobsHistoryLimit }}
+  successfulJobsHistoryLimit: {{ . }}
+  {{- end }}
+  {{- with $Values.failedJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ . }}
+  {{- end }}
+  jobTemplate:
+    spec:
+      {{- with $Values.ttlSecondsAfterFinished}}
+      ttlSecondsAfterFinished: {{ . }}
+      {{- end }}
+      template:
+        spec:
+          {{- with $.Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if $.Values.redis.custom.helper.podSecurityContext.enabled }}
+          securityContext:
+            {{- toYaml (omit $.Values.redis.custom.helper.podSecurityContext "enabled") | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: backup
+            image: "{{ $.Values.redis.custom.helper.image.repository }}:{{ $.Values.redis.custom.helper.image.tag | }}"
+            imagePullPolicy: {{ $.Values.redis.custom.helper.image.pullPolicy }}
+            {{- if $.Values.redis.custom.helper.securityContext.enabled }}
+            securityContext:
+              {{- toYaml (omit $.Values.redis.custom.helper.securityContext "enabled") | nindent 14 }}
+            {{- end }}
+            volumeMounts:
+            - name: redis
+              mountPath: /scripts
+            - name: backup-dir
+              mountPath: /backups
+            command:
+            - /bin/bash
+            - -c
+            - /scripts/backup.sh
+            env:
+              {{- include "ant-media.common.env" $ | nindent 14 }}
+              {{- with $Values.envs }}
+                {{- include "helm.utils.envs" (dict "envs" . "ctx" $) | nindent 14 }}
+              {{- end }}
+          {{- with $Values.restartPolicy }}
+          restartPolicy: {{ . }}
+          {{- end }}
+          volumes:
+          - name: redis
+            configMap:
+              defaultMode: 0777
+              name: {{ $.Release.Name }}-redis-backup
+          - name: backup-dir
+            persistentVolumeClaim:
+              claimName: {{ $.Release.Name }}-redis-backup
+{{- end }}

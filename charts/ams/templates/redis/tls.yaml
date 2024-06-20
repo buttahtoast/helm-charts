@@ -1,0 +1,47 @@
+{{- if $.Values.redis.tls.enabled }}
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ $.Release.Name }}-selfsigned-issuer
+  labels:
+    {{- include "ant-media.labels" . | nindent 4 }}
+    "app.kubernetes.io/component": "redis"
+spec:
+  selfSigned: {}
+
+
+---
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ $.Release.Name }}-issuer
+  namespace: sandbox
+spec:
+  ca:
+    secretName: root-secret
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ $.Release.Name }}-redis-tls
+spec:
+  dnsNames:
+    - {{$.Release.Name }}-redis  
+    - {{$.Release.Name }}-redis-headless
+  keystores:
+    pkcs12:
+      create: true
+      passwordSecretRef:
+        name: redis-sentinel-tls
+        key: password
+    jks:
+      create: true
+      passwordSecretRef:
+          name: redis-sentinel-tls
+          key: password
+  secretName: redis-tls-secret
+  issuerRef:
+    name: {{ $.Release.Name }}-issuer
+    kind: Issuer
+{{- end }}

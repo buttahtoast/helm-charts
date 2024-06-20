@@ -1,0 +1,24 @@
+{{- if $.Values.netpol.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "ant-media.fullname" . }}-netpol
+  labels:
+    {{- include "ant-media.labels" . | nindent 4 }}
+    "app.kubernetes.io/component": "origin"
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "ant-media.selectorLabels" . | nindent 6 }}
+      "app.kubernetes.io/component": "origin"
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    {{- with $.Values.netpol.ingress.from }}
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    ports:
+    - protocol: TCP
+      port: 5080
+{{- end }}

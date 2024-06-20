@@ -9,3 +9,6 @@ validate-yaml: false
 excluded-charts:
   - "library"
   - "manifests"
+chart-repos:
+  - bitnami=https://charts.bitnami.com/bitnami
+
