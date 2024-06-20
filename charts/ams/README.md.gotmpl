@@ -30,13 +30,13 @@ You can toggle a periodoic backup of the redis database with the `backup.enabled
 When it comes to the case you need to perform a restore, we have the pod yaml prepared which lets you interact with the cluster and with the backups. Execute:
 
 ```shell
-kubectl get configmap {{ $.Release.Name }}-redis-backup -o jsonpath='{.data.restore\.yaml}'
+kubectl get configmap { $.Release.Name }-redis-backup -o jsonpath='{.data.restore\.yaml}'
 ```
 
 Execute the restore helper:
 
 ```shell
-kubectl exec -it {{ $.Release.Name }}-restore -- bash
+kubectl exec -it { $.Release.Name }-restore -- bash
 ```
 
 

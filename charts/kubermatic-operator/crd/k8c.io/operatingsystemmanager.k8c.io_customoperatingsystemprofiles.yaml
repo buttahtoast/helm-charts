@@ -5,7 +5,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.9.2
     kubermatic.k8c.io/location: "master,seed"
-    app.kubernetes.io/version: v2.25.4
+    app.kubernetes.io/version: v2.25.5
   creationTimestamp: null
   name: customoperatingsystemprofiles.operatingsystemmanager.k8c.io
 spec:

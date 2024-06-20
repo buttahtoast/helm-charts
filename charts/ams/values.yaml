@@ -10,7 +10,7 @@ redis:
     enabled: true
   tls:
     enabled: false
-    existingSecret: "{{$.Release.Name}}-tls-secret"
+    existingSecret: "ams-tls-secret"
     certFilename: "cert.pem"
     certKeyFilename: "cert.key"
     certCAFilename: "ca.pem"
@@ -95,7 +95,7 @@ redis:
 # [JSON Exporter (Prometheus Metrics)](https://artifacthub.io/packages/helm/prometheus-community/prometheus-json-exporter)
 exporter:
   # -- Enable Prometheus Exporter
-  enabled: true
+  enabled: false
   configuration:
     config: |
       ---
@@ -130,8 +130,6 @@ kafka:
     enabled: true
 
 
-
-
 nameOverride: ""
 fullnameOverride: ""
 
@@ -140,9 +138,9 @@ image:
   # -- Image Registry
   registry: docker.io
   # -- Image Repository
-  repository: oliverbaehler/dev
+  repository: anguda/ant-media
   # -- Image Tag
-  tag: "antmedia"
+  tag: ""
   # -- Image pull policy
   pullPolicy: Always
 
@@ -274,14 +272,14 @@ origin:
   # Ingress
   ingress:
     enabled: true
-    className: "cilium"
+    className: ""
     path: "/"
     pathType: "Prefix"
-    annotations:
-      cert-manager.io/cluster-issuer: cloudflare
-      ingress.cilium.io/loadbalancer-mode: shared
+    annotations: {}
+    #  cert-manager.io/cluster-issuer: cloudflare
+    #  ingress.cilium.io/loadbalancer-mode: shared
     hosts: 
-     - "streams.sandbox.xmodel.fans"
+     - "streams.company.com"
     tls: true
 
 serviceAccount:
@@ -295,13 +293,10 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-instances:
-  - name: ""
-
 # Origin
 coturn:
   # -- Enable CoTurn Server
-  enabled: true
+  enabled: false
 
   # Image Configuration
   image:

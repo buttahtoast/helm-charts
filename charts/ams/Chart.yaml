@@ -1,0 +1,16 @@
+apiVersion: v2
+name: ams
+description: Secure Ant Media Server Deployment
+type: application
+version: 0.1.0
+appVersion: "1.16.0"
+home: https://antmedia.io/docs/guides/clustering-and-scaling/kubernetes/prepare-environment-to-deploy-ams-at-kubernetes/
+maintainers:
+  - name: oliverbaehler
+    email: oliverbaehler@hotmail.com
+  - name: chifu1234
+    email: kk@sudo-i.net
+dependencies:
+  - name: redis
+    version: 19.5.3
+    repository: https://charts.bitnami.com/bitnami
