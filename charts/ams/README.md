@@ -1,8 +1,6 @@
-# CSGO Server
+# Ant Media Server (AMS)
 
 ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
-
-This is a helm chart for all the docker image variants published by [cm2network](https://hub.docker.com/r/cm2network/csgo/). Container configurations can be looked up on the referenced link.
 
 **Homepage:** <https://antmedia.io/docs/guides/clustering-and-scaling/kubernetes/prepare-environment-to-deploy-ams-at-kubernetes/>
 
@@ -12,12 +10,6 @@ This is a helm chart for all the docker image variants published by [cm2network]
 | ---- | ------ | --- |
 | oliverbaehler | <oliverbaehler@hotmail.com> |  |
 | chifu1234 | <kk@sudo-i.net> |  |
-
-# Install Chart
-
-```
-helm install csgo --set persistence.enabled=false -n server
-```
 
 # Major Changes
 
