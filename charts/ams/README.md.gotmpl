@@ -1,19 +1,11 @@
-# CSGO Server
+# Ant Media Server (AMS)
 {{ template "chart.deprecationWarning" . }}
 
 {{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
 
-This is a helm chart for all the docker image variants published by [cm2network](https://hub.docker.com/r/cm2network/csgo/). Container configurations can be looked up on the referenced link.
-
 {{ template "chart.homepageLine" . }}
 
 {{ template "chart.maintainersSection" . }}
-
-# Install Chart
-
-```
-helm install csgo --set persistence.enabled=false -n server
-```
 
 # Major Changes
 
