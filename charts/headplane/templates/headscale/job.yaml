@@ -1,0 +1,89 @@
+{{- $Values := $.Values.global.jobs.kubectl  -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{$.Release.Name }}-generate-token
+  namespace: {{ $.Release.Namespace}}
+  annotations:
+    {{- with $Values.annotations }}
+      {{- . | toYaml | nindent 4 }}
+    {{- end }}
+  labels:
+    {{- with $Values.labels }}
+      {{- . | toYaml | nindent 4 }}
+    {{- end }}
+spec:
+  backoffLimit: {{ $Values.backoffLimit }}
+  ttlSecondsAfterFinished: {{ $Values.ttlSecondsAfterFinished }}
+  template:
+    metadata:
+      name: {{$.Release.Name }}-generate-token
+    spec:
+      restartPolicy: {{ $Values.restartPolicy }}
+      {{- if $Values.podSecurityContext.enabled }}
+      securityContext: {{- omit $Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- with $Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $Values.priorityClassName }}
+      priorityClassName: {{ . }}
+      {{- end }}
+      {{- with $Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{$.Release.Name}}-token
+      containers:
+        - name: headscale-generate-token
+          image: {{ include "helm.jobsFullyQualifiedDockerImage" . }}
+          imagePullPolicy: {{ $Values.image.pullPolicy }}
+          {{- if $Values.securityContext.enabled }}
+          securityContext: {{- omit $Values.securityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- with $Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              
+              echo "Waiting for headscale container to be Ready..."
+              while [ -z "$CONTAINER_STATUS" ]; do
+              CONTAINER_STATUS=$(kubectl get pod {{ $.Release.Name }}-headplane-0 -n {{ .Release.Namespace }} -o=jsonpath="{.status.containerStatuses[?(@.name==\"headscale\")].state.running}")
+                sleep 1
+              done
+
+              echo "Checking if Secret 'headscale-api-token' exists..."
+              if kubectl get secret {{ .Release.Name }}-api-token -n {{ .Release.Namespace }} >/dev/null 2>&1; then
+                echo "Secret already exists. Skipping token generation."
+                exit 0
+              fi
+
+              echo "Secret not found. Generating Headscale API token..."
+              TOKEN=$(kubectl -n {{ .Release.Namespace }} exec -i {{ $.Release.Name }}-headplane-0 -c headscale -- headscale apikeys create -e 100y)
+
+              if [ -z "$TOKEN" ]; then
+                echo "Failed to retrieve API token"
+                exit 1
+              fi
+
+              echo "Creating Kubernetes Secret..."
+              kubectl create secret generic {{ .Release.Name }}-api-token --from-literal=HEADPLANE_OIDC__HEADSCALE_API_KEY="$TOKEN" -n {{ .Release.Namespace }}

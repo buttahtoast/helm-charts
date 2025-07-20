@@ -1,0 +1,41 @@
+{{ $Values := .Values.headplane.scale.service }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{$.Release.Name}}-headscale
+  labels:
+    "app.kubernetes.io/component": "headscale"
+    {{- include "helm.labels" $ | nindent 4 }} 
+spec:
+{{- if (or (eq $Values.type "ClusterIP") (empty $Values.type)) }}
+  type: ClusterIP
+  {{- if $Values.clusterIP }}
+  clusterIP: {{ $Values.clusterIP }}
+  {{end}}
+{{- else if eq $Values.type "LoadBalancer" }}
+  type: {{ $Values.type }}
+  {{- if $Values.loadBalancerIP }}
+  loadBalancerIP: {{ $Values.loadBalancerIP }}
+  {{- end }}
+  {{- if $Values.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+{{ toYaml $Values.loadBalancerSourceRanges | indent 4 }}
+  {{- end -}}
+{{- else }}
+  type: {{$Values.type }}
+{{- end }}
+  {{- if $Values.sessionAffinity }}
+  sessionAffinity: {{ $Values.sessionAffinity }}
+  {{- end }}
+  ports:
+  - name: headscale
+    port: 8080
+    protocol: TCP
+    targetPort: headscale
+    {{ if (and (eq $Values.type "NodePort") (not (empty $Values.nodePort))) }}
+      {{- if $Values.nodePort }}
+    nodePort: {{$Values.nodePort}}
+      {{- end }}
+    {{ end }}
+  selector:
+    {{- include "helm.selectorLabels" . | nindent 4 }}

@@ -1,0 +1,12 @@
+apiVersion: v2
+name: headscale
+description: Secure Ant Media Server Deployment
+type: application
+version: 0.1.0
+appVersion: "v0.26.1"
+home: https://github.com/juanfont/headscale
+maintainers:
+  - name: oliverbaehler
+    email: oliverbaehler@hotmail.com
+  - name: chifu1234
+    email: kk@sudo-i.net

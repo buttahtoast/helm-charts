@@ -1,0 +1,488 @@
+# Default values for ant-media.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+global:
+  jobs:
+    kubectl:
+      image:
+        # -- Set the image repository of the helm chart job
+        registry: docker.io
+        # -- Set the image repository of the helm chart job
+        repository: clastix/kubectl
+        # -- Set the image pull policy of the helm chart job
+        pullPolicy: IfNotPresent
+        # -- Set the image tag of the helm chart job
+        tag: ""
+      # -- ImagePullSecrets
+      imagePullSecrets: []
+      # -- Annotations to add to the certgen job.
+      annotations: {}
+      # -- Set the restartPolicy
+      restartPolicy: Never
+      # -- Sets the ttl in seconds after a finished certgen job is deleted. Set to -1 to never delete.
+      ttlSecondsAfterFinished: 60
+      # -- Security context for the job pods.
+      podSecurityContext:
+        enabled: true
+        seccompProfile:
+          type: "RuntimeDefault"
+      # -- Security context for the job containers.
+      securityContext:
+        enabled: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsGroup: 1002
+        runAsNonRoot: true
+        runAsUser: 1002
+      # -- Job resources
+      resources: {}
+      # -- Set the node selector
+      nodeSelector: {}
+      # -- Set list of tolerations
+      tolerations: []
+      # -- Set affinity rules
+      affinity: {}
+      # -- Set Topology Spread Constraints
+      topologySpreadConstraints: []
+      # -- Set a pod priorityClassName
+      priorityClassName: ""
+      # -- Backofflimit for jobs
+      backoffLimit: 4
+
+
+headplane:
+  # -- Image PullSecrets
+  imagePullSecrets: []
+  # -- Additional Pod Labels
+  podLabels: {}
+  # -- Additional Pod Annotations
+  podAnnotations: {}
+  # -- SecurityContext for Pod
+  podSecurityContext:
+    enabled: false
+    seccompProfile:
+      type: RuntimeDefault
+  # -- Set the node selector
+  nodeSelector: {}
+  # -- Set list of tolerations
+  tolerations: []
+  # -- Set affinity rules
+  affinity: {}
+  # -- Set Topology Spread Constraints
+  topologySpreadConstraints: []
+  # -- Set a pod priorityClassName
+  priorityClassName: ""
+  # -- Additional volumes on the output Deployment definition.
+  volumes: []
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+
+  pvc:
+    enabled: true
+    name: headscale-config
+    accessModes:
+      - ReadWriteOnce
+    storage: 1Gi
+
+  plane:
+    config:
+      server:
+          cookie_secure: true
+      headscale:
+          url: "https://vpn.example.com"
+          config_path: "/etc/headscale/config.yaml"
+          config_strict: "true"
+      integration:
+          kubernetes:
+              validate_manifest: true
+      oidc:
+        issuer: "https://your-oidc-issuer-url.com"
+        disable_api_key_login: "true"
+        token_endpoint_auth_method: "client_secret_post"
+        redirect_uri: "https://your-headplane-admin-domain.com/admin/oidc/callback"
+        client_id: "REPLACE_IT_WITH_YOUR_OIDC_CLIENT_ID_FOR_HEADPLANE"
+    secret:
+      name: headplane-secret
+      create: true
+      server:
+        cookie_secret: "yjbqijkvfrgrtwwkoanqquykeyuyffywd"
+      oidc:
+        client_secret: ""
+        headscale_api_key: ""
+
+    # Service Configuration
+    service:
+      # -- Specifies the service type should be created (`ClusterIP`, `NodePort`or `LoadBalancer`)
+      type: ClusterIP
+      # -- Specifies the node port number (only for `NodePort` service type).
+      nodePort: 0
+      # -- Labels to add to the service.
+      labels: {}
+      # -- Annotations to add to the service.
+      annotations: {}
+      # -- LoadbalancerSourceRanges
+      loadBalancerSourceRanges: []
+
+    # Persistence Config
+    pvc:
+      enabled: true
+      name: headplane-state
+      accessModes:
+        - ReadWriteOnce
+      storage: 1Gi
+
+    # Image Configuration
+    image:
+      # -- Image Registry
+      registry: ghcr.io
+      # -- Image Repository
+      repository: tale/headplane
+      # -- Image Tag
+      tag: "0.5.5"
+      # -- Image pull policy
+      pullPolicy: IfNotPresent
+    # -- SecurityContext for Container
+    securityContext:
+      enabled: false
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
+      runAsNonRoot: true
+      runAsUser: 999
+    resources: {}
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+    # -- Executed command
+    cmd:
+    #  - sh
+    #  - -c
+    #  - "sleep infinity"
+    # -- Set the node selector
+    nodeSelector: {}
+    # -- Set list of tolerations
+    tolerations: []
+    # -- Set affinity rules
+    affinity: {}
+    # -- Set Topology Spread Constraints
+    topologySpreadConstraints: []
+    # -- Set a pod priorityClassName
+    priorityClassName: ""
+    # -- Liveness Probe
+    livenessProbe:
+      enabled: false
+      httpGet:
+        path: / 
+        port: 5080
+      initialDelaySeconds: 30
+      periodSeconds: 10
+    # -- Readiness Probe
+    readinessProbe:
+      enabled: false
+      httpGet:
+        path: / 
+        port: 5080
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    # -- Extra environment variables (`key: value` style, allows templating)
+    envs: {}
+    # EXTRA: "value"
+    # -- Additional volumeMounts on the output Deployment definition.
+    volumeMounts: []
+    # - name: foo
+    #   mountPath: "/etc/foo"
+    #   readOnly: true
+  scale:
+    config:
+      server_url: https://vpn.example.com
+      listen_addr: 0.0.0.0:8080
+      metrics_listen_addr: 0.0.0.0:9090
+      grpc_listen_addr: 0.0.0.0:50443
+      grpc_allow_insecure: false
+      prefixes:
+        v4: 100.64.0.0/10
+        v6: fd7a:115c:a1e0::/48
+        allocation: sequential
+      database:
+        type: sqlite
+        debug: false
+        sqlite:
+          path: /etc/headscale/db.sqlite
+      noise:
+        private_key_path: /etc/headscale/noise_private.key
+      derp:
+        server:
+          enabled: false
+          region_id: 999
+          region_code: "headscale"
+          region_name: "Headscale Embedded DERP"
+          stun_listen_addr: "0.0.0.0:3478"
+          private_key_path: /var/lib/headscale/derp_server_private.key
+          automatically_add_embedded_derp_region: true
+          ipv4: 1.2.3.4
+          ipv6: 2001:db8::1
+        urls:
+          - https://controlplane.tailscale.com/derpmap/default
+        paths: []
+      dns:
+        magic_dns: true
+        base_domain: service.buttah.cloud
+        nameservers:
+          global:
+            - 1.1.1.1
+            - 8.8.8.8
+      oidc:
+        issuer: "https://your-oidc-issuer.com"
+        client_id: "YOUR_OIDC_CLIENT_ID_FOR_HEADSCALE"
+#        allowed_groups:
+#          - vpn_access
+#       allowed_domains:
+#         - example.com
+#       allowed_users:
+#        - alice@example.com
+  
+    secret:
+      name: headscale-secret
+      create: true
+      oidc:
+        client_secret: "REPLACE_IT_WITH_YOUR_OIDC_CLIENT_SECRET"
+
+    # Service Configuration
+    service:
+      # -- Specifies the service type should be created (`ClusterIP`, `NodePort`or `LoadBalancer`)
+      type: ClusterIP
+      # -- Specifies the node port number (only for `NodePort` service type).
+      nodePort: 0
+      # -- Labels to add to the service.
+      labels: {}
+      # -- Annotations to add to the service.
+      annotations: {}
+      # -- LoadbalancerSourceRanges
+      loadBalancerSourceRanges: []
+
+    # Persistence Config
+    pvc:
+      enabled: true
+      name: headscale-state
+      accessModes:
+        - ReadWriteOnce
+      storage: 1Gi
+
+    # Image Configuration
+    image:
+      # -- Image Registry
+      registry: docker.io
+      # -- Image Repository
+      repository: headscale/headscale
+      # -- Image Tag
+      tag: "0.25.1"
+      # -- Image pull policy
+      pullPolicy: IfNotPresent
+    # -- SecurityContext for Container
+    securityContext:
+      enabled: false
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: false
+      runAsNonRoot: true
+      runAsUser: 999
+    resources: {}
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+    # -- Executed command
+    cmd:
+    #  - sh
+    #  - -c
+    #  - "sleep infinity"
+    # -- Set the node selector
+    nodeSelector: {}
+    # -- Set list of tolerations
+    tolerations: []
+    # -- Set affinity rules
+    affinity: {}
+    # -- Set Topology Spread Constraints
+    topologySpreadConstraints: []
+    # -- Set a pod priorityClassName
+    priorityClassName: ""
+    # -- Liveness Probe
+    livenessProbe:
+      enabled: false
+      httpGet:
+        path: / 
+        port: 5080
+      initialDelaySeconds: 30
+      periodSeconds: 10
+    # -- Readiness Probe
+    readinessProbe:
+      enabled: false
+      httpGet:
+        path: / 
+        port: 5080
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    # -- Extra environment variables (`key: value` style, allows templating)
+    envs: {}
+    # EXTRA: "value"
+    # -- Additional volumeMounts on the output Deployment definition.
+    volumeMounts: []
+    # - name: foo
+    #   mountPath: "/etc/foo"
+    #   readOnly: true
+
+# Relay Configuration
+relay:
+  # -- Enable Relay Deployment
+  enabled: false
+  # Image Configuration
+  image:
+    # -- Image Registry
+    registry: ghcr.io
+    # -- Image Repository
+    repository: tailscale/tailscale
+    # -- Image Tag
+    tag: "v1.80.3"
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+  # -- Image PullSecrets
+  imagePullSecrets: []
+  # -- Amount of replicas
+  replicaCount: 1
+  # -- Deployment Strategy
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  # -- Additional Pod Labels
+  podLabels: {}
+  # -- Additional Pod Annotations
+  podAnnotations: {}
+  # -- SecurityContext for Pod
+  podSecurityContext:
+    enabled: true
+    seccompProfile:
+      type: RuntimeDefault
+  # -- SecurityContext for Container
+  securityContext:
+    enabled: false
+    capabilities:
+      add:
+      - NET_ADMIN
+      drop:
+      - ALL
+    readOnlyRootFilesystem: false
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  # -- Set the node selector
+  nodeSelector: {}
+  # -- Set list of tolerations
+  tolerations: []
+  # -- Set affinity rules
+  affinity: {}
+  # -- Set Topology Spread Constraints
+  topologySpreadConstraints: []
+  # -- Set a pod priorityClassName
+  priorityClassName: ""
+  # -- Liveness Probe
+  livenessProbe:
+    enabled: false
+    httpGet:
+      path: / 
+      port: 5080
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  # -- Readiness Probe
+  readinessProbe:
+    enabled: false
+    httpGet:
+      path: / 
+      port: 5080
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  # -- Extra environment variables (`key: value` style, allows templating)
+  envs: {}
+  # EXTRA: "value"
+  # -- Additional volumes on the output Deployment definition.
+  volumes: []
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+  # -- Additional volumeMounts on the output Deployment definition.
+  volumeMounts: []
+  # - name: foo
+  #   mountPath: "/etc/foo"
+  #   readOnly: true
+
+
+
+
+  config:
+    hostname: "example.com"
+    exit_node: "example.com"
+    login_server: "https://vpn.example.com"
+    advertise_exit_node: "true"
+    firewall_debug: "false"
+    routes: "10.0.0.0/8"
+pvc:
+  enabled: true
+  name: headscale-config
+  accessModes:
+    - ReadWriteOnce
+  storage: 1Gi
+#  storageClassName: default
+
+ingress:
+  enabled: false
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "cloudflare"
+  labels: []
+  headplaneDomain: "headplane.example.com"
+  headscaleDomain: "vpn.example.com"
+  tlsSecretName: "headplane-tls"
+
+
+
+services:
+
+
+
+
+
+
+
+
+

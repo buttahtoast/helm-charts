@@ -1,0 +1,38 @@
+{{- if .Values.headplane.plane.pvc.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.headplane.plane.pvc.name | quote }}
+spec:
+  accessModes:
+    {{- range .Values.headplane.plane.pvc.accessModes }}
+    - {{ . | quote }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.headplane.plane.pvc.storage | quote }}
+  {{- if .Values.headplane.plane.pvc.storageClassName }}
+  storageClassName: {{ .Values.headplane.plane.pvc.storageClassName | quote }}
+  {{- end }}
+{{- end }}
+{{- if .Values.headplane.scale.pvc.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.headplane.scale.pvc.name | quote }}
+spec:
+  accessModes:
+    {{- range .Values.headplane.scale.pvc.accessModes }}
+    - {{ . | quote }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.headplane.scale.pvc.storage | quote }}
+  {{- if .Values.headplane.scale.pvc.storageClassName }}
+  storageClassName: {{ .Values.headplane.scale.pvc.storageClassName | quote }}
+  {{- end }}
+{{- end }}
+
+

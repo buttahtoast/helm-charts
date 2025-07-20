@@ -1,0 +1,163 @@
+{{- if .Values.relay.enabled -}}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $.Release.Name }}-headplane
+  labels:
+    "app.kubernetes.io/component": "headplane"
+    {{- include "helm.labels" $ | nindent 4 }} 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      "app.kubernetes.io/component": "headplane"
+      {{- include "helm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        "app.kubernetes.io/component": "headplane"
+        {{- include "helm.labels" $ | nindent 8 }} 
+    spec:
+      shareProcessNamespace: true
+      serviceAccountName: "{{ $.Release.Name }}-headplane"
+     {{- with .Values.headplane.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.headplane.podSecurityContext.enabled }}
+      securityContext:
+        {{- toYaml (omit .Values.headplane.podSecurityContext "enabled") | nindent 8 }}
+      {{- end }}
+      {{- with .Values.headplane.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.headplane.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.headplane.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: headscale-config
+          secret:
+            name: {{$.Release.Name}}-headscale-config
+        - name: headplane-config
+          secret:
+            name: {{$.Release.Name}}-headplane-config
+        - name: headscale-state
+          {{- if .Values.headplane.scale.pvc.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.headplane.scale.pvc.name | quote }}
+          {{- else }}
+            emptyDir: {}
+          {{- end }}
+        - name: headplane-state
+          {{- if .Values.headplane.plane.pvc.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.headplane.plane.pvc.name | quote }}
+          {{- else }}
+            emptyDir: {}
+          {{- end }}
+
+      containers:
+      - name: headplane
+        {{- if .Values.headplane.plane.securityContext.enabled }}
+        securityContext:
+          {{- toYaml (omit .Values.headplane.plane.securityContext "enabled") | nindent 10 }}
+        {{- end }}
+        image: {{ include "helm.fullyQualifiedDockerImagePlane" $ }}
+        imagePullPolicy: {{ .Values.headplane.plane.image.pullPolicy }}
+        ports:
+        - containerPort: 3000
+          name: headplane
+        volumeMounts:
+        - name: headplane-config
+          mountPath: /etc/headplane
+        - name: headscale-config
+          mountPath: /etc/headscale
+        - name: headscale-state
+          mountPath: /var/lib/headscale
+        env:
+        {{- with .Values.headplane.plane.envs }}
+          {{- include "helm.utils.envs" (dict "envs" . "ctx" $) | nindent 8 }}
+        {{- end }}
+        - name: HEADPLANE_LOAD_ENV_OVERRIDES
+          value: 'true'
+        - name: 'HEADPLANE_INTEGRATION__KUBERNETES__ENABLED'
+          value: "true"
+        - name: 'HEADPLANE_INTEGRATION__KUBERNETES__POD_NAME'
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: 'HEADPLANE_SERVER__HOST'
+          value: "0.0.0.0"
+        - name: 'HEADPLANE_SERVER__PORT'
+          value: "3000"
+
+        {{- with .Values.headplane.plane.resources }}  
+        resources:
+          {{ .| toYaml | nindent 10 }}
+        {{- end }}
+        {{- if .Values.headplane.plane.livenessProbe.enabled }}
+        livenessProbe:
+          {{- toYaml (omit .Values.headplane.plane.livenessProbe "enabled") | nindent 10 }}
+        {{- end }}
+        {{- if .Values.headplane.plane.readinessProbe.enabled }}
+        readinessProbe:
+          {{- toYaml (omit .Values.headplane.plane.readinessProbe "enabled") | nindent 10 }}
+        {{- end }}
+
+      - name: headscale
+        {{- if .Values.headplane.scale.securityContext.enabled }}
+        securityContext:
+          {{- toYaml (omit .Values.headplane.scale.securityContext "enabled") | nindent 10 }}
+        {{- end }}
+        image: {{ include "helm.fullyQualifiedDockerImageScale" $ }}
+        imagePullPolicy: {{ .Values.headplane.scale.image.pullPolicy }}
+        args:
+          - serve
+          - --force
+          - -c
+          - /config/config.yaml
+        ports:
+        - containerPort: 8080
+          name: headscale
+        - containerPort: 9090
+          name: metrics
+        - containerPort: 50443
+          name: grpc
+        volumeMounts:
+        - name: headscale-config
+          mountPath: /etc/headscale
+        - name: headplane-state
+          mountPath: /var/lib/headplane
+        envFrom:
+          - secretRef:
+              name: {{ .Values.headplane.scale.secret.name }}
+        env:
+        {{- with .Values.headplane.scale.envs }}
+          {{- include "helm.utils.envs" (dict "envs" . "ctx" $) | nindent 8 }}
+        {{- end }}
+        - name: HEADPLANE_LOAD_ENV_OVERRIDES
+          value: 'true'
+        - name: 'HEADPLANE_INTEGRATION__KUBERNETES__POD_NAME'
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        {{- with .Values.headplane.scale.resources }}  
+        resources:
+          {{ .| toYaml | nindent 10 }}
+        {{- end }}
+        {{- if .Values.headplane.scale.livenessProbe.enabled }}
+        livenessProbe:
+          {{- toYaml (omit .Values.headplane.scale.livenessProbe "enabled") | nindent 10 }}
+        {{- end }}
+        {{- if .Values.headplane.scale.readinessProbe.enabled }}
+        readinessProbe:
+          {{- toYaml (omit .Values.headplane.scale.readinessProbe "enabled") | nindent 10 }}
+        {{- end }}
+{{- end }}

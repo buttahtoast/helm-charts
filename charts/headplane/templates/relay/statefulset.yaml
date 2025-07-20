@@ -1,0 +1,112 @@
+{{- if .Values.relay.enabled -}}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tailscale-relay
+  labels:
+    app: tailscale
+spec:
+  replicas: {{ .Values.relay.replicaCount }}
+  selector:
+    matchLabels:
+      "app.kubernetes.io/component": "relay"
+      {{- include "helm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        "app.kubernetes.io/component": "relay"
+        {{- include "helm.labels" $ | nindent 8 }} 
+    spec:
+      serviceAccountName: "{{ $.Release.Name }}-relay"
+     {{- with .Values.relay.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.relay.podSecurityContext.enabled }}
+      securityContext:
+        {{- toYaml (omit .Values.relay.podSecurityContext "enabled") | nindent 8 }}
+      {{- end }}
+      {{- with .Values.relay.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.relay.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.relay.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: tailscale
+        {{- if .Values.relay.securityContext.enabled }}
+        securityContext:
+          {{- toYaml (omit .Values.relay.securityContext "enabled") | nindent 10 }}
+        {{- end }}
+        image: "{{ .Values.relay.image.repository }}:{{ .Values.relay.image.tag }}"
+        imagePullPolicy: {{ .Values.relay.image.pullPolicy }}
+        env:
+        {{- with .Values.relay.envs }}
+          {{- include "helm.utils.envs" (dict "envs" . "ctx" $) | nindent 8 }}
+        {{- end }}
+        {{- $extraArgs := list }}
+        {{- if .Values.relay.config.login_server }}
+        {{- $extraArgs = append $extraArgs (printf "--login-server=%s" .Values.relay.config.login_server) }}
+        {{- end }}
+        {{- if .Values.relay.config.advertise_exit_node }}
+        {{- $extraArgs = append $extraArgs "--advertise-exit-node" }}
+        {{- end }}
+        {{- if gt (len $extraArgs) 0 }}
+        - name: TS_EXTRA_ARGS
+          value: "{{ join " " $extraArgs }}"
+        {{- end }}
+        {{- if .Values.relay.config.exit_node }}
+        - name: TS_EXIT_NODE
+          value: "{{ .Values.relay.config.exit_node }}"
+        {{- end }}
+        {{- if .Values.relay.config.hostname }}
+        - name: TS_HOSTNAME
+          value: "{{ .Values.relay.config.hostname }}"
+        {{- end }}
+        {{- if .Values.relay.config.routes }}
+        - name: TS_ROUTES
+          value: "{{ .Values.relay.config.routes }}"
+        {{- end }}
+        {{- if .Values.relay.config.firewall_debug }}
+        - name: TS_DEBUG_FIREWALL_MODE
+          value: "{{ .Values.relay.config.firewall_debug }}"
+        {{- end }}
+        # Store the state in a k8s secret
+        - name: TS_KUBE_SECRET
+          value: "tailscale-auth"
+        - name: TS_USERSPACE
+          value: "true"
+        - name: TS_AUTHKEY
+          valueFrom:
+            secretKeyRef:
+              name: tailscale-auth
+              key: TS_AUTHKEY
+              optional: true
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        {{- with .Values.relay.resources }}  
+        resources:
+          {{ .| toYaml | nindent 10 }}
+        {{- end }}
+        {{- if .Values.relay.livenessProbe.enabled }}
+        livenessProbe:
+          {{- toYaml (omit .Values.relay.livenessProbe "enabled") | nindent 10 }}
+        {{- end }}
+        {{- if .Values.relay.readinessProbe.enabled }}
+        readinessProbe:
+          {{- toYaml (omit .Values.relay.readinessProbe "enabled") | nindent 10 }}
+        {{- end }}
+{{- end }}

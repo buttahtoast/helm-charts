@@ -1,0 +1,52 @@
+# Ant Media Server (AMS)
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+# Major Changes
+
+Major Changes to functions are documented with the version affected. **Before upgrading the dependency version, check this section out!**
+
+| **Template** | **Chart Version** | **Change/Description** | **Commits/PRs** |
+| :----------- | :---------------- | :--------------------- | :-------------- |
+|||||
+
+# Backup & Restore
+
+You can toggle a periodoic backup of the redis database with the `backup.enabled` parameter. [See Backup](#backup) for more information. The idea is to dump the snapshots to a pvc (which is backuped by the plattform) and have access to different states of the cluster.
+
+When it comes to the case you need to perform a restore, we have the pod yaml prepared which lets you interact with the cluster and with the backups. Execute:
+
+```shell
+kubectl get configmap { $.Release.Name }-redis-backup -o jsonpath='{.data.restore\.yaml}'
+```
+
+Execute the restore helper:
+
+```shell
+kubectl exec -it { $.Release.Name }-restore -- bash
+```
+
+
+
+
+
+{{/*
+  Chart Values
+*/}}
+{{ template "chart.valuesSection" . }}
+
+
+{{/*
+  Chart Sources
+*/}}
+{{ template "chart.sourcesSection" . }}
+
+{{/*
+  Chart Requirements
+*/}}
+{{ template "chart.requirementsSection" . }}
