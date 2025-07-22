@@ -92,6 +92,11 @@ headplane:
   plane:
     config:
       server:
+          host: "0.0.0.0"
+          port: 3000
+          # The secret used to encode and decode web sessions
+          # Ensure that this is exactly 32 characters long
+          cookie_secret: "<change_me_to_something_secure!>"
           cookie_secure: true
       headscale:
           url: "https://vpn.example.com"
@@ -99,7 +104,9 @@ headplane:
           config_strict: "true"
       integration:
           kubernetes:
+              enabled: true
               validate_manifest: true
+              pod_name: "headscale"
       oidc:
         issuer: "https://your-oidc-issuer-url.com"
         disable_api_key_login: "true"
@@ -221,9 +228,9 @@ headplane:
         type: sqlite
         debug: false
         sqlite:
-          path: /etc/headscale/db.sqlite
+          path: /var/lib/headscale/db.sqlite
       noise:
-        private_key_path: /etc/headscale/noise_private.key
+        private_key_path: /var/lib/headscale/noise_private.key
       derp:
         server:
           enabled: false
@@ -289,7 +296,7 @@ headplane:
       # -- Image Repository
       repository: headscale/headscale
       # -- Image Tag
-      tag: "0.25.1"
+      tag: "0.26.1"
       # -- Image pull policy
       pullPolicy: IfNotPresent
     # -- SecurityContext for Container

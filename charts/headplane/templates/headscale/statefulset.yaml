@@ -1,9 +1,9 @@
-{{- if .Values.relay.enabled -}}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ $.Release.Name }}-headplane
+  namespace: {{ $.Release.Namespace }}
   labels:
     "app.kubernetes.io/component": "headplane"
     {{- include "helm.labels" $ | nindent 4 }} 
@@ -44,10 +44,10 @@ spec:
       volumes:
         - name: headscale-config
           secret:
-            name: {{$.Release.Name}}-headscale-config
+            secretName: {{$.Release.Name}}-headscale-config
         - name: headplane-config
           secret:
-            name: {{$.Release.Name}}-headplane-config
+            secretName: {{$.Release.Name}}-headplane-config
         - name: headscale-state
           {{- if .Values.headplane.scale.pvc.enabled }}
           persistentVolumeClaim:
@@ -62,7 +62,6 @@ spec:
           {{- else }}
             emptyDir: {}
           {{- end }}
-
       containers:
       - name: headplane
         {{- if .Values.headplane.plane.securityContext.enabled }}
@@ -79,6 +78,8 @@ spec:
           mountPath: /etc/headplane
         - name: headscale-config
           mountPath: /etc/headscale
+        - name: headplane-state
+          mountPath: /var/lib/headplane
         - name: headscale-state
           mountPath: /var/lib/headscale
         env:
@@ -97,7 +98,6 @@ spec:
           value: "0.0.0.0"
         - name: 'HEADPLANE_SERVER__PORT'
           value: "3000"
-
         {{- with .Values.headplane.plane.resources }}  
         resources:
           {{ .| toYaml | nindent 10 }}
@@ -122,7 +122,7 @@ spec:
           - serve
           - --force
           - -c
-          - /config/config.yaml
+          - /etc/headscale/config.yaml
         ports:
         - containerPort: 8080
           name: headscale
@@ -133,8 +133,8 @@ spec:
         volumeMounts:
         - name: headscale-config
           mountPath: /etc/headscale
-        - name: headplane-state
-          mountPath: /var/lib/headplane
+        - name: headscale-state
+          mountPath: /var/lib/headscale
         envFrom:
           - secretRef:
               name: {{ .Values.headplane.scale.secret.name }}
@@ -160,4 +160,3 @@ spec:
         readinessProbe:
           {{- toYaml (omit .Values.headplane.scale.readinessProbe "enabled") | nindent 10 }}
         {{- end }}
-{{- end }}
