@@ -8,6 +8,9 @@ spec:
       {{- if .Values.gateway.sectionName }}
       sectionName: {{ .Values.gateway.sectionName }}
       {{- end }}
+      {{- if .Values.gateway.namespace }}
+      namespace: {{ .Values.gateway.namespace }}
+      {{- end }}
   hostnames:
     - {{ .Values.host }}
   rules:

@@ -9,7 +9,8 @@ service:
 
 gateway:
   name: "my-gateway"  # Name of the existing Gateway resource
-  sectionName: "http"  # Optional sectionName for parentRef
+  sectionName:
+  namespace:
 
 host: "cloudreve.example.com"  # Hostname for HTTPRoute
 
