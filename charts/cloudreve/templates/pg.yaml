@@ -1,0 +1,14 @@
+{{- if .Values.postgres.enabled }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Release.Name }}-postgres
+spec:
+  instances: {{ .Values.postgres.instances }}
+  bootstrap:
+    initdb:
+      database: {{ .Values.postgres.database }}
+      owner: {{ .Values.postgres.user }}
+  storage:
+    size: {{ .Values.postgres.storage.size }}
+{{- end }}

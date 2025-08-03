@@ -1,0 +1,46 @@
+image:
+  repository: cloudreve/cloudreve
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5212
+
+gateway:
+  name: "my-gateway"  # Name of the existing Gateway resource
+  sectionName: "http"  # Optional sectionName for parentRef
+
+host: "cloudreve.example.com"  # Hostname for HTTPRoute
+
+postgres:
+  enabled: true
+  instances: 1
+  database: "cloudreve"
+  user: "cloudreve"
+  storage:
+    size: "1Gi"
+
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    password: "redis-password"  # Change this in production
+
+minio:
+  auth:
+    rootUser: "minioadmin"
+    rootPassword: "minioadmin"  # Change this in production
+  defaultBuckets: "cloudreve"  # Creates a bucket named 'cloudreve'
+  service:
+    type: ClusterIP
+  persistence:
+    size: 10Gi
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+#   memory: 128Mi

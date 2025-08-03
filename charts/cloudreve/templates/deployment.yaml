@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-cloudreve
+  labels:
+    app: cloudreve
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudreve
+  template:
+    metadata:
+      labels:
+        app: cloudreve
+    spec:
+      containers:
+        - name: cloudreve
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 5212
+          env:
+            # Database configuration
+            - name: CR_CONF_Database.Type
+              value: "postgres"
+            - name: CR_CONF_Database.Host
+              value: "{{ .Release.Name }}-postgres-rw"
+            - name: CR_CONF_Database.Port
+              value: "5432"
+            - name: CR_CONF_Database.User
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Release.Name }}-postgres-app"
+                  key: username
+            - name: CR_CONF_Database.Password
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Release.Name }}-postgres-app"
+                  key: password
+            - name: CR_CONF_Database.Name
+              value: {{ .Values.postgres.database }}
+            # Redis configuration (if enabled)
+            {{- if .Values.redis.enabled }}
+            - name: CR_CONF_Redis.Server
+              value: "{{ .Release.Name }}-redis-master:6379"
+            - name: CR_CONF_Redis.Password
+              value: {{ .Values.redis.auth.password | quote }}
+            - name: CR_CONF_Redis.DB
+              value: "0"
+            {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /cloudreve/data
+      volumes:
+        - name: data
+          emptyDir: {}

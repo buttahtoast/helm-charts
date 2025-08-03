@@ -1,0 +1,13 @@
+apiVersion: v2
+name: cloudreve
+description: A Helm chart for Cloudreve with PostgreSQL (CNPG), Minio (S3), and Redis
+version: 0.1.0
+appVersion: "latest"
+dependencies:
+  - name: minio
+    version: "14.*"
+    repository: "https://charts.bitnami.com/bitnami"
+  - name: redis
+    version: "20.*"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled
